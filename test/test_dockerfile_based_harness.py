@@ -8,7 +8,8 @@ _docker_client = docker.from_env()
 
 
 @pytest.mark.parametrize("dockerfile_path", ["pandas.test.Dockerfile",
-                                             "pytorch.examples.Dockerfile"])
+                                             "pytorch.examples.Dockerfile",
+                                             "tensorflow.examples.Dockerfile"])
 def test_dockerfiles(dockerfile_path: str, local_image_id: str, use_gpu: bool):
     print(f'Will start running test for: {dockerfile_path} against: {local_image_id}')
     image, _ = _docker_client.images.build(path='test/test_artifacts', dockerfile=dockerfile_path,
