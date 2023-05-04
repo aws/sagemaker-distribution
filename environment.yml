@@ -1,0 +1,10 @@
+# Run: conda env update --file environment.yml -n sagemaker-distribution
+channels:
+  - conda-forge
+dependencies:
+  - conda
+  - docker-py
+  - pip
+  - boto3
+  - pytest
+  - semver
