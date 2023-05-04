@@ -37,8 +37,6 @@ def get_dir_for_version(version: Version) -> str:
 
 def create_and_get_semver_dir(version: Version, exist_ok: bool = False):
     dir = get_dir_for_version(version)
-    if not exist_ok and os.path.exists(dir):
-        raise Exception()
 
     if os.path.exists(dir):
         if not exist_ok:
@@ -175,7 +173,7 @@ def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: 
 def _test_local_images(image_ids_to_test: list[str]):
     assert len(image_ids_to_test) == len(_image_generator_configs)
     for (image_id, config) in zip(image_ids_to_test, _image_generator_configs):
-        exit_code = pytest.main(['--local-image-id', image_id, *config['pytest_flags']])
+        exit_code = pytest.main(['-m', 'slow', '--local-image-id', image_id, *config['pytest_flags']])
 
         assert exit_code == 0, f'Tests failed with exit code: {exit_code} against: {image_id}'
 

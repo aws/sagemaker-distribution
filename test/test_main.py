@@ -1,0 +1,271 @@
+from __future__ import absolute_import
+
+import pytest
+
+pytestmark = pytest.mark.unit
+
+from main import (
+    get_semver,
+    create_and_get_semver_dir,
+    _get_version_tags,
+    create_major_version_artifacts,
+    create_minor_version_artifacts,
+    create_patch_version_artifacts,
+    build_images
+)
+import os
+from unittest.mock import patch, Mock, MagicMock
+
+
+class CreateVersionArgs:
+    def __init__(self, runtime_version_upgrade_type, base_patch_version):
+        self.base_patch_version = base_patch_version
+        self.runtime_version_upgrade_type = runtime_version_upgrade_type
+        self.force = False
+
+
+class BuildImageArgs:
+    def __init__(self, target_patch_version, target_ecr_repo=None):
+        self.target_patch_version = target_patch_version
+        self.target_ecr_repo = target_ecr_repo
+        self.skip_tests = True
+
+
+def _create_docker_cpu_env_in_file(file_path):
+    with open(file_path, 'w') as env_in_file:
+        env_in_file.write('conda-forge::ipykernel\n')
+
+
+def _create_docker_cpu_env_out_file(file_path):
+    with open(file_path, 'w') as env_out_file:
+        env_out_file.write('''# This file may be used to create an environment using:
+        # $ conda create --name <env> --file <this file>
+        # platform: linux-64
+        @EXPLICIT
+        https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.3-pyh210e3f2_0.conda#8c1f6bf32a6ca81232c4853d4165ca67\n''')
+
+
+def _create_docker_gpu_env_in_file(file_path):
+    with open(file_path, 'w') as env_in_file:
+        env_in_file.write('conda-forge::numpy\n')
+
+
+def _create_docker_gpu_env_out_file(file_path):
+    with open(file_path, 'w') as env_out_file:
+        env_out_file.write('''# This file may be used to create an environment using:
+        # $ conda create --name <env> --file <this file>
+        # platform: linux-64
+        @EXPLICIT
+        https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.conda#05592c85b9f6931dc2df1e80c0d56294\n''')
+
+
+def _create_docker_file(file_path):
+    with open(file_path, 'w') as docker_file:
+        docker_file.write('''ARG TAG_FOR_BASE_MICROMAMBA_IMAGE
+        FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\n''')
+
+
+def _create_new_version_artifacts_helper(mocker, tmp_path, version):
+
+    def mock_get_dir_for_version(base_version):
+        version_string = f'v{base_version.major}.{base_version.minor}.{base_version.patch}'
+        return tmp_path / version_string
+
+    mocker.patch('main.get_dir_for_version', side_effect=mock_get_dir_for_version)
+    input_version = get_semver(version)
+    # Create directory for base version
+    input_version_dir = create_and_get_semver_dir(input_version)
+    # Create env.in and env.out for base version
+    _create_docker_cpu_env_in_file(input_version_dir / 'cpu.env.in')
+    _create_docker_gpu_env_in_file(input_version_dir / 'gpu.env.in')
+    _create_docker_cpu_env_out_file(input_version_dir / 'cpu.env.out')
+    _create_docker_gpu_env_out_file(input_version_dir / 'gpu.env.out')
+    _create_docker_file(input_version_dir / 'Dockerfile')
+
+
+def test_get_semver_version():
+    # Test invalid version string.
+    with pytest.raises(Exception):
+        get_semver('1.124.5d')
+    # Test version string with prerelease
+    with pytest.raises(Exception):
+        get_semver('1.124.5-prerelease')
+    # Test version string with build
+    with pytest.raises(Exception):
+        get_semver('1.124.5+25')
+    # Test version string with build and prerelease
+    with pytest.raises(Exception):
+        get_semver('1.124.5-prerelease+25')
+    # Test valid version string.
+    assert get_semver('1.124.5') is not None
+
+
+@patch('os.path.exists')
+@patch('os.path.isdir')
+@patch('shutil.rmtree')
+@patch('os.makedirs')
+def test_create_and_get_semver_dir(mock_make_dirs, mock_rmtree,
+                                   mock_path_is_dir, mock_path_exists):
+    # case 1: Directory exists and exist_ok is False => Throws Exception
+    mock_path_exists.return_value = True
+    with pytest.raises(Exception):
+        create_and_get_semver_dir(get_semver('1.124.5'))
+    # Case 2: Instead of a directory in the path, a file exists.
+    mock_path_is_dir.return_value = False
+    with pytest.raises(Exception):
+        create_and_get_semver_dir(get_semver('1.124.5'), True)
+    # Happy case
+    mock_path_is_dir.return_value = True
+    assert create_and_get_semver_dir(get_semver('1.124.5'), True) is not None
+
+
+def test_create_new_version_artifacts_for_invalid_upgrade_type():
+    input = CreateVersionArgs('test_upgrade', '1.2.3')
+    with pytest.raises(Exception):
+        create_major_version_artifacts(input)
+    with pytest.raises(Exception):
+        create_minor_version_artifacts(input)
+    with pytest.raises(Exception):
+        create_patch_version_artifacts(input)
+
+
+def test_create_new_version_artifacts_for_patch_version_upgrade(mocker, tmp_path):
+    input_version = '1.2.5'
+    _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
+    args = CreateVersionArgs('patch', input_version)
+    create_patch_version_artifacts(args)
+    # Assert new version directory is created
+    new_version_dir = tmp_path / 'v1.2.6'
+    assert os.path.exists(new_version_dir)
+    # Check cpu.env.in and gpu.env.in exists in the new directory
+    new_version_dir_files = os.listdir(new_version_dir)
+    assert 'cpu.env.in' in new_version_dir_files
+    assert 'gpu.env.in' in new_version_dir_files
+    assert 'Dockerfile' in new_version_dir_files
+    with open(new_version_dir / 'cpu.env.in', 'r') as f:
+        contents = f.read()
+        # version of ipykernel in cpu.env.out is 6.21.3
+        # so we expect the version string to be >=6.21.3,<6.22.0
+        expected_version_string = '>=6.21.3,<6.22.0'
+        assert contents.find(expected_version_string) != -1
+    with open(new_version_dir / 'gpu.env.in', 'r') as f:
+        contents = f.read()
+        # version of numpy in gpu.env.out is 1.24.2
+        # so we expect the version string to be >=1.24.2,<1.25.0
+        expected_version_string = '>=1.24.2,<1.25.0'
+        assert contents.find(expected_version_string) != -1
+
+
+def test_create_new_version_artifacts_for_minor_version_upgrade(mocker, tmp_path):
+    input_version = '1.2.5'
+    _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
+    args = CreateVersionArgs('minor', input_version)
+    create_minor_version_artifacts(args)
+    # Assert new version directory is created
+    new_version_dir = tmp_path / 'v1.3.0'
+    assert os.path.exists(new_version_dir)
+    # Check cpu.env.in and gpu.env.in exists in the new directory
+    new_version_dir_files = os.listdir(new_version_dir)
+    assert 'cpu.env.in' in new_version_dir_files
+    assert 'gpu.env.in' in new_version_dir_files
+    assert 'Dockerfile' in new_version_dir_files
+    with open(new_version_dir / 'cpu.env.in', 'r') as f:
+        contents = f.read()
+        # version of ipykernel in cpu.env.out is 6.21.3
+        # so we expect the version string to be >=6.21.3,<7.0.0
+        expected_version_string = '>=6.21.3,<7.0.0'
+        assert contents.find(expected_version_string) != -1
+    with open(new_version_dir / 'gpu.env.in', 'r') as f:
+        contents = f.read()
+        # version of numpy in gpu.env.out is 1.24.2
+        # so we expect the version string to be >=1.24.2,<2.0.0
+        expected_version_string = '>=1.24.2,<2.0.0'
+        assert contents.find(expected_version_string) != -1
+
+
+def test_create_new_version_artifacts_for_major_version_upgrade(mocker, tmp_path):
+    input_version = '1.2.5'
+    _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
+    args = CreateVersionArgs('major', input_version)
+    create_major_version_artifacts(args)
+    # Assert new version directory is created
+    new_version_dir = tmp_path / 'v2.0.0'
+    assert os.path.exists(new_version_dir)
+    # Check cpu.env.in and gpu.env.in exists in the new directory
+    new_version_dir_files = os.listdir(new_version_dir)
+    assert 'cpu.env.in' in new_version_dir_files
+    assert 'gpu.env.in' in new_version_dir_files
+    assert 'Dockerfile' in new_version_dir_files
+    with open(new_version_dir / 'cpu.env.in', 'r') as f:
+        contents = f.read()
+        # version of ipykernel in cpu.env.out is 6.21.3
+        # so we expect the version string to be >=6.21.3,
+        expected_version_string = '>=6.21.3,\''
+        assert contents.find(expected_version_string) != -1
+    with open(new_version_dir / 'gpu.env.in', 'r') as f:
+        contents = f.read()
+        # version of numpy in gpu.env.out is 1.24.2
+        # so we expect the version string to be >=1.24.2,
+        expected_version_string = '>=1.24.2,\''
+        assert contents.find(expected_version_string) != -1
+
+
+def test_build_images(mocker, tmp_path):
+    mock_docker_from_env = MagicMock(name='_docker_client')
+    mocker.patch('main._docker_client', new=mock_docker_from_env)
+    version = '1.124.5'
+    args = BuildImageArgs(version)
+
+    def mock_get_dir_for_version(base_version):
+        version_string = f'v{base_version.major}.{base_version.minor}.{base_version.patch}'
+        return tmp_path / version_string
+
+    mocker.patch('main.get_dir_for_version', side_effect=mock_get_dir_for_version)
+    input_version = get_semver(version)
+    # Create directory for base version
+    input_version_dir = create_and_get_semver_dir(input_version)
+    # Create env.in for base version
+    _create_docker_cpu_env_in_file(input_version_dir / 'cpu.env.in')
+    _create_docker_cpu_env_in_file(input_version_dir / 'gpu.env.in')
+    _create_docker_file(input_version_dir / 'Dockerfile')
+    # Assert env.out doesn't exist
+    assert os.path.exists(input_version_dir / 'cpu.env.out') is False
+    assert os.path.exists(input_version_dir / 'gpu.env.out') is False
+    mock_image_1 = Mock()
+    mock_image_1.id.return_value = 'img1'
+    mock_image_2 = Mock()
+    mock_image_2.id.return_value = 'img2'
+    mock_docker_from_env.images.build.side_effect = [(mock_image_1, 'logs1'), (mock_image_2, 'logs2')]
+    mock_docker_from_env.containers.run.side_effect = ['container_logs1'.encode('utf-8'),
+                                                       'container_logs2'.encode('utf-8')]
+    # Invoke build images
+    build_images(args)
+    # Assert env.out exists
+    assert os.path.exists(input_version_dir / 'cpu.env.out')
+    assert os.path.exists(input_version_dir / 'gpu.env.out')
+    # Validate the contents of env.out
+    actual_output = set()
+    with open(input_version_dir / 'cpu.env.out', 'r') as f:
+        actual_output.add(f.read())
+    with open(input_version_dir / 'gpu.env.out', 'r') as f:
+        actual_output.add(f.read())
+    expected_output = {'container_logs1', 'container_logs2'}
+    assert actual_output == expected_output
+
+
+@patch('os.path.exists')
+def test_get_version_tags(mock_path_exists):
+    version = get_semver('1.124.5')
+    # case 1: The given version is the latest for patch, minor and major
+    mock_path_exists.side_effect = [False, False, False]
+    assert _get_version_tags(version) == ['1.124.5', '1.124', '1', 'latest']
+    # case 2: The given version is the latest for patch, minor but not major
+    mock_path_exists.side_effect = [False, False, True]
+    assert _get_version_tags(version) == ['1.124.5', '1.124', '1']
+    # case 3: The given version is the latest for patch but not for minor, major
+    mock_path_exists.side_effect = [False, True]
+    assert _get_version_tags(version) == ['1.124.5', '1.124']
+    # case 4: The given version is not the latest for patch, minor, major
+    mock_path_exists.side_effect = [True]
+    assert _get_version_tags(version) == ['1.124.5']
+
