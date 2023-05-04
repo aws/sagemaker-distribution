@@ -2,6 +2,7 @@ import subprocess
 
 import docker
 import pytest
+pytestmark = pytest.mark.slow
 
 
 _docker_client = docker.from_env()

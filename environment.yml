@@ -7,4 +7,5 @@ dependencies:
   - pip
   - boto3
   - pytest
+  - pytest-mock
   - semver
