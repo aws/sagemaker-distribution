@@ -2,7 +2,8 @@ ARG COSMOS_IMAGE
 FROM $COSMOS_IMAGE
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-RUN sudo apt-get install -y git && \
+RUN sudo apt-get update && \
+    sudo apt-get install -y git && \
     git clone --recursive https://github.com/pytorch/examples && \
     :
 

@@ -7,7 +7,7 @@ import pytest
 _docker_client = docker.from_env()
 
 
-@pytest.mark.parametrize("dockerfile_path", ["numpy.test.Dockerfile",
+@pytest.mark.parametrize("dockerfile_path", ["pandas.test.Dockerfile",
                                              "pytorch.examples.Dockerfile"])
 def test_dockerfiles(dockerfile_path: str, local_image_id: str, use_gpu: bool):
     print(f'Will start running test for: {dockerfile_path} against: {local_image_id}')
