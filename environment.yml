@@ -8,4 +8,5 @@ dependencies:
   - boto3
   - pytest
   - pytest-mock
+  - pytest-xdist
   - semver
