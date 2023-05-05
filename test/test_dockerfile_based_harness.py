@@ -8,7 +8,9 @@ pytestmark = pytest.mark.slow
 _docker_client = docker.from_env()
 
 
-@pytest.mark.parametrize("dockerfile_path", ["scipy.test.Dockerfile",
+@pytest.mark.parametrize("dockerfile_path", ["keras.test.Dockerfile",
+                                             "matplotlib.test.Dockerfile",
+                                             "scipy.test.Dockerfile",
                                              "numpy.test.Dockerfile",
                                              "boto3.test.Dockerfile",
                                              "pandas.test.Dockerfile",
