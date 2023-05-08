@@ -24,8 +24,8 @@ as part of a _minor_ upgrade (such as _0.4.x_ to _0.5.0_).
 
 ## Getting started
 
-If you just want to use the images, you do _not_ need to use this GitHub repository. Instead, you can pull pre-built and ready-to-use images from our AWS ECR Gallery repository and can be accessed [here](https://gallery.ecr.aws/sagemaker/sagemaker-distribution).
-Public ECR Repository URI: `public.ecr.aws/sagemaker/sagemaker-distribution`
+If you just want to use the images, you do _not_ need to use this GitHub repository. Instead, you can pull pre-built
+and ready-to-use images from our [AWS ECR Gallery repository](https://gallery.ecr.aws/sagemaker/sagemaker-distribution).
 
 ### Dependency versions included in a particular Amazon SageMaker Distribution version
 
