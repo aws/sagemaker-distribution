@@ -20,7 +20,7 @@ Run the following to invoke those tests:
 pytest --local-image-id REPLACE_ME_WITH_IMAGE_ID
 ```
 
-You can also pass a `--use-gpu` flag if the test machine has GPU(s) and necessary Nvidia drivers.
+You can also pass a `--use-gpu` flag if the test machine has Nvidia GPU(s) and necessary Nvidia drivers.
 
 ### Unit tests for the project's source code
 

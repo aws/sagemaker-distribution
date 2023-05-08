@@ -74,7 +74,7 @@ docker run -it \
     $ECR_IMAGE_ID jupyter-lab --no-browser --ip=0.0.0.0
 ```
 
-(If you have access to GPUs, you can pass `--gpus=all` to the Docker command.)
+(If you have access to Nvidia GPUs, you can pass `--gpus=all` to the Docker command.)
 
 In the console output, you'll then see a URL similar to `http://127.0.0.1:8888/lab?token=foo`. Just open that URL in
 your browser, create a Jupyter Lab notebook or open a terminal, and start hacking.
