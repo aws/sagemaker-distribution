@@ -11,6 +11,6 @@ RUN micromamba install -y conda-forge::pytest
 
 
 WORKDIR "boto3"
-COPY --chown=$MAMBA_USER:$MAMBA_USER run_boto3_tests.sh .
+COPY --chown=$MAMBA_USER:$MAMBA_USER scripts/run_boto3_tests.sh .
 RUN chmod +x run_boto3_tests.sh
 CMD ["./run_boto3_tests.sh"]
