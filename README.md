@@ -98,12 +98,33 @@ the AWS console or [Python SDK](https://boto3.amazonaws.com/v1/documentation/api
 
 ```sh
 # Step 0: Define the following variables specific to your setup.
-export ECR_IMAGE_ID='foo:latest-gpu'
+export ECR_GALLERY_IMAGE_ID='sagemaker-distribution:latest-cpu'
 export SAGEMAKER_IMAGE_NAME='...'
 export SAGEMAKER_STUDIO_DOMAIN_ID='d-foo'
 export SAGEMAKER_STUDIO_IAM_ROLE_ARN='...'
 
-# Step 1: Create an Amazon SageMaker Image.
+# Step 1.0: Copy pre-built image from ECR Gallery to your private ECR repository.
+# Note: Currently SageMaker Studio doesn't support loading images from ECR Gallery. This could change in the future and at that point, this step might not be necessary.
+
+# Prerequisite: AWS Account should already have a private ECR repository
+# https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html
+
+# Pull the Docker image from the public ECR Gallery
+docker pull public.ecr.aws/sagemaker/$ECR_GALLERY_IMAGE_ID
+
+# Tag the image for your private ECR Repository.
+# Define the following variables specific to your setup.
+export ECR_PRIVATE_REPOSITORY_NAME='...'
+export ECR_IMAGE_TAG='...'
+export AWS_ACCOUNT_ID='...'
+export AWS_ECR_REPOSITORY_REGION='...'
+export ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_ECR_REPOSITORY_REGION.amazonaws.com/$ECR_PRIVATE_REPOSITORY_NAME:$ECR_IMAGE_TAG
+docker tag public.ecr.aws/sagemaker/$ECR_GALLERY_IMAGE_ID $ECR_IMAGE_URI
+
+# Push the image to your private repository
+docker push $ECR_IMAGE_URI
+
+# Step 1.1: Create an Amazon SageMaker Image.
 aws sagemaker create-image \
     --image-name $SAGEMAKER_IMAGE_NAME \
     --role-arn $SAGEMAKER_STUDIO_IAM_ROLE_ARN
@@ -111,7 +132,7 @@ aws sagemaker create-image \
 # Step 2: Create an Amazon SageMaker Image Version.
 aws sagemaker create-image-version \
     --image-name $SAGEMAKER_IMAGE_NAME \
-    --base-image $ECR_IMAGE_ID
+    --base-image $ECR_IMAGE_URI
 
 # Optional, step 2.1: Verify that the Image and Image Version were successfully created.
 # You may have to specify a different `--version-number` if you created multiple Image Versions.
