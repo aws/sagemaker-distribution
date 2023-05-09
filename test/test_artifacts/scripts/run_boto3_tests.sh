@@ -7,7 +7,4 @@ boto3_version=$(micromamba list | grep boto3 | tr -s ' ' | cut -d ' ' -f 3)
 git checkout tags/$boto3_version
 
 # Run the unit and functional tests
-pytest tests/unit tests/functional
-
-# exit based on the return code
-rc=$?; if [[ $rc != 0 ]]; then exit $rc; fi
+pytest tests/unit tests/functional || exit $?
