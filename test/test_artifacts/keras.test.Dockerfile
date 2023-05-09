@@ -8,7 +8,8 @@ RUN sudo apt-get update && sudo apt-get install -y git && \
     :
 
 # Some of the keras guides requires pydot and graphviz to be installed
-RUN micromamba install -y conda-forge::pydot conda-forge::graphviz
+RUN micromamba install -y conda-forge::pydot conda-forge::graphviz nvidia::cuda-nvcc
+ENV XLA_FLAGS=--xla_gpu_cuda_data_dir=/opt/conda
 
 WORKDIR "keras-io/guides"
 COPY --chown=$MAMBA_USER:$MAMBA_USER scripts/run_keras_tests.sh .
