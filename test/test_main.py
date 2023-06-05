@@ -1,5 +1,7 @@
 from __future__ import absolute_import
 
+import base64
+import boto3
 import pytest
 
 pytestmark = pytest.mark.unit
@@ -11,7 +13,8 @@ from main import (
     create_major_version_artifacts,
     create_minor_version_artifacts,
     create_patch_version_artifacts,
-    build_images
+    build_images,
+    _push_images_upstream
 )
 import os
 from unittest.mock import patch, Mock, MagicMock
@@ -268,4 +271,34 @@ def test_get_version_tags(mock_path_exists):
     # case 4: The given version is not the latest for patch, minor, major
     mock_path_exists.side_effect = [True]
     assert _get_version_tags(version) == ['1.124.5']
+
+
+def _test_push_images_upstream(mocker, repository):
+    boto3_client = MagicMock()
+    expected_client_name = 'ecr-public' if repository.startswith('public.ecr.aws') else 'ecr'
+    boto3_mocker = mocker.patch('boto3.client', return_value=boto3_client)
+    mock_docker_from_env = MagicMock(name='_docker_client')
+    mocker.patch('main._docker_client', new=mock_docker_from_env)
+    authorization_token_string = 'username:password'
+    encoded_authorization_token = base64.b64encode(authorization_token_string.encode('ascii'))
+    boto3_client.get_authorization_token.return_value = {
+        'authorizationData': [
+            {
+                'authorizationToken': encoded_authorization_token
+            }
+        ]
+    }
+    mock_docker_from_env.images.push.side_effect = None
+    _push_images_upstream([{'repository': repository, 'tag': '0.1'}], 'us-west-2')
+    assert boto3_mocker.call_args[0][0] == expected_client_name
+
+
+def test_push_images_upstream_for_private_ecr_repository(mocker):
+    repository = 'aws_account_id.dkr.ecr.us-west-2.amazonaws.com/my-repository'
+    _test_push_images_upstream(mocker, repository)
+
+
+def test_push_images_upstream_for_public_ecr_repository(mocker):
+    repository = 'public.ecr.aws/registry_alias/my-repository'
+    _test_push_images_upstream(mocker, repository)
 

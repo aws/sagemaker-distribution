@@ -161,9 +161,9 @@ def build_images(args):
 
 def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: str):
     print(f'Will now push the images to ECR: {image_versions_to_push}')
-    username, password = _get_ecr_credentials(region)
 
     for i in image_versions_to_push:
+        username, password = _get_ecr_credentials(region, i['repository'])
         _docker_client.images.push(repository=i['repository'], tag=i['tag'],
                                    auth_config={'username': username, 'password': password})
 
@@ -239,8 +239,9 @@ def _get_version_tags(target_version: Version) -> list[str]:
     return res
 
 
-def _get_ecr_credentials(region) -> (str, str):
-    _ecr_client = boto3.client('ecr', region_name=region)
+def _get_ecr_credentials(region, repository: str) -> (str, str):
+    _ecr_client_config_name = 'ecr-public' if repository.startswith('public.ecr.aws') else 'ecr'
+    _ecr_client = boto3.client(_ecr_client_config_name, region_name=region)
     auth_token = _ecr_client.get_authorization_token()['authorizationData'][0]['authorizationToken']
     auth_token = base64.b64decode(auth_token).decode()
     return auth_token.split(':')
@@ -255,21 +256,21 @@ def get_arg_parser():
 
     create_major_version_parser = subparsers.add_parser(
         "create-major-version-artifacts",
-        help=""
+        help="Creates a new major version of Amazon SageMaker Distribution."
     )
     create_major_version_parser.set_defaults(func=create_major_version_artifacts,
                                              runtime_version_upgrade_type=_MAJOR)
 
     create_minor_version_parser = subparsers.add_parser(
         "create-minor-version-artifacts",
-        help=""
+        help="Creates a new minor version of Amazon SageMaker Distribution."
     )
     create_minor_version_parser.set_defaults(func=create_minor_version_artifacts,
                                              runtime_version_upgrade_type=_MINOR)
 
     create_patch_version_parser = subparsers.add_parser(
         "create-patch-version-artifacts",
-        help=""
+        help="Creates a new patch version of Amazon SageMaker Distribution."
     )
     create_patch_version_parser.set_defaults(func=create_patch_version_artifacts,
                                              runtime_version_upgrade_type=_PATCH)
@@ -279,36 +280,36 @@ def get_arg_parser():
         p.add_argument(
             "--base-patch-version",
             required=True,
-            help=""
+            help="Specify the base patch version from which a new version should be created."
         )
         p.add_argument(
             "--force",
             action='store_true',
-            help=""
+            help="Overwrites any existing directory corresponding to the new version that will be generated."
         )
 
     build_image_parser = subparsers.add_parser(
         "build",
-        help=""
+        help="Builds a new image from the Dockerfile."
     )
     build_image_parser.add_argument(
         "--target-patch-version",
         required=True,
-        help=""
+        help="Specify the target version of Amazon SageMaker Distribution for which an image needs to be built."
     )
     build_image_parser.add_argument(
         "--skip-tests",
         action='store_true',
-        help=""
+        help="Disable running tests against the newly generated Docker image."
     )
     build_image_parser.add_argument(
         "--target-ecr-repo",
         action='append',
-        help=""
+        help="Specify the AWS ECR repository in which this image needs to be uploaded."
     )
     build_image_parser.add_argument(
         "--region",
-        help=""
+        help="Specify the region of the ECR repository."
     )
     build_image_parser.set_defaults(func=build_images)
     return parser
