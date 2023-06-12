@@ -13,6 +13,7 @@ from conda_env.specs import RequirementsSpec
 from semver import Version
 
 from dependency_upgrader import _get_dependency_upper_bound_for_runtime_upgrade, _MAJOR, _MINOR, _PATCH
+from changeset_generator import _derive_changeset
 from config import _image_generator_configs
 
 _docker_client = docker.from_env()
@@ -132,6 +133,30 @@ def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_v
         f.write("\n")  # This new line is pretty important. See code documentation in Dockerfile for the reasoning.
 
 
+def generate_change_log(args):
+    target_version = get_semver(args.target_patch_version)
+    source_version = get_semver(args.source_patch_version)
+    target_version_dir = get_dir_for_version(target_version)
+    source_version_dir = get_dir_for_version(source_version)
+    for processor in ['cpu', 'gpu']:
+        upgrades, new_packages = _derive_changeset(target_version_dir, source_version_dir, processor)
+        with open(f'{target_version_dir}/CHANGELOG-{processor}.md', 'w') as f:
+            f.write('# Change log: ' + args.target_patch_version + '(' + processor + ')\n\n')
+            if len(upgrades) != 0:
+                f.write('## Upgrades: \n\n')
+                f.write('Package | Previous Version | Current Version\n')
+                f.write('---|---|---\n')
+                for package in upgrades:
+                    f.write(package + '|' + upgrades[package][0] + '|'
+                            + upgrades[package][1] + '\n')
+            if len(new_packages) != 0:
+                f.write('## What\'s new: \n\n')
+                f.write('Package | Version \n')
+                f.write('---|---\n')
+                for package in new_packages:
+                    f.write(package + '|' + new_packages[package] + '\n')
+
+
 def create_major_version_artifacts(args):
     _create_new_version_artifacts(args)
 
@@ -242,9 +267,11 @@ def _get_version_tags(target_version: Version) -> list[str]:
 def _get_ecr_credentials(region, repository: str) -> (str, str):
     _ecr_client_config_name = 'ecr-public' if repository.startswith('public.ecr.aws') else 'ecr'
     _ecr_client = boto3.client(_ecr_client_config_name, region_name=region)
-    auth_token = _ecr_client.get_authorization_token()['authorizationData'][0]['authorizationToken']
-    auth_token = base64.b64decode(auth_token).decode()
-    return auth_token.split(':')
+    _authorization_data = _ecr_client.get_authorization_token()['authorizationData']
+    if _ecr_client_config_name == 'ecr':
+        # If we are using the ecr private client, then fetch the first index from authorizationData
+        _authorization_data = _authorization_data[0]
+    return base64.b64decode(_authorization_data['authorizationToken']).decode().split(':')
 
 
 def get_arg_parser():
@@ -312,6 +339,23 @@ def get_arg_parser():
         help="Specify the region of the ECR repository."
     )
     build_image_parser.set_defaults(func=build_images)
+    generate_change_log_parser = subparsers.add_parser(
+        "generate-change-log",
+        help="Generates change log for a given SageMaker distribution image."
+    )
+    generate_change_log_parser.add_argument(
+        "--target-patch-version",
+        required=True,
+        help="Specify the target version of Amazon SageMaker Distribution for which the change log must be "
+             "generated."
+    )
+    generate_change_log_parser.add_argument(
+        "--source-patch-version",
+        required=True,
+        help="Specify the source patch version of Amazon SageMaker Distribution from which the target patch version is"
+             "generated."
+    )
+    generate_change_log_parser.set_defaults(func=generate_change_log)
     return parser
 
 
