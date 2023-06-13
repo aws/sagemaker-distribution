@@ -242,9 +242,11 @@ def _get_version_tags(target_version: Version) -> list[str]:
 def _get_ecr_credentials(region, repository: str) -> (str, str):
     _ecr_client_config_name = 'ecr-public' if repository.startswith('public.ecr.aws') else 'ecr'
     _ecr_client = boto3.client(_ecr_client_config_name, region_name=region)
-    auth_token = _ecr_client.get_authorization_token()['authorizationData'][0]['authorizationToken']
-    auth_token = base64.b64decode(auth_token).decode()
-    return auth_token.split(':')
+    _authorization_data = _ecr_client.get_authorization_token()['authorizationData']
+    if _ecr_client_config_name == 'ecr':
+        # If we are using the ecr private client, then fetch the first index from authorizationData
+        _authorization_data = _authorization_data[0]
+    return base64.b64decode(_authorization_data['authorizationToken']).decode().split(':')
 
 
 def get_arg_parser():

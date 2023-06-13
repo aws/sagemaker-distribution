@@ -281,12 +281,14 @@ def _test_push_images_upstream(mocker, repository):
     mocker.patch('main._docker_client', new=mock_docker_from_env)
     authorization_token_string = 'username:password'
     encoded_authorization_token = base64.b64encode(authorization_token_string.encode('ascii'))
+    authorization_data = {
+        'authorizationToken': encoded_authorization_token
+    }
+    if expected_client_name == 'ecr':
+        # Private ECR client returns a list of authorizationData.
+        authorization_data = [authorization_data]
     boto3_client.get_authorization_token.return_value = {
-        'authorizationData': [
-            {
-                'authorizationToken': encoded_authorization_token
-            }
-        ]
+        'authorizationData': authorization_data
     }
     mock_docker_from_env.images.push.side_effect = None
     _push_images_upstream([{'repository': repository, 'tag': '0.1'}], 'us-west-2')
