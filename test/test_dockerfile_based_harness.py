@@ -9,15 +9,17 @@ pytestmark = pytest.mark.slow
 _docker_client = docker.from_env()
 
 
-@pytest.mark.parametrize("dockerfile_path", ["keras.test.Dockerfile",
-                                             "matplotlib.test.Dockerfile",
-                                             "scipy.test.Dockerfile",
-                                             "numpy.test.Dockerfile",
-                                             "boto3.test.Dockerfile",
-                                             "pandas.test.Dockerfile",
-                                             "sm-python-sdk.test.Dockerfile",
-                                             "pytorch.examples.Dockerfile",
-                                             "tensorflow.examples.Dockerfile"])
+@pytest.mark.parametrize("dockerfile_path", [
+    "keras.test.Dockerfile",
+    "matplotlib.test.Dockerfile",
+    "scipy.test.Dockerfile",
+    "numpy.test.Dockerfile",
+    "boto3.test.Dockerfile",
+    "pandas.test.Dockerfile",
+    "pytorch.examples.Dockerfile",
+    "tensorflow.examples.Dockerfile",
+    "autogluon.test.Dockerfile",
+])
 def test_dockerfiles(dockerfile_path: str, local_image_id: str, use_gpu: bool):
     print(f'Will start running test for: {dockerfile_path} against: {local_image_id}')
     try:
