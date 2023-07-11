@@ -13,6 +13,7 @@ from conda_env.specs import RequirementsSpec
 from semver import Version
 
 from dependency_upgrader import _get_dependency_upper_bound_for_runtime_upgrade, _MAJOR, _MINOR, _PATCH
+from changeset_generator import _derive_changeset
 from config import _image_generator_configs
 
 _docker_client = docker.from_env()
@@ -87,6 +88,9 @@ def _create_new_version_artifacts(args):
                                         image_generator_config)
 
     _copy_static_files(base_version_dir, new_version_dir)
+    # Write the base patch version to source-version.txt
+    with open(f'{new_version_dir}/source-version.txt', 'w') as f:
+        f.write(args.base_patch_version)
 
 
 def _copy_static_files(base_version_dir, new_version_dir):
@@ -132,6 +136,35 @@ def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_v
         f.write("\n")  # This new line is pretty important. See code documentation in Dockerfile for the reasoning.
 
 
+def _generate_change_log(target_patch_version):
+    target_version = get_semver(target_patch_version)
+    target_version_dir = get_dir_for_version(target_version)
+    source_version_txt_file_path = f'{target_version_dir}/source-version.txt'
+    if not os.path.exists(source_version_txt_file_path):
+        raise Exception
+    with open(source_version_txt_file_path, 'r') as f:
+        source_patch_version = f.readline()
+    source_version = get_semver(source_patch_version)
+    source_version_dir = get_dir_for_version(source_version)
+    for processor in ['cpu', 'gpu']:
+        upgrades, new_packages = _derive_changeset(target_version_dir, source_version_dir, processor)
+        with open(f'{target_version_dir}/CHANGELOG-{processor}.md', 'w') as f:
+            f.write('# Change log: ' + target_patch_version + '(' + processor + ')\n\n')
+            if len(upgrades) != 0:
+                f.write('## Upgrades: \n\n')
+                f.write('Package | Previous Version | Current Version\n')
+                f.write('---|---|---\n')
+                for package in upgrades:
+                    f.write(package + '|' + upgrades[package][0] + '|'
+                            + upgrades[package][1] + '\n')
+            if len(new_packages) != 0:
+                f.write('## What\'s new: \n\n')
+                f.write('Package | Version \n')
+                f.write('---|---\n')
+                for package in new_packages:
+                    f.write(package + '|' + new_packages[package] + '\n')
+
+
 def create_major_version_artifacts(args):
     _create_new_version_artifacts(args)
 
@@ -147,6 +180,7 @@ def create_patch_version_artifacts(args):
 def build_images(args):
     target_version = get_semver(args.target_patch_version)
     image_ids, image_versions = _build_local_images(target_version, args.target_ecr_repo)
+    _generate_change_log(args.target_patch_version)
 
     if not args.skip_tests:
         print(f'Will now run tests against: {image_ids}')
