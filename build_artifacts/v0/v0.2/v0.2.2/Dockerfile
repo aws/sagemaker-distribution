@@ -19,7 +19,7 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl awscli && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl awscli unzip && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata && \
     chmod g+w /etc/passwd && \
@@ -47,5 +47,17 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
 
+USER root
+RUN HOME_DIR="/home/${NB_USER}/licenses" \
+    && mkdir -p ${HOME_DIR} \
+    && curl -o ${HOME_DIR}/oss_compliance.zip https://aws-dlinfra-utilities.s3.amazonaws.com/oss_compliance.zip \
+    && unzip ${HOME_DIR}/oss_compliance.zip -d ${HOME_DIR}/ \
+    && cp ${HOME_DIR}/oss_compliance/test/testOSSCompliance /usr/local/bin/testOSSCompliance \
+    && chmod +x /usr/local/bin/testOSSCompliance \
+    && chmod +x ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh \
+    && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
+    && rm -rf ${HOME_DIR}/oss_compliance*
+
+USER $MAMBA_USER
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
