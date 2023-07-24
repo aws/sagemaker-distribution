@@ -14,6 +14,7 @@ _docker_client = docker.from_env()
                                              "numpy.test.Dockerfile",
                                              "boto3.test.Dockerfile",
                                              "pandas.test.Dockerfile",
+                                             "sm-python-sdk.test.Dockerfile",
                                              "pytorch.examples.Dockerfile",
                                              "tensorflow.examples.Dockerfile"])
 def test_dockerfiles(dockerfile_path: str, local_image_id: str, use_gpu: bool):
