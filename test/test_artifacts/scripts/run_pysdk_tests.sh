@@ -16,4 +16,4 @@ pytest tests/unit --ignore=tests/unit/sagemaker/feature_store/ --ignore=tests/un
     --ignore=tests/unit/test_tensorboard.py --ignore=tests/unit/sagemaker/async_inference --ignore=tests/unit/sagemaker/experiments --ignore tests/unit/sagemaker/local \
     --ignore tests/unit/sagemaker/monitor/test_data_capture_config.py --ignore tests/unit/sagemaker/experiments --ignore tests/unit/sagemaker/remote_function \
     --ignore tests/unit/sagemaker/model/test_deploy.py --deselect tests/unit/test_estimator.py::test_insert_invalid_source_code_args \
-    --deselect tests/unit/test_estimator.py::test_insert_invalid_source_code_args || exit $?
+    --deselect tests/unit/sagemaker/tensorflow/test_estimator.py::test_insert_invalid_source_code_args || exit $?
