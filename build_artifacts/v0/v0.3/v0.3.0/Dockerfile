@@ -59,5 +59,6 @@ RUN HOME_DIR="/home/${NB_USER}/licenses" \
     && rm -rf ${HOME_DIR}/oss_compliance*
 
 USER $MAMBA_USER
+ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
