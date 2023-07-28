@@ -105,9 +105,9 @@ If you would like to build a custom image using `sagemaker-distribution` as a ba
 ```
 FROM public.ecr.aws/sagemaker/sagemaker-distribution:latest-cpu
 
-sudo apt-get install ...
+RUN sudo apt-get install -y vim && \
 
-micromamba install --freeze-installed --yes --channel conda-forge foo
+micromamba install --freeze-installed --yes --channel conda-forge sagemaker-inference
 ```
 
 ## Security
