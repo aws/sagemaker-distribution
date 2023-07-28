@@ -99,9 +99,9 @@ _cpu.env.out_ or _gpu.env.out_ and follow the instructions in the first 2 lines.
 
 ## Customizing image
 
-When installing packages onto the image, best practice would be to use `micromamba install --freeze-installed --channel conda-forge foo` rather than `pip install`, in order to prevent breaking the environment, while also avoiding unwanted changes to pre-installed packages.
+If you'd like to create a new Docker image on top of what we offer, we recommend you use `micromamba install ...` instead of `pip install ...`.
 
-If you would like to build a custom image using `sagemaker-distribution` as a base, this would look like:
+For example:
 ```
 FROM public.ecr.aws/sagemaker/sagemaker-distribution:latest-cpu
 
