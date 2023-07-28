@@ -89,7 +89,7 @@ directory (such as Jupyter Lab notebooks) will persist.
 > development environment (IDE) for machine learning that lets you build, train, debug, deploy, and monitor your
 > machine learning models.
 
-To use the sagemaker-distribution image in SageMaker Studio, simply go to the image selection dropdown, and select `SageMaker Distribution v{Major_version} {CPU/GPU}`.
+To use the sagemaker-distribution image in SageMaker Studio, select `SageMaker Distribution v{Major_version} {CPU/GPU}` using the [SageMaker Studio Launcher](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-launcher.html).
 
 ### "I want to directly use the Conda environment, not via a Docker image"
 
@@ -99,15 +99,15 @@ _cpu.env.out_ or _gpu.env.out_ and follow the instructions in the first 2 lines.
 
 ## Customizing image
 
-When installing packages onto the image, best practice would be to use `micromamba install --no-update-deps --channel conda-forge foo` rather than `pip install`, in order to prevent breaking the environment, while also avoiding unwanted changes to dependencies.
+When installing packages onto the image, best practice would be to use `micromamba install --freeze-installed --channel conda-forge foo` rather than `pip install`, in order to prevent breaking the environment, while also avoiding unwanted changes to pre-installed packages.
 
 If you would like to build a custom image using `sagemaker-distribution` as a base, this would look like:
 ```
 FROM public.ecr.aws/sagemaker/sagemaker-distribution:latest-cpu
 
-sudo apt install ...
+sudo apt-get install ...
 
-micromamba install --no-update-deps --yes --channel conda-forge foo
+micromamba install --freeze-installed --yes --channel conda-forge foo
 ```
 
 ## Security
