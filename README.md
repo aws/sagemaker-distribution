@@ -104,10 +104,10 @@ If you'd like to create a new Docker image on top of what we offer, we recommend
 For example:
 ```
 FROM public.ecr.aws/sagemaker/sagemaker-distribution:latest-cpu
-
-RUN sudo apt-get install -y vim && \
-
-micromamba install --freeze-installed --yes --channel conda-forge sagemaker-inference
+USER $ROOT
+RUN apt-get install -y vim
+USER $MAMBA_USER
+RUN micromamba install sagemaker-inference --freeze-installed --yes --channel conda-forge --name base
 ```
 
 ## Security
