@@ -89,111 +89,26 @@ directory (such as Jupyter Lab notebooks) will persist.
 > development environment (IDE) for machine learning that lets you build, train, debug, deploy, and monitor your
 > machine learning models.
 
-You can use Amazon SageMaker Studio's BYOI (i.e. bring your own image) feature to try out the images in _the cloud_. See
-relevant documentation [here](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-byoi.html).
-
-Let's say you already have a Amazon SageMaker Studio Domain in your AWS account. You can then run the following steps to pull
-in the image into Studio. (Note that we use AWS CLI below, but all of the same operations are possible either through
-the AWS console or [Python SDK](https://boto3.amazonaws.com/v1/documentation/api/latest/index.html).)
-
-```sh
-# Step 0: Define the following variables specific to your setup.
-export ECR_GALLERY_IMAGE_ID='sagemaker-distribution:latest-cpu'
-export SAGEMAKER_IMAGE_NAME='...'
-export SAGEMAKER_STUDIO_DOMAIN_ID='d-foo'
-export SAGEMAKER_STUDIO_IAM_ROLE_ARN='...'
-
-# Step 1.0: Copy pre-built image from ECR Gallery to your private ECR repository.
-# Note: Currently SageMaker Studio doesn't support loading images from ECR Gallery. This could change in the future and at that point, this step might not be necessary.
-
-# Prerequisite: AWS Account should already have a private ECR repository
-# https://docs.aws.amazon.com/AmazonECR/latest/userguide/repository-create.html
-
-# Pull the Docker image from the public ECR Gallery
-docker pull public.ecr.aws/sagemaker/$ECR_GALLERY_IMAGE_ID
-
-# Tag the image for your private ECR Repository.
-# Define the following variables specific to your setup.
-export ECR_PRIVATE_REPOSITORY_NAME='...'
-export ECR_IMAGE_TAG='...'
-export AWS_ACCOUNT_ID='...'
-export AWS_ECR_REPOSITORY_REGION='...'
-export ECR_IMAGE_URI=$AWS_ACCOUNT_ID.dkr.ecr.$AWS_ECR_REPOSITORY_REGION.amazonaws.com/$ECR_PRIVATE_REPOSITORY_NAME:$ECR_IMAGE_TAG
-docker tag public.ecr.aws/sagemaker/$ECR_GALLERY_IMAGE_ID $ECR_IMAGE_URI
-
-# Push the image to your private repository
-docker push $ECR_IMAGE_URI
-
-# Step 1.1: Create an Amazon SageMaker Image.
-aws sagemaker create-image \
-    --image-name $SAGEMAKER_IMAGE_NAME \
-    --role-arn $SAGEMAKER_STUDIO_IAM_ROLE_ARN
-
-# Step 2: Create an Amazon SageMaker Image Version.
-aws sagemaker create-image-version \
-    --image-name $SAGEMAKER_IMAGE_NAME \
-    --base-image $ECR_IMAGE_URI
-
-# Optional, step 2.1: Verify that the Image and Image Version were successfully created.
-# You may have to specify a different `--version-number` if you created multiple Image Versions.
-aws sagemaker describe-image-version \
-    --image-name $SAGEMAKER_IMAGE_NAME \
-    --version-number 1
-
-# Step 3.1: Create a file that will contain App Image Config parameters.
-cat > /tmp/app-config.json << EOF
-{
-   "AppImageConfigName": "app-image-config-$SAGEMAKER_IMAGE_NAME",
-   "KernelGatewayImageConfig": { 
-      "FileSystemConfig": { 
-         "DefaultGid": 100,
-         "DefaultUid": 1000,
-         "MountPath": "/home/sagemaker-user"
-      },
-      "KernelSpecs": [ 
-         { 
-            "DisplayName": "Python 3 (ipykernel)",
-            "Name": "python3"
-         }
-      ]
-   }
-}
-EOF
-
-# Step 3.2: Create an Amazon SageMaker App Image Config.
-aws sagemaker create-app-image-config \
-    --cli-input-json file:///tmp/app-config.json
-
-# Step 4.1: Create a file that will contain default parameters for User Settings.
-cat > /tmp/default-user-settings.json << EOF
-{
-    "DefaultUserSettings": {
-        "KernelGatewayAppSettings": {
-            "CustomImages": [
-                {
-                    "ImageName": "$SAGEMAKER_IMAGE_NAME",
-                    "AppImageConfigName": "app-image-config-$SAGEMAKER_IMAGE_NAME",
-                    "ImageVersionNumber": 1
-                }
-            ]
-        }
-    }
-}
-EOF
-
-# Step 4.2: Update Amazon SageMaker Domain with the new default User Settings.
-aws sagemaker update-domain \
-    --domain-id $SAGEMAKER_STUDIO_DOMAIN_ID \
-    --cli-input-json file:///tmp/default-user-settings.json
-```
-
-Now, for your User Profile, log-out and log back in to start using the custom image.
+To use the sagemaker-distribution image in SageMaker Studio, select `SageMaker Distribution v{Major_version} {CPU/GPU}` using the [SageMaker Studio Launcher](https://docs.aws.amazon.com/sagemaker/latest/dg/studio-launcher.html).
 
 ### "I want to directly use the Conda environment, not via a Docker image"
 
 Amazon SageMaker Distribution supports full reproducibility of Conda environments, so you don't necessarily need to use
 Docker. Just find the version number you want to use in the [build_artifacts](build_artifacts) directory, open one of
 _cpu.env.out_ or _gpu.env.out_ and follow the instructions in the first 2 lines.
+
+## Customizing image
+
+If you'd like to create a new Docker image on top of what we offer, we recommend you use `micromamba install ...` instead of `pip install ...`.
+
+For example:
+```
+FROM public.ecr.aws/sagemaker/sagemaker-distribution:latest-cpu
+USER $ROOT
+RUN apt-get install -y vim
+USER $MAMBA_USER
+RUN micromamba install sagemaker-inference --freeze-installed --yes --channel conda-forge --name base
+```
 
 ## Security
 
