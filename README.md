@@ -97,7 +97,7 @@ Amazon SageMaker Distribution supports full reproducibility of Conda environment
 Docker. Just find the version number you want to use in the [build_artifacts](build_artifacts) directory, open one of
 _cpu.env.out_ or _gpu.env.out_ and follow the instructions in the first 2 lines.
 
-## Customizing image
+### Customizing image
 
 If you'd like to create a new Docker image on top of what we offer, we recommend you use `micromamba install ...` instead of `pip install ...`.
 
