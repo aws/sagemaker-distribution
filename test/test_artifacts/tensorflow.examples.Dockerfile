@@ -11,6 +11,6 @@ WORKDIR "docs/site/en/guide"
 COPY --chown=$MAMBA_USER:$MAMBA_USER ./tensorflow/ ./
 RUN chmod +x run_tensorflow_example_notebooks.sh
 
-RUN micromamba install -y -c conda-forge papermill
+RUN micromamba install -y --freeze-installed -c conda-forge papermill
 
 CMD ["./run_tensorflow_example_notebooks.sh"]

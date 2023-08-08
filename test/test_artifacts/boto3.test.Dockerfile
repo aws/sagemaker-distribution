@@ -7,7 +7,7 @@ RUN sudo apt-get update && sudo apt-get install -y git && \
     :
 
 # For Running boto3 tests, we need pytest
-RUN micromamba install -y conda-forge::pytest
+RUN micromamba install -y --freeze-installed conda-forge::pytest
 
 
 WORKDIR "boto3"
