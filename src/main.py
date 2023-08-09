@@ -9,30 +9,19 @@ import boto3
 import docker
 import pytest
 from conda.models.match_spec import MatchSpec
-from conda_env.specs import RequirementsSpec
 from semver import Version
 
 from dependency_upgrader import _get_dependency_upper_bound_for_runtime_upgrade, _MAJOR, _MINOR, _PATCH
 from config import _image_generator_configs
+from package_staleness import generate_package_staleness_report
+from utils import (
+    get_dir_for_version,
+    is_exists_dir_for_version,
+    get_semver,
+    get_match_specs
+)
 
 _docker_client = docker.from_env()
-
-
-def get_semver(version_str) -> Version:
-    version = Version.parse(version_str)
-    if version.prerelease is not None or version.build is not None:
-        raise Exception()
-    return version
-
-
-def is_exists_dir_for_version(version: Version) -> bool:
-    dir_path = get_dir_for_version(version)
-    return os.path.exists(dir_path)
-
-
-def get_dir_for_version(version: Version) -> str:
-    return os.path.relpath(f'build_artifacts/v{version.major}/v{version.major}.{version.minor}/'
-                           f'v{version.major}.{version.minor}.{version.patch}')
 
 
 def create_and_get_semver_dir(version: Version, exist_ok: bool = False):
@@ -47,21 +36,6 @@ def create_and_get_semver_dir(version: Version, exist_ok: bool = False):
 
     os.makedirs(dir)
     return dir
-
-
-def read_env_file(file_path) -> RequirementsSpec:
-    return RequirementsSpec(filename=file_path)
-
-
-def get_match_specs(file_path) -> List[MatchSpec]:
-    if not os.path.isfile(file_path):
-        return []
-
-    requirement_spec = read_env_file(file_path)
-    assert len(requirement_spec.environment.dependencies) == 1
-    assert 'conda' in requirement_spec.environment.dependencies
-
-    return [MatchSpec(i) for i in requirement_spec.environment.dependencies['conda']]
 
 
 def _create_new_version_artifacts(args):
@@ -104,12 +78,10 @@ def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_v
     base_match_specs_in = get_match_specs(f'{base_version_dir}/{env_in_filename}')
 
     base_match_specs_out = get_match_specs(f'{base_version_dir}/{env_out_filename}')
-    base_match_specs_out_dict = {m.get('name'): m for m in base_match_specs_out}
 
     out = []
-    for match_in in base_match_specs_in:
-        package_name = match_in.get("name")
-        match_out: MatchSpec = base_match_specs_out_dict.get(match_in.get('name'))
+    for package_name in base_match_specs_in:
+        match_out: MatchSpec = base_match_specs_out.get(package_name)
 
         if match_out is None:
             # No restriction on what versions to use.
@@ -315,6 +287,18 @@ def get_arg_parser():
         help="Specify the region of the ECR repository."
     )
     build_image_parser.set_defaults(func=build_images)
+    package_staleness_parser = subparsers.add_parser(
+        "generate-staleness-report",
+        help="Generates package staleness report for each of the marquee packages in the given "
+             "image version."
+    )
+    package_staleness_parser.set_defaults(func=generate_package_staleness_report)
+    package_staleness_parser.add_argument(
+        "--target-patch-version",
+        required=True,
+        help="Specify the base patch version for which the package staleness report needs to be "
+             "generated."
+    )
     return parser
 
 

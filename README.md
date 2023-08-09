@@ -57,6 +57,18 @@ So, if you want to stay on the latest software as and when release by Amazon Sag
 `latest-cpu` and do a `docker pull latest-cpu` when needed. If you use, say, `0.1.2-cpu`, the underlying distribution
 will remain the same over time.
 
+### Package Staleness Report
+
+If you want to generate/view the staleness report for each of the individual packages in a given 
+SageMaker distribution image version, then run the following command:
+
+```
+VERSION=<Insert SageMaker Distribution version in semver format here. example: 0.4.2>
+python ./src/main.py generate-staleness-report --target-patch-version $VERSION
+```
+
+
+
 ## Example use cases
 
 Here are some examples on how you can try out one of our images.

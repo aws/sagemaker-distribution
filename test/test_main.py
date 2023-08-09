@@ -7,7 +7,6 @@ import pytest
 pytestmark = pytest.mark.unit
 
 from main import (
-    get_semver,
     create_and_get_semver_dir,
     _get_version_tags,
     create_major_version_artifacts,
@@ -16,6 +15,7 @@ from main import (
     build_images,
     _push_images_upstream
 )
+from utils import get_semver
 import os
 from unittest.mock import patch, Mock, MagicMock
 

@@ -8,7 +8,8 @@ _image_generator_configs = [
         },
         'image_tag_generator': '{image_version}-gpu',
         'env_out_filename': 'gpu.env.out',
-        'pytest_flags': ['--use-gpu']
+        'pytest_flags': ['--use-gpu'],
+        'image_type': 'gpu'
     },
     {
         'build_args': {
@@ -17,6 +18,7 @@ _image_generator_configs = [
         },
         'image_tag_generator': '{image_version}-cpu',
         'env_out_filename': 'cpu.env.out',
-        'pytest_flags': []
+        'pytest_flags': [],
+        'image_type': 'cpu'
     }
 ]
