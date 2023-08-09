@@ -83,7 +83,8 @@ def _create_new_version_artifacts_helper(mocker, tmp_path, version):
     _create_docker_gpu_env_in_file(input_version_dir / 'gpu.env.in')
     _create_docker_cpu_env_out_file(input_version_dir / 'cpu.env.out')
     _create_docker_gpu_env_out_file(input_version_dir / 'gpu.env.out')
-    _create_docker_file(input_version_dir / 'Dockerfile')
+    os.makedirs(tmp_path / 'template')
+    _create_docker_file(tmp_path / 'template' / 'Dockerfile')
 
 
 def test_get_semver_version():
@@ -132,8 +133,10 @@ def test_create_new_version_artifacts_for_invalid_upgrade_type():
         create_patch_version_artifacts(input)
 
 
-def test_create_new_version_artifacts_for_patch_version_upgrade(mocker, tmp_path):
+@patch("os.path.relpath")
+def test_create_new_version_artifacts_for_patch_version_upgrade(rel_path, mocker, tmp_path):
     input_version = '1.2.5'
+    rel_path.side_effect = [str(tmp_path / 'template' / 'Dockerfile')]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
     args = CreateVersionArgs('patch', input_version)
     create_patch_version_artifacts(args)
@@ -159,8 +162,10 @@ def test_create_new_version_artifacts_for_patch_version_upgrade(mocker, tmp_path
         assert contents.find(expected_version_string) != -1
 
 
-def test_create_new_version_artifacts_for_minor_version_upgrade(mocker, tmp_path):
+@patch("os.path.relpath")
+def test_create_new_version_artifacts_for_minor_version_upgrade(rel_path, mocker, tmp_path):
     input_version = '1.2.5'
+    rel_path.side_effect = [str(tmp_path / 'template' / 'Dockerfile')]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
     args = CreateVersionArgs('minor', input_version)
     create_minor_version_artifacts(args)
@@ -186,8 +191,10 @@ def test_create_new_version_artifacts_for_minor_version_upgrade(mocker, tmp_path
         assert contents.find(expected_version_string) != -1
 
 
-def test_create_new_version_artifacts_for_major_version_upgrade(mocker, tmp_path):
+@patch("os.path.relpath")
+def test_create_new_version_artifacts_for_major_version_upgrade(rel_path, mocker, tmp_path):
     input_version = '1.2.5'
+    rel_path.side_effect = [str(tmp_path / 'template' / 'Dockerfile')]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
     args = CreateVersionArgs('major', input_version)
     create_major_version_artifacts(args)

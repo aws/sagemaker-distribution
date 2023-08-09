@@ -90,9 +90,10 @@ def _create_new_version_artifacts(args):
 
 
 def _copy_static_files(base_version_dir, new_version_dir):
-    for name in ['gpu.arg_based_env.in', 'Dockerfile']:
-        for f in glob.glob(f'{base_version_dir}/{name}'):
-            shutil.copy2(f, new_version_dir)
+    for f in glob.glob(f'{base_version_dir}/gpu.arg_based_env.in'):
+        shutil.copy2(f, new_version_dir)
+    for f in glob.glob(os.path.relpath(f'template/Dockerfile')):
+        shutil.copy2(f, new_version_dir)
 
 
 def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_version_upgrade_type,
