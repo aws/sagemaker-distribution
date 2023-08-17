@@ -1,8 +1,17 @@
 #!/bin/bash
 
-AUTOGLUON_VERSION=$(micromamba list | grep autogluon.tabular | tr -s ' ' | cut -d ' ' -f 3)
+AUTOGLUON_VERSION=$(micromamba list | grep autogluon | tr -s ' ' | cut -d ' ' -f 3)
 git checkout tags/v$AUTOGLUON_VERSION
 
-# Don't run tests with optional dependencies not install from conda build
-SELECT_TESTS='not automm_sts and not image_predictor and not tabpfn and not vowpalwabbit and not (tabular_nn and compile_onnx)'
-pytest tabular/tests/unittests/models/ -k "$SELECT_TESTS" || exit $?
+# Run autogluon quick start as end-to-end check
+jupyter nbconvert --execute --to python docs/tutorials/tabular/tabular-quick-start.ipynb
+jupyter nbconvert --execute --to python docs/tutorials/timeseries/forecasting-quick-start.ipynb
+
+# Detect gpu and run multimodal quick start if presented
+python -c "import torch; exit(0) if torch.cuda.is_available() else exit(1)"
+ret=$?
+
+if [ $ret -eq 0 ]
+then 
+    jupyter nbconvert --execute --to python docs/tutorials/multimodal/multimodal_prediction/multimodal-quick-start.ipynb
+fi
