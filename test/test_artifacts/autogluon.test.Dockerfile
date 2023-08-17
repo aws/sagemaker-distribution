@@ -6,7 +6,7 @@ ARG AUTOGLUON_VERSION="0.8.2"
 
 RUN sudo apt-get update && sudo apt-get install -y git graphviz graphviz-dev
 
-# TODO: remove autogluon.tabular once it's included into the distribution
+# TODO: remove autogluon once it's included into the distribution
 RUN micromamba install -y conda-forge::pytest conda-forge::pygraphviz conda-forge::jupyter conda-forge::nbconvert conda-forge::autogluon==$AUTOGLUON_VERSION
 
 RUN git clone --recursive https://github.com/autogluon/autogluon.git
