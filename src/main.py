@@ -51,7 +51,15 @@ def _create_new_version_artifacts(args):
         raise Exception()
 
     base_patch_version = get_semver(args.base_patch_version)
+    if base_patch_version.prerelease:
+        # We don't support creating new patch/major/minor versions from a prerelease version
+        # Re-run the build command for the prerelease version again to pick the latest versions
+        # of the marquee packages
+        raise Exception()
     next_version = getattr(base_patch_version, runtime_version_upgrade_func)()
+
+    if args.pre_release_identifier:
+        next_version = next_version.replace(prerelease=args.pre_release_identifier)
 
     base_version_dir = get_dir_for_version(base_patch_version)
     new_version_dir = create_and_get_semver_dir(next_version, args.force)
@@ -192,6 +200,9 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
 def _get_version_tags(target_version: Version) -> list[str]:
     # First, add '2.6.x' as is.
     res = [str(target_version)]
+    # If this is a pre-release version, then don't add additional tags
+    if target_version.prerelease:
+        return res
 
     # If we were to add '2.6', check if '2.6.(x+1)' is present.
     if not is_exists_dir_for_version(target_version.bump_patch()):
@@ -256,6 +267,11 @@ def get_arg_parser():
             "--base-patch-version",
             required=True,
             help="Specify the base patch version from which a new version should be created."
+        )
+        p.add_argument(
+            "--pre-release-identifier",
+            help="Optionally specify the pre-release identifier for this new version that should "
+                 "be created."
         )
         p.add_argument(
             "--force",
