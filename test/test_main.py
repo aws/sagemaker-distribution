@@ -21,9 +21,11 @@ from unittest.mock import patch, Mock, MagicMock
 
 
 class CreateVersionArgs:
-    def __init__(self, runtime_version_upgrade_type, base_patch_version):
+    def __init__(self, runtime_version_upgrade_type, base_patch_version,
+                 pre_release_identifier=None):
         self.base_patch_version = base_patch_version
         self.runtime_version_upgrade_type = runtime_version_upgrade_type
+        self.pre_release_identifier = pre_release_identifier
         self.force = False
 
 
@@ -71,7 +73,9 @@ def _create_docker_file(file_path):
 def _create_new_version_artifacts_helper(mocker, tmp_path, version):
 
     def mock_get_dir_for_version(base_version):
-        version_string = f'v{base_version.major}.{base_version.minor}.{base_version.patch}'
+        pre_release_suffix = '/v' + str(base_version) if base_version.prerelease else ''
+        version_string = f'v{base_version.major}.{base_version.minor}.{base_version.patch}' + \
+                         pre_release_suffix
         return tmp_path / version_string
 
     mocker.patch('main.get_dir_for_version', side_effect=mock_get_dir_for_version)
@@ -91,9 +95,6 @@ def test_get_semver_version():
     # Test invalid version string.
     with pytest.raises(Exception):
         get_semver('1.124.5d')
-    # Test version string with prerelease
-    with pytest.raises(Exception):
-        get_semver('1.124.5-prerelease')
     # Test version string with build
     with pytest.raises(Exception):
         get_semver('1.124.5+25')
@@ -102,6 +103,20 @@ def test_get_semver_version():
         get_semver('1.124.5-prerelease+25')
     # Test valid version string.
     assert get_semver('1.124.5') is not None
+    assert get_semver('1.124.5-beta') is not None
+
+
+def test_new_version_artifacts_for_an_input_prerelease_version():
+    input_version = '1.23.0-beta'
+    args = CreateVersionArgs('patch', input_version)
+    with pytest.raises(Exception):
+        create_patch_version_artifacts(args)
+    args = CreateVersionArgs('minor', input_version)
+    with pytest.raises(Exception):
+        create_minor_version_artifacts(args)
+    args = CreateVersionArgs('major', input_version)
+    with pytest.raises(Exception):
+        create_major_version_artifacts(args)
 
 
 @patch('os.path.exists')
@@ -133,15 +148,18 @@ def test_create_new_version_artifacts_for_invalid_upgrade_type():
         create_patch_version_artifacts(input)
 
 
-@patch("os.path.relpath")
-def test_create_new_version_artifacts_for_patch_version_upgrade(rel_path, mocker, tmp_path):
+def _create_and_assert_patch_version_upgrade(rel_path, mocker, tmp_path,
+                                             pre_release_identifier=None):
     input_version = '1.2.5'
+    new_version_dir = tmp_path / 'v1.2.6'
+    if pre_release_identifier:
+        new_version_dir = new_version_dir / ('v1.2.6-' + pre_release_identifier)
     rel_path.side_effect = [str(tmp_path / 'template' / 'Dockerfile')]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
-    args = CreateVersionArgs('patch', input_version)
+    args = CreateVersionArgs('patch', input_version, pre_release_identifier=pre_release_identifier)
     create_patch_version_artifacts(args)
     # Assert new version directory is created
-    new_version_dir = tmp_path / 'v1.2.6'
+
     assert os.path.exists(new_version_dir)
     # Check cpu.env.in and gpu.env.in exists in the new directory
     new_version_dir_files = os.listdir(new_version_dir)
@@ -163,14 +181,27 @@ def test_create_new_version_artifacts_for_patch_version_upgrade(rel_path, mocker
 
 
 @patch("os.path.relpath")
-def test_create_new_version_artifacts_for_minor_version_upgrade(rel_path, mocker, tmp_path):
+def test_create_new_version_artifacts_for_patch_version_upgrade(rel_path, mocker, tmp_path):
+    _create_and_assert_patch_version_upgrade(rel_path, mocker, tmp_path)
+
+
+@patch("os.path.relpath")
+def test_create_new_version_artifacts_for_patch_version_upgrade_with_prerelease(rel_path, mocker,
+                                                                                tmp_path):
+    _create_and_assert_patch_version_upgrade(rel_path, mocker, tmp_path, 'beta')
+
+
+def _create_and_assert_minor_version_upgrade(rel_path, mocker, tmp_path,
+                                             pre_release_identifier=None):
     input_version = '1.2.5'
+    new_version_dir = tmp_path / 'v1.3.0'
+    if pre_release_identifier:
+        new_version_dir = new_version_dir / ('v1.3.0-' + pre_release_identifier)
     rel_path.side_effect = [str(tmp_path / 'template' / 'Dockerfile')]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
-    args = CreateVersionArgs('minor', input_version)
+    args = CreateVersionArgs('minor', input_version, pre_release_identifier=pre_release_identifier)
     create_minor_version_artifacts(args)
     # Assert new version directory is created
-    new_version_dir = tmp_path / 'v1.3.0'
     assert os.path.exists(new_version_dir)
     # Check cpu.env.in and gpu.env.in exists in the new directory
     new_version_dir_files = os.listdir(new_version_dir)
@@ -192,14 +223,27 @@ def test_create_new_version_artifacts_for_minor_version_upgrade(rel_path, mocker
 
 
 @patch("os.path.relpath")
-def test_create_new_version_artifacts_for_major_version_upgrade(rel_path, mocker, tmp_path):
+def test_create_new_version_artifacts_for_minor_version_upgrade(rel_path, mocker, tmp_path):
+    _create_and_assert_minor_version_upgrade(rel_path, mocker, tmp_path)
+
+
+@patch("os.path.relpath")
+def test_create_new_version_artifacts_for_minor_version_upgrade_with_prerelease(rel_path, mocker,
+                                                                                tmp_path):
+    _create_and_assert_minor_version_upgrade(rel_path, mocker, tmp_path, 'beta')
+
+
+def _create_and_assert_major_version_upgrade(rel_path, mocker, tmp_path,
+                                             pre_release_identifier=None):
     input_version = '1.2.5'
+    new_version_dir = tmp_path / 'v2.0.0'
+    if pre_release_identifier:
+        new_version_dir = new_version_dir / ('v2.0.0-' + pre_release_identifier)
     rel_path.side_effect = [str(tmp_path / 'template' / 'Dockerfile')]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version)
-    args = CreateVersionArgs('major', input_version)
+    args = CreateVersionArgs('major', input_version, pre_release_identifier=pre_release_identifier)
     create_major_version_artifacts(args)
     # Assert new version directory is created
-    new_version_dir = tmp_path / 'v2.0.0'
     assert os.path.exists(new_version_dir)
     # Check cpu.env.in and gpu.env.in exists in the new directory
     new_version_dir_files = os.listdir(new_version_dir)
@@ -218,6 +262,17 @@ def test_create_new_version_artifacts_for_major_version_upgrade(rel_path, mocker
         # so we expect the version string to be >=1.24.2,
         expected_version_string = '>=1.24.2,\''
         assert contents.find(expected_version_string) != -1
+
+
+@patch("os.path.relpath")
+def test_create_new_version_artifacts_for_major_version_upgrade(rel_path, mocker, tmp_path):
+    _create_and_assert_major_version_upgrade(rel_path, mocker, tmp_path)
+
+
+@patch("os.path.relpath")
+def test_create_new_version_artifacts_for_major_version_upgrade_with_prerelease(rel_path, mocker,
+                                                                                tmp_path):
+    _create_and_assert_major_version_upgrade(rel_path, mocker, tmp_path, 'beta')
 
 
 def test_build_images(mocker, tmp_path):
@@ -270,14 +325,30 @@ def test_get_version_tags(mock_path_exists):
     mock_path_exists.side_effect = [False, False, False]
     assert _get_version_tags(version) == ['1.124.5', '1.124', '1', 'latest']
     # case 2: The given version is the latest for patch, minor but not major
-    mock_path_exists.side_effect = [False, False, True]
+    # case 2.1 The major version is a prerelease version
+    mock_path_exists.side_effect = [False, False, True, False]
+    assert _get_version_tags(version) == ['1.124.5', '1.124', '1', 'latest']
+    # case 2.2 The major version is not a prerelease version
+    mock_path_exists.side_effect = [False, False, True, True]
     assert _get_version_tags(version) == ['1.124.5', '1.124', '1']
-    # case 3: The given version is the latest for patch but not for minor, major
-    mock_path_exists.side_effect = [False, True]
+    # case 3: The given version is the latest for patch and major but not for minor
+    # case 3.1 The minor version is a prerelease version (we need to mock path.exists for major
+    # version twice - one for the actual directory, one for the docker file)
+    mock_path_exists.side_effect = [False, True, False, True, True]
+    assert _get_version_tags(version) == ['1.124.5', '1.124', '1']
+    # case 3.2 The minor version is not a prerelease version
+    mock_path_exists.side_effect = [False, True, True]
     assert _get_version_tags(version) == ['1.124.5', '1.124']
     # case 4: The given version is not the latest for patch, minor, major
-    mock_path_exists.side_effect = [True]
+    # case 4.1 The patch version is a prerelease version (we need to mock path.exists for minor
+    # and major twice - one for the actual directory, one for the docker file)
+    mock_path_exists.side_effect = [True, False, True, True, True, True]
+    assert _get_version_tags(version) == ['1.124.5', '1.124']
+    # case 4.2 The patch version is not a prerelease version
+    mock_path_exists.side_effect = [True, True]
     assert _get_version_tags(version) == ['1.124.5']
+    # case 5: The given version includes a prerelease identifier
+    assert _get_version_tags(get_semver('1.124.5-beta')) == ['1.124.5-beta']
 
 
 def _test_push_images_upstream(mocker, repository):

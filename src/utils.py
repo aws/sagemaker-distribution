@@ -5,18 +5,24 @@ from conda_env.specs import RequirementsSpec
 
 
 def get_dir_for_version(version: Version) -> str:
+    version_prerelease_suffix = f'/v{version.major}.{version.minor}.{version.patch}-' \
+                                f'{version.prerelease}' if version.prerelease else ''
     return os.path.relpath(f'build_artifacts/v{version.major}/v{version.major}.{version.minor}/'
-                           f'v{version.major}.{version.minor}.{version.patch}')
+                           f'v{version.major}.{version.minor}.{version.patch}'
+                           f'{version_prerelease_suffix}')
 
 
 def is_exists_dir_for_version(version: Version) -> bool:
     dir_path = get_dir_for_version(version)
-    return os.path.exists(dir_path)
+    # Also validate whether this directory is not generated due to any pre-release builds
+    # This can be validated by checking whether {cpu/gpu}.env.{in/out}/Dockerfile exists in the
+    # directory.
+    return os.path.exists(dir_path) and os.path.exists(dir_path + "/" + 'Dockerfile')
 
 
 def get_semver(version_str) -> Version:
     version = Version.parse(version_str)
-    if version.prerelease is not None or version.build is not None:
+    if version.build is not None:
         raise Exception()
     return version
 
