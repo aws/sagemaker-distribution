@@ -1,0 +1,55 @@
+name: Generate patch release artifacts
+on:
+  # Manual trigger
+  workflow_dispatch:
+  # Run every Monday at 8AM PST / 9AM PDT
+  schedule:
+    - cron: '0 16 * * MON'
+run-name: Patch release
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  generate-patch-artifacts:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - name: Get base/target versions
+        id: version
+        run: |
+          TOKEN=$(curl -k https://public.ecr.aws/token/ | jq -r '.token')
+          BASE=$(curl -k -H "Authorization: Bearer $TOKEN"  https://public.ecr.aws/v2/sagemaker/sagemaker-distribution/tags/list | jq '.tags | sort |  reverse | .[2] | split("-") | .[0]' | tr -d '"')
+          TARGET=$(printf $BASE | awk -F. '/[0-9]+\./{$NF++;print}' OFS=.)
+          echo "base=$BASE" >> $GITHUB_OUTPUT
+          echo "target=$TARGET" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: ./environment.yml
+          environment-name: sagemaker-distribution
+      - name: Activate sagemaker-distribution
+        run: micromamba activate sagemaker-distribution
+      - name: Create new branch
+        run: git checkout -b patch-release-${{steps.version.outputs.target}}
+      - name: Generate patch artifacts
+        run: python ./src/main.py create-patch-version-artifacts --base-patch-version ${{steps.version.outputs.base}}
+      - name: Push changes to branch
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add ./build_artifacts
+          git commit -m 'chore: Add build artifacts for ${{steps.version.outputs.target}} release'
+          git push --set-upstream origin patch-release-${{steps.version.outputs.target}}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate staleness report
+        run: python ./src/main.py generate-staleness-report --target-patch-version ${{steps.version.outputs.target}} >> STALENESS_REPORT.md
+      - name: Open PR with patch artifacts
+        run: |
+          gh pr create -H patch-release-${{steps.version.outputs.target}} --title 'release: New patch release v${{steps.version.outputs.target}}' --body 'Created by Github action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
