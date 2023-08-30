@@ -9,6 +9,7 @@ import boto3
 import docker
 import pytest
 from conda.models.match_spec import MatchSpec
+from docker.errors import BuildError
 from semver import Version
 
 from dependency_upgrader import _get_dependency_upper_bound_for_runtime_upgrade, _MAJOR, _MINOR, _PATCH
@@ -171,8 +172,15 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
     generated_image_versions = []
 
     for config in _image_generator_configs:
-        image, log_gen = _docker_client.images.build(path=target_version_dir, rm=True, pull=True,
-                                                     buildargs=config['build_args'])
+        try:
+            image, log_gen = _docker_client.images.build(path=target_version_dir, rm=True,
+                                                         pull=True, buildargs=config['build_args'])
+        except BuildError as e:
+            for line in e.build_log:
+                if 'stream' in line:
+                    print(line['stream'].strip())
+            # After printing the logs raise the exception (which is the old behavior)
+            raise
         print(f'Successfully built an image with id: {image.id}')
         generated_image_ids.append(image.id)
 

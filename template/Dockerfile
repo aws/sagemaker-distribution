@@ -17,11 +17,10 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
     echo "${NB_USER}" > "/etc/arg_mamba_user" && \
     :
 ENV MAMBA_USER=$NB_USER
+ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl awscli unzip git && \
-    # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl awscli unzip git tzdata && \
     chmod g+w /etc/passwd && \
     echo "ALL    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
     # Note that we do NOT run `rm -rf /var/lib/apt/lists/*` here. If we did, anyone building on top of our images will
