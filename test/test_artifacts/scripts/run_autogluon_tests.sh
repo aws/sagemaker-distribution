@@ -5,7 +5,8 @@ git checkout tags/v$AUTOGLUON_VERSION
 
 # Run autogluon quick start as end-to-end check
 jupyter nbconvert --execute --to python docs/tutorials/tabular/tabular-quick-start.ipynb
-jupyter nbconvert --execute --to python docs/tutorials/timeseries/forecasting-quick-start.ipynb
+# Not include timeseries during the first integration
+# jupyter nbconvert --execute --to python docs/tutorials/timeseries/forecasting-quick-start.ipynb
 
 # Detect gpu and run multimodal quick start if presented
 python -c "import torch; exit(0) if torch.cuda.is_available() else exit(1)"
