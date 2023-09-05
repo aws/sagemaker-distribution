@@ -105,7 +105,7 @@ def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_v
                                                                               min_version_inclusive,
                                                                               runtime_version_upgrade_type)
 
-            out.append(f"{channel}::{package_name}[version='>={min_version_inclusive},{max_version_str}']")
+            out.append(f"{channel}::{package_name}[version='>={min_version_inclusive}{max_version_str}']")
 
     with open(f'{new_version_dir}/{env_in_filename}', 'w') as f:
         f.write("# This file is auto-generated.\n")

@@ -18,9 +18,9 @@ def _get_dependency_upper_bound_for_semver(lower_bound: str, runtime_upgrade_typ
     if runtime_upgrade_type == _MAJOR:
         return ''   # No upper bound.
     elif runtime_upgrade_type == _MINOR:
-        return f'<{lower_semver.bump_major()}'
+        return f',<{lower_semver.bump_major()}'
     elif runtime_upgrade_type == _PATCH:
-        return f'<{lower_semver.bump_minor()}'
+        return f',<{lower_semver.bump_minor()}'
     else:
         raise Exception()
 
@@ -30,9 +30,9 @@ def _get_dependency_upper_bound_for_pythonesque(lower_bound: str, runtime_upgrad
     if runtime_upgrade_type == _MAJOR:
         return ''  # No upper bound.
     elif runtime_upgrade_type == _MINOR:
-        return f'<{lower_semver.bump_minor()}'
+        return f',<{lower_semver.bump_minor()}'
     elif runtime_upgrade_type == _PATCH:
-        return f'<{lower_semver.bump_minor()}'
+        return f',<{lower_semver.bump_minor()}'
     else:
         raise Exception()
 

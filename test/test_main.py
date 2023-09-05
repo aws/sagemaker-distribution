@@ -254,13 +254,13 @@ def _create_and_assert_major_version_upgrade(rel_path, mocker, tmp_path,
         contents = f.read()
         # version of ipykernel in cpu.env.out is 6.21.3
         # so we expect the version string to be >=6.21.3,
-        expected_version_string = '>=6.21.3,\''
+        expected_version_string = '>=6.21.3\''
         assert contents.find(expected_version_string) != -1
     with open(new_version_dir / 'gpu.env.in', 'r') as f:
         contents = f.read()
         # version of numpy in gpu.env.out is 1.24.2
         # so we expect the version string to be >=1.24.2,
-        expected_version_string = '>=1.24.2,\''
+        expected_version_string = '>=1.24.2\''
         assert contents.find(expected_version_string) != -1
 
 
