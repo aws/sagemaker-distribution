@@ -13,8 +13,10 @@ from main import (
     create_minor_version_artifacts,
     create_patch_version_artifacts,
     build_images,
-    _push_images_upstream
+    _push_images_upstream,
+    _get_config_for_image
 )
+from config import _image_generator_configs
 from utils import get_semver
 import os
 from unittest.mock import patch, Mock, MagicMock
@@ -30,10 +32,11 @@ class CreateVersionArgs:
 
 
 class BuildImageArgs:
-    def __init__(self, target_patch_version, target_ecr_repo=None):
+    def __init__(self, target_patch_version, target_ecr_repo=None, force=False):
         self.target_patch_version = target_patch_version
         self.target_ecr_repo = target_ecr_repo
         self.skip_tests = True
+        self.force = force
 
 
 def _create_docker_cpu_env_in_file(file_path):
@@ -76,17 +79,18 @@ def _create_new_version_artifacts_helper(mocker, tmp_path, version):
         pre_release_suffix = '/v' + str(base_version) if base_version.prerelease else ''
         version_string = f'v{base_version.major}.{base_version.minor}.{base_version.patch}' + \
                          pre_release_suffix
-        return tmp_path / version_string
+        # get_dir_for_version returns a str and not PosixPath
+        return str(tmp_path) + "/" + version_string
 
     mocker.patch('main.get_dir_for_version', side_effect=mock_get_dir_for_version)
     input_version = get_semver(version)
     # Create directory for base version
     input_version_dir = create_and_get_semver_dir(input_version)
     # Create env.in and env.out for base version
-    _create_docker_cpu_env_in_file(input_version_dir / 'cpu.env.in')
-    _create_docker_gpu_env_in_file(input_version_dir / 'gpu.env.in')
-    _create_docker_cpu_env_out_file(input_version_dir / 'cpu.env.out')
-    _create_docker_gpu_env_out_file(input_version_dir / 'gpu.env.out')
+    _create_docker_cpu_env_in_file(input_version_dir + '/cpu.env.in')
+    _create_docker_gpu_env_in_file(input_version_dir + '/gpu.env.in')
+    _create_docker_cpu_env_out_file(input_version_dir + '/cpu.env.out')
+    _create_docker_gpu_env_out_file(input_version_dir + '/gpu.env.out')
     os.makedirs(tmp_path / 'template')
     _create_docker_file(tmp_path / 'template' / 'Dockerfile')
 
@@ -283,19 +287,20 @@ def test_build_images(mocker, tmp_path):
 
     def mock_get_dir_for_version(base_version):
         version_string = f'v{base_version.major}.{base_version.minor}.{base_version.patch}'
-        return tmp_path / version_string
+        # get_dir_for_version returns a str and not a PosixPath
+        return str(tmp_path) + "/" + version_string
 
     mocker.patch('main.get_dir_for_version', side_effect=mock_get_dir_for_version)
     input_version = get_semver(version)
     # Create directory for base version
     input_version_dir = create_and_get_semver_dir(input_version)
     # Create env.in for base version
-    _create_docker_cpu_env_in_file(input_version_dir / 'cpu.env.in')
-    _create_docker_cpu_env_in_file(input_version_dir / 'gpu.env.in')
-    _create_docker_file(input_version_dir / 'Dockerfile')
+    _create_docker_cpu_env_in_file(input_version_dir + '/cpu.env.in')
+    _create_docker_cpu_env_in_file(input_version_dir + '/gpu.env.in')
+    _create_docker_file(input_version_dir + '/Dockerfile')
     # Assert env.out doesn't exist
-    assert os.path.exists(input_version_dir / 'cpu.env.out') is False
-    assert os.path.exists(input_version_dir / 'gpu.env.out') is False
+    assert os.path.exists(input_version_dir + '/cpu.env.out') is False
+    assert os.path.exists(input_version_dir + '/gpu.env.out') is False
     mock_image_1 = Mock()
     mock_image_1.id.return_value = 'img1'
     mock_image_2 = Mock()
@@ -306,13 +311,13 @@ def test_build_images(mocker, tmp_path):
     # Invoke build images
     build_images(args)
     # Assert env.out exists
-    assert os.path.exists(input_version_dir / 'cpu.env.out')
-    assert os.path.exists(input_version_dir / 'gpu.env.out')
+    assert os.path.exists(input_version_dir + '/cpu.env.out')
+    assert os.path.exists(input_version_dir + '/gpu.env.out')
     # Validate the contents of env.out
     actual_output = set()
-    with open(input_version_dir / 'cpu.env.out', 'r') as f:
+    with open(input_version_dir + '/cpu.env.out', 'r') as f:
         actual_output.add(f.read())
-    with open(input_version_dir / 'gpu.env.out', 'r') as f:
+    with open(input_version_dir + '/gpu.env.out', 'r') as f:
         actual_output.add(f.read())
     expected_output = {'container_logs1', 'container_logs2'}
     assert actual_output == expected_output
@@ -382,3 +387,22 @@ def test_push_images_upstream_for_public_ecr_repository(mocker):
     repository = 'public.ecr.aws/registry_alias/my-repository'
     _test_push_images_upstream(mocker, repository)
 
+
+@patch('os.path.exists')
+def test_get_build_config_for_image(mock_path_exists, tmp_path):
+
+    input_version_dir = str(tmp_path) + '/v2.0.0'
+    image_generator_config = _image_generator_configs[0]
+    # Case 1: Mock os.path.exists to return False
+    mock_path_exists.return_value = False
+    assert image_generator_config == _get_config_for_image(input_version_dir,
+                                                           image_generator_config, False)
+    # Case 2: Mock os.path.exists to return True but force is True
+    mock_path_exists.return_value = True
+    assert image_generator_config == _get_config_for_image(input_version_dir,
+                                                           image_generator_config, True)
+    # Case 3: Mock os.path.exists to return True and force is False
+    mock_path_exists.return_value = True
+    response = _get_config_for_image(input_version_dir, image_generator_config, False)
+    assert response['build_args']['ENV_IN_FILENAME'] == image_generator_config["env_out_filename"]
+    assert 'ARG_BASED_ENV_IN_FILENAME' not in response['build_args']

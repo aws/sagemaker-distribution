@@ -1,5 +1,6 @@
 import argparse
 import base64
+import copy
 import glob
 import os
 import shutil
@@ -127,7 +128,8 @@ def create_patch_version_artifacts(args):
 
 def build_images(args):
     target_version = get_semver(args.target_patch_version)
-    image_ids, image_versions = _build_local_images(target_version, args.target_ecr_repo)
+    image_ids, image_versions = _build_local_images(target_version, args.target_ecr_repo,
+                                                    args.force)
 
     if not args.skip_tests:
         print(f'Will now run tests against: {image_ids}')
@@ -161,16 +163,32 @@ def _test_local_images(image_ids_to_test: list[str]):
     print(f'Tests ran successfully against: {image_ids_to_test}')
 
 
+def _get_config_for_image(target_version_dir: str, image_generator_config, force_rebuild) -> dict:
+    if not os.path.exists(target_version_dir + "/" + image_generator_config["env_out_filename"]) \
+            or force_rebuild:
+        return image_generator_config
+
+    config_for_image = copy.copy(image_generator_config)
+    # Use the existing env.out to create the conda environment. Pass that as env.in
+    config_for_image['build_args']['ENV_IN_FILENAME'] = \
+        image_generator_config["env_out_filename"]
+    # Remove ARG_BASED_ENV_IN_FILENAME if it exists
+    config_for_image['build_args'].pop('ARG_BASED_ENV_IN_FILENAME', None)
+    return config_for_image
+
+
 # Returns a tuple of: 1/ list of actual images generated; 2/ list of tagged images. A given image can be tagged by
 # multiple different strings - for e.g., a CPU image can be tagged as '1.3.2-cpu', '1.3-cpu', '1-cpu' and/or
 # 'latest-cpu'. Therefore, (1) is strictly a subset of (2).
-def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]) -> (list[str], list[dict[str, str]]):
+def _build_local_images(target_version: Version, target_ecr_repo_list: list[str], force: bool) -> (
+        list[str], list[dict[str, str]]):
     target_version_dir = get_dir_for_version(target_version)
 
     generated_image_ids = []
     generated_image_versions = []
 
-    for config in _image_generator_configs:
+    for image_generator_config in _image_generator_configs:
+        config = _get_config_for_image(target_version_dir, image_generator_config, force)
         image, log_gen = _docker_client.images.build(path=target_version_dir, rm=True, pull=True,
                                                      buildargs=config['build_args'])
         print(f'Successfully built an image with id: {image.id}')
@@ -292,6 +310,12 @@ def get_arg_parser():
         "--skip-tests",
         action='store_true',
         help="Disable running tests against the newly generated Docker image."
+    )
+    build_image_parser.add_argument(
+        "--force",
+        action='store_true',
+        help="Builds a new docker image which will fetch the latest versions of each package in "
+             "the conda environment. Any existing env.out file will be overwritten."
     )
     build_image_parser.add_argument(
         "--target-ecr-repo",
