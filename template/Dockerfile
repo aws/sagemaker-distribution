@@ -30,7 +30,7 @@ RUN apt-get update && \
 RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile
 
 USER $MAMBA_USER
-COPY --chown=$MAMBA_USER:$MAMBA_USER *.in /tmp/
+COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
 
 # Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
 # will happen.
