@@ -14,6 +14,7 @@ from docker.errors import BuildError, ContainerError
 from semver import Version
 
 from dependency_upgrader import _get_dependency_upper_bound_for_runtime_upgrade, _MAJOR, _MINOR, _PATCH
+from changelog_generator import generate_change_log
 from config import _image_generator_configs
 from package_staleness import generate_package_staleness_report
 from utils import (
@@ -71,6 +72,8 @@ def _create_new_version_artifacts(args):
                                         image_generator_config)
 
     _copy_static_files(base_version_dir, new_version_dir)
+    with open(f'{new_version_dir}/source-version.txt', 'w') as f:
+        f.write(args.base_patch_version)
 
 
 def _copy_static_files(base_version_dir, new_version_dir):
@@ -131,6 +134,7 @@ def build_images(args):
     target_version = get_semver(args.target_patch_version)
     image_ids, image_versions = _build_local_images(target_version, args.target_ecr_repo,
                                                     args.force)
+    generate_change_log(args.target_patch_version)
 
     if not args.skip_tests:
         print(f'Will now run tests against: {image_ids}')
