@@ -10,6 +10,7 @@ import boto3
 import docker
 import pytest
 from conda.models.match_spec import MatchSpec
+from docker.errors import BuildError, ContainerError
 from semver import Version
 
 from dependency_upgrader import _get_dependency_upper_bound_for_runtime_upgrade, _MAJOR, _MINOR, _PATCH
@@ -189,13 +190,26 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
 
     for image_generator_config in _image_generator_configs:
         config = _get_config_for_image(target_version_dir, image_generator_config, force)
-        image, log_gen = _docker_client.images.build(path=target_version_dir, rm=True, pull=True,
-                                                     buildargs=config['build_args'])
+        try:
+            image, log_gen = _docker_client.images.build(path=target_version_dir, rm=True,
+                                                         pull=True, buildargs=config['build_args'])
+        except BuildError as e:
+            for line in e.build_log:
+                if 'stream' in line:
+                    print(line['stream'].strip())
+            # After printing the logs, raise the exception (which is the old behavior)
+            raise
         print(f'Successfully built an image with id: {image.id}')
         generated_image_ids.append(image.id)
+        try:
+            container_logs = _docker_client.containers.run(image=image.id, detach=False,
+                                                           auto_remove=True,
+                                                           command='micromamba env export --explicit')
+        except ContainerError as e:
+            print(e.container.logs().decode('utf-8'))
+            # After printing the logs, raise the exception (which is the old behavior)
+            raise
 
-        container_logs = _docker_client.containers.run(image=image.id, detach=False, auto_remove=True,
-                                                       command='micromamba env export --explicit')
         with open(f'{target_version_dir}/{config["env_out_filename"]}', 'wb') as f:
             f.write(container_logs)
 
