@@ -17,6 +17,7 @@ from main import (
     _get_config_for_image
 )
 from config import _image_generator_configs
+from changelog_generator import _derive_changeset
 from utils import get_semver
 import os
 from unittest.mock import patch, Mock, MagicMock
@@ -39,18 +40,19 @@ class BuildImageArgs:
         self.force = force
 
 
-def _create_docker_cpu_env_in_file(file_path):
+def _create_docker_cpu_env_in_file(file_path, required_package='conda-forge::ipykernel'):
     with open(file_path, 'w') as env_in_file:
-        env_in_file.write('conda-forge::ipykernel\n')
+        env_in_file.write(f'{required_package}\n')
 
 
-def _create_docker_cpu_env_out_file(file_path):
+def _create_docker_cpu_env_out_file(file_path,
+                                    package_metadata='https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.3-pyh210e3f2_0.conda#8c1f6bf32a6ca81232c4853d4165ca67'):
     with open(file_path, 'w') as env_out_file:
-        env_out_file.write('''# This file may be used to create an environment using:
-        # $ conda create --name <env> --file <this file>
-        # platform: linux-64
-        @EXPLICIT
-        https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.3-pyh210e3f2_0.conda#8c1f6bf32a6ca81232c4853d4165ca67\n''')
+        env_out_file.write(f'''# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: linux-64
+@EXPLICIT
+{package_metadata}\n''')
 
 
 def _create_docker_gpu_env_in_file(file_path):
@@ -61,10 +63,10 @@ def _create_docker_gpu_env_in_file(file_path):
 def _create_docker_gpu_env_out_file(file_path):
     with open(file_path, 'w') as env_out_file:
         env_out_file.write('''# This file may be used to create an environment using:
-        # $ conda create --name <env> --file <this file>
-        # platform: linux-64
-        @EXPLICIT
-        https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.conda#05592c85b9f6931dc2df1e80c0d56294\n''')
+# $ conda create --name <env> --file <this file>
+# platform: linux-64
+@EXPLICIT
+https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.conda#05592c85b9f6931dc2df1e80c0d56294\n''')
 
 
 def _create_docker_file(file_path):
@@ -406,3 +408,28 @@ def test_get_build_config_for_image(mock_path_exists, tmp_path):
     response = _get_config_for_image(input_version_dir, image_generator_config, False)
     assert response['build_args']['ENV_IN_FILENAME'] == image_generator_config["env_out_filename"]
     assert 'ARG_BASED_ENV_IN_FILENAME' not in response['build_args']
+
+
+def test_derive_changeset(tmp_path):
+    target_version_dir = str(tmp_path / 'v1.0.6')
+    source_version_dir = str(tmp_path / 'v1.0.5')
+    os.makedirs(target_version_dir)
+    os.makedirs(source_version_dir)
+    # Create env.in of the source version
+    _create_docker_cpu_env_in_file(source_version_dir + "/cpu.env.in")
+    # Create env.out of the source version
+    _create_docker_cpu_env_out_file(source_version_dir + "/cpu.env.out",
+                                    package_metadata='https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.3-pyh210e3f_0.conda#8c1f6bf32a6ca81232c4853d4165ca67')
+    # Create env.in of the target version, which has additional dependency on boto3
+    target_env_in_packages = 'conda-forge::ipykernel\nconda-forge::boto3'
+    _create_docker_cpu_env_in_file(target_version_dir + "/cpu.env.in", required_package=target_env_in_packages)
+    target_env_out_packages = 'https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.6-pyh210e3f2_0.conda#8c1f6bf32a6ca81232c4853d4165ca67\n' \
+                              'https://conda.anaconda.org/conda-forge/linux-64/boto3-1.2-cuda112py38hd_0.conda#8c1f6bf32a6ca81232c4853d4165ca67'
+    _create_docker_cpu_env_out_file(target_version_dir + "/cpu.env.out", package_metadata=target_env_out_packages)
+    expected_upgrades = {'ipykernel': ['6.21.3', '6.21.6']}
+    expected_new_packages = {'boto3': '1.2'}
+    actual_upgrades, actual_new_packages = _derive_changeset(target_version_dir,
+                                                             source_version_dir,
+                                                             _image_generator_configs[1])
+    assert expected_upgrades == actual_upgrades
+    assert expected_new_packages == actual_new_packages
