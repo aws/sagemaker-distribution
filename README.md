@@ -10,18 +10,6 @@ the _latest_ versions of all these packages _such that_ they are _mutually compa
 This project follows semver (more on that below) and comes with a helper tool to automate new releases of the
 distribution.
 
-### Currently under beta
-
-This feature is provided as a ‘Beta Service’ as defined in the AWS Service Terms. It is governed by your Agreement with
-AWS and the AWS Service Terms. Before using this Beta Service, please review the Betas and Previews terms found
-[here](https://aws.amazon.com/service-terms/). In particular, please note that the Beta Service is confidential and you
-may not discuss the features, functionality, or documentation related to the Beta Service with any parties that are not
-authorized by AWS. The Beta Service is subject to change and cancellation.
-
-During this beta, we may modify some interfaces of the images, their feature-set or the list of packages that are
-included in it. However, the image versions will continue to be v0.x.y and such modifications, if any, will only occur
-as part of a _minor_ upgrade (such as _0.4.x_ to _0.5.0_).
-
 ## Getting started
 
 If you just want to use the images, you do _not_ need to use this GitHub repository. Instead, you can pull pre-built
