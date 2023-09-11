@@ -134,7 +134,6 @@ def build_images(args):
     target_version = get_semver(args.target_patch_version)
     image_ids, image_versions = _build_local_images(target_version, args.target_ecr_repo,
                                                     args.force)
-    generate_change_log(args.target_patch_version)
 
     if not args.skip_tests:
         print(f'Will now run tests against: {image_ids}')
@@ -216,6 +215,10 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
 
         with open(f'{target_version_dir}/{config["env_out_filename"]}', 'wb') as f:
             f.write(container_logs)
+
+        # Generate change logs. Use the original image generator config which contains the name
+        # of the actual env.in file instead of the 'config'.
+        generate_change_log(target_version, image_generator_config)
 
         version_tags_to_apply = _get_version_tags(target_version)
         image_tags_to_apply = [config['image_tag_generator'].format(image_version=i) for i in version_tags_to_apply]
