@@ -4,7 +4,7 @@ from utils import (
     get_semver,
     get_match_specs,
 )
-from config import _image_generator_configs
+from semver import Version
 
 
 def _derive_changeset(target_version_dir, source_version_dir, image_config) -> (dict[str,
@@ -36,8 +36,7 @@ def _derive_changeset(target_version_dir, source_version_dir, image_config) -> (
     return upgrades, new_packages
 
 
-def generate_change_log(target_patch_version):
-    target_version = get_semver(target_patch_version)
+def generate_change_log(target_version: Version, image_config):
     target_version_dir = get_dir_for_version(target_version)
     source_version_txt_file_path = f'{target_version_dir}/source-version.txt'
     if not os.path.exists(source_version_txt_file_path):
@@ -48,22 +47,21 @@ def generate_change_log(target_patch_version):
         source_patch_version = f.readline()
     source_version = get_semver(source_patch_version)
     source_version_dir = get_dir_for_version(source_version)
-    for image_config in _image_generator_configs:
-        processor = image_config['image_type']
-        upgrades, new_packages = _derive_changeset(target_version_dir, source_version_dir,
-                                                   image_config)
-        with open(f'{target_version_dir}/CHANGELOG-{processor}.md', 'w') as f:
-            f.write('# Change log: ' + target_patch_version + '(' + processor + ')\n\n')
-            if len(upgrades) != 0:
-                f.write('## Upgrades: \n\n')
-                f.write('Package | Previous Version | Current Version\n')
-                f.write('---|---|---\n')
-                for package in upgrades:
-                    f.write(package + '|' + upgrades[package][0] + '|'
-                            + upgrades[package][1] + '\n')
-            if len(new_packages) != 0:
-                f.write('\n## What\'s new: \n\n')
-                f.write('Package | Version \n')
-                f.write('---|---\n')
-                for package in new_packages:
-                    f.write(package + '|' + new_packages[package] + '\n')
+    image_type = image_config['image_type']
+    upgrades, new_packages = _derive_changeset(target_version_dir, source_version_dir,
+                                               image_config)
+    with open(f'{target_version_dir}/CHANGELOG-{image_type}.md', 'w') as f:
+        f.write('# Change log: ' + str(target_version) + '(' + image_type + ')\n\n')
+        if len(upgrades) != 0:
+            f.write('## Upgrades: \n\n')
+            f.write('Package | Previous Version | Current Version\n')
+            f.write('---|---|---\n')
+            for package in upgrades:
+                f.write(package + '|' + upgrades[package][0] + '|'
+                        + upgrades[package][1] + '\n')
+        if len(new_packages) != 0:
+            f.write('\n## What\'s new: \n\n')
+            f.write('Package | Version \n')
+            f.write('---|---\n')
+            for package in new_packages:
+                f.write(package + '|' + new_packages[package] + '\n')
