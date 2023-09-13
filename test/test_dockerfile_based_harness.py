@@ -82,3 +82,4 @@ def _validate_docker_images(dockerfile_path: str, local_image_id: str, use_gpu: 
     finally:
         # Remove the test docker image after running the test.
         _docker_client.images.remove(image=image.id, force=True)
+
