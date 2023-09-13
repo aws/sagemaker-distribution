@@ -2,7 +2,7 @@ import subprocess
 
 import docker
 import pytest
-from docker.errors import BuildError, ContainerError
+from docker.errors import BuildError
 
 _docker_client = docker.from_env()
 
@@ -72,14 +72,18 @@ def _validate_docker_images(dockerfile_path: str, local_image_id: str, use_gpu: 
     # We assume that the image above would have supplied the right entrypoint, so we just run it as is. If the container
     # didn't execute successfully, the Docker client below will throw an error and fail the test.
     # A consequence of this design decision is that any test assertions should go inside the container's entry-point.
-    try:
-        _docker_client.containers.run(image=image.id, detach=False, auto_remove=True,
-                                      device_requests=device_requests)
-    except ContainerError as e:
-        print(e.container.logs().decode('utf-8'))
-        # After printing the logs, raise the exception (which is the old behavior)
-        raise
-    finally:
-        # Remove the test docker image after running the test.
-        _docker_client.images.remove(image=image.id, force=True)
 
+    container = _docker_client.containers.run(image=image.id, detach=True, stderr=True,
+                                      device_requests=device_requests)
+    # Wait till container completes execution
+    result = container.wait()
+    exit_code = result["StatusCode"]
+    if exit_code != 0:
+        # Print STD out only during test failure
+        print(container.logs().decode('utf-8'))
+    # Remove the container.
+    container.remove(force=True)
+    # Remove the test docker image after running the test. Don't remove any untagged parent image.
+    _docker_client.images.remove(image=image.id, force=True, noprune=True)
+    # Fail the test if docker exit code is not zero
+    assert exit_code == 0
