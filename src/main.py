@@ -172,7 +172,7 @@ def _get_config_for_image(target_version_dir: str, image_generator_config, force
             or force_rebuild:
         return image_generator_config
 
-    config_for_image = copy.copy(image_generator_config)
+    config_for_image = copy.deepcopy(image_generator_config)
     # Use the existing env.out to create the conda environment. Pass that as env.in
     config_for_image['build_args']['ENV_IN_FILENAME'] = \
         image_generator_config["env_out_filename"]
