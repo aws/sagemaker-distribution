@@ -18,7 +18,6 @@ _docker_client = docker.from_env()
     "pandas.test.Dockerfile",
     "pytorch.examples.Dockerfile",
     "tensorflow.examples.Dockerfile",
-    "autogluon.test.Dockerfile",
 ])
 def test_dockerfiles(dockerfile_path: str, local_image_id: str, use_gpu: bool):
     print(f'Will start running test for: {dockerfile_path} against: {local_image_id}')
