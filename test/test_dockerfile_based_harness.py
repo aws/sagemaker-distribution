@@ -3,12 +3,11 @@ import subprocess
 import docker
 import pytest
 from docker.errors import BuildError, ContainerError
-pytestmark = pytest.mark.slow
-
 
 _docker_client = docker.from_env()
 
 
+@pytest.mark.cpu
 @pytest.mark.parametrize("dockerfile_path", ["keras.test.Dockerfile",
                                              "matplotlib.test.Dockerfile",
                                              "scipy.test.Dockerfile",
@@ -18,7 +17,38 @@ _docker_client = docker.from_env()
                                              "sm-python-sdk.test.Dockerfile",
                                              "pytorch.examples.Dockerfile",
                                              "tensorflow.examples.Dockerfile"])
-def test_dockerfiles(dockerfile_path: str, local_image_id: str, use_gpu: bool):
+def test_dockerfiles_for_cpu(dockerfile_path: str, local_image_id: str, use_gpu: bool):
+    _validate_docker_images(dockerfile_path, local_image_id, use_gpu)
+
+
+@pytest.mark.gpu
+@pytest.mark.parametrize("dockerfile_path", ["keras.test.Dockerfile",
+                                             "matplotlib.test.Dockerfile",
+                                             "scipy.test.Dockerfile",
+                                             "numpy.test.Dockerfile",
+                                             "boto3.test.Dockerfile",
+                                             "pandas.test.Dockerfile",
+                                             "sm-python-sdk.test.Dockerfile",
+                                             "pytorch.examples.Dockerfile",
+                                             "tensorflow.examples.Dockerfile"])
+def test_dockerfiles_for_gpu(dockerfile_path: str, local_image_id: str, use_gpu: bool):
+    _validate_docker_images(dockerfile_path, local_image_id, use_gpu)
+
+
+
+# The following is a simple function to check whether the local machine has at least 1 GPU and some Nvidia driver
+# version.
+def _is_nvidia_drivers_available() -> bool:
+    exitcode, output = subprocess.getstatusoutput("nvidia-smi --query-gpu=driver_version --format=csv,noheader --id=0")
+    if exitcode == 0:
+        print(f'Found Nvidia driver version: {output}')
+    else:
+        print(f'No Nvidia drivers found on the machine. Error output: {output}')
+
+    return exitcode == 0
+
+
+def _validate_docker_images(dockerfile_path: str, local_image_id: str, use_gpu: bool):
     print(f'Will start running test for: {dockerfile_path} against: {local_image_id}')
     try:
         image, _ = _docker_client.images.build(path='test/test_artifacts',
@@ -35,7 +65,7 @@ def test_dockerfiles(dockerfile_path: str, local_image_id: str, use_gpu: bool):
     # that the image would have supplied the right entrypoint.
 
     device_requests = []
-    if use_gpu and is_nvidia_drivers_available():
+    if use_gpu and _is_nvidia_drivers_available():
         # Pass all available GPUs, if available.
         device_requests.append(docker.types.DeviceRequest(count=-1, capabilities=[['gpu']]))
 
@@ -53,14 +83,3 @@ def test_dockerfiles(dockerfile_path: str, local_image_id: str, use_gpu: bool):
         # Remove the test docker image after running the test.
         _docker_client.images.remove(image=image.id, force=True)
 
-
-# The following is a simple function to check whether the local machine has at least 1 GPU and some Nvidia driver
-# version.
-def is_nvidia_drivers_available() -> bool:
-    exitcode, output = subprocess.getstatusoutput("nvidia-smi --query-gpu=driver_version --format=csv,noheader --id=0")
-    if exitcode == 0:
-        print(f'Found Nvidia driver version: {output}')
-    else:
-        print(f'No Nvidia drivers found on the machine. Error output: {output}')
-
-    return exitcode == 0
