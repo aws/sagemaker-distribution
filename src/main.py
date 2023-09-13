@@ -14,6 +14,7 @@ from docker.errors import BuildError, ContainerError
 from semver import Version
 
 from dependency_upgrader import _get_dependency_upper_bound_for_runtime_upgrade, _MAJOR, _MINOR, _PATCH
+from changelog_generator import generate_change_log
 from config import _image_generator_configs
 from package_staleness import generate_package_staleness_report
 from utils import (
@@ -71,6 +72,8 @@ def _create_new_version_artifacts(args):
                                         image_generator_config)
 
     _copy_static_files(base_version_dir, new_version_dir)
+    with open(f'{new_version_dir}/source-version.txt', 'w') as f:
+        f.write(args.base_patch_version)
 
 
 def _copy_static_files(base_version_dir, new_version_dir):
@@ -157,7 +160,8 @@ def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: 
 def _test_local_images(image_ids_to_test: list[str]):
     assert len(image_ids_to_test) == len(_image_generator_configs)
     for (image_id, config) in zip(image_ids_to_test, _image_generator_configs):
-        exit_code = pytest.main(['-n', '2', '-m', 'slow', '--local-image-id', image_id, *config['pytest_flags']])
+        exit_code = pytest.main(['-n', '2', '-m', config['image_type'], '--local-image-id',
+                                 image_id, *config['pytest_flags']])
 
         assert exit_code == 0, f'Tests failed with exit code: {exit_code} against: {image_id}'
 
@@ -169,7 +173,7 @@ def _get_config_for_image(target_version_dir: str, image_generator_config, force
             or force_rebuild:
         return image_generator_config
 
-    config_for_image = copy.copy(image_generator_config)
+    config_for_image = copy.deepcopy(image_generator_config)
     # Use the existing env.out to create the conda environment. Pass that as env.in
     config_for_image['build_args']['ENV_IN_FILENAME'] = \
         image_generator_config["env_out_filename"]
@@ -212,6 +216,10 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
 
         with open(f'{target_version_dir}/{config["env_out_filename"]}', 'wb') as f:
             f.write(container_logs)
+
+        # Generate change logs. Use the original image generator config which contains the name
+        # of the actual env.in file instead of the 'config'.
+        generate_change_log(target_version, image_generator_config)
 
         version_tags_to_apply = _get_version_tags(target_version)
         image_tags_to_apply = [config['image_tag_generator'].format(image_version=i) for i in version_tags_to_apply]
