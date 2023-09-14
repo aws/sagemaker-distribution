@@ -10,3 +10,4 @@ dependencies:
   - pytest-mock
   - pytest-xdist
   - semver
+  - jupyter-lsp
