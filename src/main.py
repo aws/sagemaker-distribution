@@ -133,11 +133,11 @@ def create_patch_version_artifacts(args):
 def build_images(args):
     target_version = get_semver(args.target_patch_version)
     image_ids, image_versions = _build_local_images(target_version, args.target_ecr_repo,
-                                                    args.force)
+                                                    args.force, args.skip_tests)
 
     if not args.skip_tests:
         print(f'Will now run tests against: {image_ids}')
-        _test_local_images(image_ids)
+        _test_local_images(image_ids, args.target_patch_version)
     else:
         print('Will skip tests.')
 
@@ -157,11 +157,11 @@ def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: 
     print(f'Successfully pushed these images to ECR: {image_versions_to_push}')
 
 
-def _test_local_images(image_ids_to_test: list[str]):
+def _test_local_images(image_ids_to_test: list[str], target_version: str):
     assert len(image_ids_to_test) == len(_image_generator_configs)
     for (image_id, config) in zip(image_ids_to_test, _image_generator_configs):
-        exit_code = pytest.main(['-n', '2', '-m', config['image_type'], '--local-image-id',
-                                 image_id, *config['pytest_flags']])
+        exit_code = pytest.main(['-n', '2', '-m', config['image_type'], '--local-image-version',
+                                 target_version, *config['pytest_flags']])
 
         assert exit_code == 0, f'Tests failed with exit code: {exit_code} against: {image_id}'
 
@@ -185,8 +185,8 @@ def _get_config_for_image(target_version_dir: str, image_generator_config, force
 # Returns a tuple of: 1/ list of actual images generated; 2/ list of tagged images. A given image can be tagged by
 # multiple different strings - for e.g., a CPU image can be tagged as '1.3.2-cpu', '1.3-cpu', '1-cpu' and/or
 # 'latest-cpu'. Therefore, (1) is strictly a subset of (2).
-def _build_local_images(target_version: Version, target_ecr_repo_list: list[str], force: bool) -> (
-        list[str], list[dict[str, str]]):
+def _build_local_images(target_version: Version, target_ecr_repo_list: list[str], force: bool,
+                        skip_tests=False) -> (list[str], list[dict[str, str]]):
     target_version_dir = get_dir_for_version(target_version)
 
     generated_image_ids = []
@@ -229,6 +229,11 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
                 for t in image_tags_to_apply:
                     image.tag(target_ecr_repo, tag=t)
                     generated_image_versions.append({'repository': target_ecr_repo, 'tag': t})
+
+        if not skip_tests:
+            # Tag the image for testing
+            image.tag('localhost/sagemaker-distribution',
+                      config['image_tag_generator'].format(image_version=str(target_version)))
 
     return generated_image_ids, generated_image_versions
 
