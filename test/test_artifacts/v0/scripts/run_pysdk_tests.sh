@@ -11,6 +11,7 @@ git checkout tags/v$pysdk_version
 pip install -r requirements/extras/test_requirements.txt
 
 # Run the unit tests, ignoring tests which require AWS Configuration
+# TODO: Re-evaluate the ignored tests since we are setting the AWS_DEFAULT_REGION as part of the Dockerfile.
 pytest tests/unit --ignore=tests/unit/sagemaker/feature_store/ --ignore=tests/unit/sagemaker/jumpstart/ --ignore=tests/unit/sagemaker/workflow/ \
     --ignore=tests/unit/sagemaker/async_inference --ignore=tests/unit/test_model_card.py --ignore=tests/unit/test_model_card.py --ignore=tests/unit/test_processing.py \
     --ignore=tests/unit/test_tensorboard.py --ignore=tests/unit/sagemaker/async_inference --ignore=tests/unit/sagemaker/experiments --ignore tests/unit/sagemaker/local \
