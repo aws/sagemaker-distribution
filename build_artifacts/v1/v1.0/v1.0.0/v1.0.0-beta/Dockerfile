@@ -5,9 +5,14 @@ ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 
+ARG AMZN_BASE="/opt/amazon/sagemaker"
+ARG DIRECTORY_TREE_STAGE_DIR="${AMZN_BASE}/dir-staging"
+
 ARG NB_USER="sagemaker-user"
 ARG NB_UID=1000
 ARG NB_GID=100
+
+ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 
 USER root
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
@@ -19,7 +24,7 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends awscli tzdata && \
     chmod g+w /etc/passwd && \
@@ -30,7 +35,7 @@ RUN apt-get update && \
 RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile
 
 USER $MAMBA_USER
-COPY --chown=$MAMBA_USER:$MAMBA_USER *.in /tmp/
+COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
 
 # Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
 # will happen.
@@ -57,6 +62,20 @@ RUN HOME_DIR="/home/${NB_USER}/licenses" \
     && chmod +x ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
+
+# Merge in OS directory tree contents.
+RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
+COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
+RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
+    rm -rf ${DIRECTORY_TREE_STAGE_DIR}
+
+# Create logging directories for supervisor
+RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
+    chmod a+rw $SAGEMAKER_LOGGING_DIR
+
+# Create supervisord runtime directory
+RUN mkdir -p /var/run/supervisord && \
+    chmod a+rw /var/run/supervisord
 
 USER $MAMBA_USER
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
