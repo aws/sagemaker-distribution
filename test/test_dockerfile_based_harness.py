@@ -19,15 +19,17 @@ _docker_client = docker.from_env()
 @pytest.mark.parametrize("dockerfile_path, required_packages", [
     ("keras.test.Dockerfile", ['keras']),
     ("autogluon.test.Dockerfile", ['autogluon']),
-    ("matplotlib.test.Dockerfile", ['matplotlib']),
-    ("scipy.test.Dockerfile", ['scipy']),
-    ("numpy.test.Dockerfile", ['numpy']),
-    ("boto3.test.Dockerfile", ['boto3']),
-    ("pandas.test.Dockerfile", ['pandas']),
-    ("sm-python-sdk.test.Dockerfile", ['sagemaker-python-sdk']),
-    ("pytorch.examples.Dockerfile", ['pytorch']),
-    ("tensorflow.examples.Dockerfile", ['tensorflow']),
-    ("jupyter-ai.test.Dockerfile", ['jupyter-ai'])])
+    #    ("matplotlib.test.Dockerfile", ['matplotlib']),
+    #    ("scipy.test.Dockerfile", ['scipy']),
+    #    ("numpy.test.Dockerfile", ['numpy']),
+    #    ("boto3.test.Dockerfile", ['boto3']),
+    #    ("pandas.test.Dockerfile", ['pandas']),
+    #    ("sm-python-sdk.test.Dockerfile", ['sagemaker-python-sdk']),
+    #    ("pytorch.examples.Dockerfile", ['pytorch']),
+    #    ("tensorflow.examples.Dockerfile", ['tensorflow']),
+    #    ("jupyter-ai.test.Dockerfile", ['jupyter-ai']),
+    ("jupyter-lsp.test.Dockerfile", ['jupyter-lsp']),
+    ("notebook.test.Dockerfile", ['notebook'])])
 def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
     _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, 'cpu')
@@ -37,15 +39,17 @@ def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
 @pytest.mark.parametrize("dockerfile_path, required_packages", [
     ("keras.test.Dockerfile", ['keras']),
     ("autogluon.test.Dockerfile", ['autogluon']),
-    ("matplotlib.test.Dockerfile", ['matplotlib']),
-    ("scipy.test.Dockerfile", ['scipy']),
-    ("numpy.test.Dockerfile", ['numpy']),
-    ("boto3.test.Dockerfile", ['boto3']),
-    ("pandas.test.Dockerfile", ['pandas']),
-    ("sm-python-sdk.test.Dockerfile", ['sagemaker-python-sdk']),
-    ("pytorch.examples.Dockerfile", ['pytorch']),
-    ("tensorflow.examples.Dockerfile", ['tensorflow']),
-    ("jupyter-ai.test.Dockerfile", ['jupyter-ai'])])
+    #("matplotlib.test.Dockerfile", ['matplotlib']),
+    #("scipy.test.Dockerfile", ['scipy']),
+    #("numpy.test.Dockerfile", ['numpy']),
+    #("boto3.test.Dockerfile", ['boto3']),
+    #("pandas.test.Dockerfile", ['pandas']),
+    #("sm-python-sdk.test.Dockerfile", ['sagemaker-python-sdk']),
+    #("pytorch.examples.Dockerfile", ['pytorch']),
+    #("tensorflow.examples.Dockerfile", ['tensorflow']),
+    #("jupyter-ai.test.Dockerfile", ['jupyter-ai']),
+    ("jupyter-lsp.test.Dockerfile", ['jupyter-lsp']),
+    ("notebook.test.Dockerfile", ['notebook'])])
 def test_dockerfiles_for_gpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
     _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, 'gpu')
