@@ -18,7 +18,7 @@ and ready-to-use images from our [AWS ECR Gallery repository](https://gallery.ec
 ### Dependency versions included in a particular Amazon SageMaker Distribution version
 
 If you want to check what packages are installed in a given version of Amazon SageMaker Distribution, you can find that
-in the relevant _env.out_ file in the [build_artifacts](build_artifacts) directory.
+in the relevant _RELEASE.md_ file in the [build_artifacts](build_artifacts) directory.
 
 ### Versioning strategy
 
