@@ -20,5 +20,19 @@ _image_generator_configs = [
         'env_out_filename': 'cpu.env.out',
         'pytest_flags': [],
         'image_type': 'cpu'
+    },
+    {
+        'build_args': {
+            'TAG_FOR_BASE_MICROMAMBA_IMAGE': 'jammy',
+            'ENV_IN_FILENAME': 'neuron.env.in',
+            'NEURONX_RUNTIME_LIB_VERSION': '2.16.*',
+            'NEURONX_COLLECTIVES_LIB_VERSION': '2.16.*',
+            'NEURONX_TOOLS_VERSION': '2.13.*',
+            'NEURON': 'true'
+        },
+        'image_tag_generator': '{image_version}-neuron',
+        'env_out_filename': 'neuron.env.out',
+        'pytest_flags': [],
+        'image_type': 'neuron'
     }
 ]

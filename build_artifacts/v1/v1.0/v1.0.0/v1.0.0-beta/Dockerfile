@@ -4,6 +4,10 @@ FROM mambaorg/micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE
 ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
+ARG NEURON
+ARG NEURONX_RUNTIME_LIB_VERSION
+ARG NEURONX_COLLECTIVES_LIB_VERSION
+ARG NEURONX_TOOLS_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
 ARG DIRECTORY_TREE_STAGE_DIR="${AMZN_BASE}/dir-staging"
@@ -26,13 +30,23 @@ ENV MAMBA_USER=$NB_USER
 RUN apt-get update && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends awscli tzdata && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata awscli && \
     chmod g+w /etc/passwd && \
     echo "ALL    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
     # Note that we do NOT run `rm -rf /var/lib/apt/lists/*` here. If we did, anyone building on top of our images will
     # not be able to run any `apt-get install` commands and that would hamper customizability of the images.
     :
 RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile
+
+RUN [ "$NEURON" = "true" ] \
+    && apt-get install -y gnupg2 \
+    && . /etc/os-release \
+    && echo "deb https://apt.repos.neuron.amazonaws.com ${VERSION_CODENAME} main" | tee --append /etc/apt/sources.list.d/neuron.list \
+    && wget -qO - https://apt.repos.neuron.amazonaws.com/GPG-PUB-KEY-AMAZON-AWS-NEURON.PUB | apt-key add - \
+    && apt-get update \
+    && apt-get install -y aws-neuronx-tools=$NEURONX_TOOLS_VERSION \
+        aws-neuronx-collectives=$NEURONX_COLLECTIVES_LIB_VERSION \
+        aws-neuronx-runtime-lib=$NEURONX_RUNTIME_LIB_VERSION
 
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
@@ -51,6 +65,9 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
+
+RUN [ "$NEURON" = "true" ] \
+    && pip install neuronx-cc==2.* torch-neuronx torchvision --extra-index-url https://pip.repos.neuron.amazonaws.com
 
 USER root
 RUN HOME_DIR="/home/${NB_USER}/licenses" \
