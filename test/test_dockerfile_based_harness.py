@@ -133,7 +133,6 @@ def _validate_docker_images(dockerfile_path: str, required_packages: List[str],
         print(container.logs().decode('utf-8'))
     # Remove the container.
     container.remove(force=True)
-    # Remove the test docker image after running the test. Don't remove any untagged parent image.
-    _docker_client.images.remove(image=image.id, force=True, noprune=True)
+    _docker_client.images.remove(image=image.id, force=True)
     # Fail the test if docker exit code is not zero
     assert exit_code == 0

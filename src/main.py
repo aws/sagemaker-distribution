@@ -15,6 +15,7 @@ from semver import Version
 
 from dependency_upgrader import _get_dependency_upper_bound_for_runtime_upgrade, _MAJOR, _MINOR, _PATCH
 from changelog_generator import generate_change_log
+from release_notes_generator import generate_release_notes
 from config import _image_generator_configs
 from package_staleness import generate_package_staleness_report
 from utils import (
@@ -136,6 +137,7 @@ def build_images(args):
     target_version = get_semver(args.target_patch_version)
     image_ids, image_versions = _build_local_images(target_version, args.target_ecr_repo,
                                                     args.force, args.skip_tests)
+    generate_release_notes(target_version)
 
     if not args.skip_tests:
         print(f'Will now run tests against: {image_ids}')
@@ -231,8 +233,7 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
                 for t in image_tags_to_apply:
                     image.tag(target_ecr_repo, tag=t)
                     generated_image_versions.append({'repository': target_ecr_repo, 'tag': t})
-
-        if not skip_tests:
+        else:
             # Tag the image for testing
             image.tag('localhost/sagemaker-distribution',
                       config['image_tag_generator'].format(image_version=str(target_version)))
