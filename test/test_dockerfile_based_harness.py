@@ -29,6 +29,7 @@ _docker_client = docker.from_env()
     ("tensorflow.examples.Dockerfile", ['tensorflow']),
     ("jupyter-ai.test.Dockerfile", ['jupyter-ai']),
     ("jupyter-lsp.test.Dockerfile", ['jupyter-lsp']),
+    ("jupyter-lsp-server.test.Dockerfile", ['jupyter-lsp-server']),
     ("notebook.test.Dockerfile", ['notebook'])])
 def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
@@ -49,6 +50,7 @@ def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
     ("tensorflow.examples.Dockerfile", ['tensorflow']),
     ("jupyter-ai.test.Dockerfile", ['jupyter-ai']),
     ("jupyter-lsp.test.Dockerfile", ['jupyter-lsp']),
+    ("jupyter-lsp-server.test.Dockerfile", ['jupyter-lsp-server']),
     ("notebook.test.Dockerfile", ['notebook'])])
 def test_dockerfiles_for_gpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
