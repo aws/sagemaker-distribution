@@ -13,6 +13,7 @@ ARG NB_UID=1000
 ARG NB_GID=100
 
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
+ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 
 USER root
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
@@ -24,11 +25,12 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends awscli tzdata && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends awscli tzdata krb5-user && \
     chmod g+w /etc/passwd && \
     echo "ALL    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
+    touch /etc/krb5.conf.lock && chown ${NB_USER}:${MAMBA_USER} /etc/krb5.conf* && \
     # Note that we do NOT run `rm -rf /var/lib/apt/lists/*` here. If we did, anyone building on top of our images will
     # not be able to run any `apt-get install` commands and that would hamper customizability of the images.
     :
@@ -71,7 +73,9 @@ RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
 
 # Create logging directories for supervisor
 RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
-    chmod a+rw $SAGEMAKER_LOGGING_DIR
+    chmod a+rw $SAGEMAKER_LOGGING_DIR && \
+    mkdir -p ${STUDIO_LOGGING_DIR} && \
+    chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR}
 
 # Create supervisord runtime directory
 RUN mkdir -p /var/run/supervisord && \
@@ -80,4 +84,14 @@ RUN mkdir -p /var/run/supervisord && \
 USER $MAMBA_USER
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
+
+# https://stackoverflow.com/questions/122327
+RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;import sysconfig; print(sysconfig.get_paths().get('purelib'))") && \
+    # Remove SparkRKernel as it's not supported \
+    jupyter-kernelspec remove -f -y sparkrkernel && \
+    # Patch Sparkmagic lib to support Custom Certificates \
+    # https://github.com/jupyter-incubator/sparkmagic/pull/435/files \
+    cp -a ${SYSTEM_PYTHON_PATH}/sagemaker_studio_analytics_extension/patches/configuration.py ${SYSTEM_PYTHON_PATH}/sparkmagic/utils/ && \
+    cp -a ${SYSTEM_PYTHON_PATH}/sagemaker_studio_analytics_extension/patches/reliablehttpclient.py ${SYSTEM_PYTHON_PATH}/sparkmagic/livyclientlib/reliablehttpclient.py
+
 ENV SHELL=/bin/bash
