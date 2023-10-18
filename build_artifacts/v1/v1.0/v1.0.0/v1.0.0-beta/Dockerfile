@@ -34,6 +34,15 @@ RUN apt-get update && \
     :
 RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile
 
+# Install glue kernels, and move to shared directory
+RUN install-glue-kernels && \
+    mv /root/.local/share/jupyter/kernels/glue_pyspark /opt/conda/share/jupyter/kernels && \
+    mv /root/.local/share/jupyter/kernels/glue_spark /opt/conda/share/jupyter/kernels
+
+# Patch glue kernels to use kernel wrapper
+COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
+COPY patch_glue_spark.json /opt/conda/share/jupyter/kernels/glue_spark/kernel.json
+
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
 
