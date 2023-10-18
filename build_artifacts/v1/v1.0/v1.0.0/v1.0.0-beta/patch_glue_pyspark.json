@@ -12,3 +12,4 @@
   "env": {"request_origin": "SageMakerStudioPySparkNotebook", "glue_version": "3.0"},
   "language": "python"
 }
+

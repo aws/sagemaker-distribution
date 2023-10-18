@@ -4,7 +4,7 @@
     "-m",
     "sagemaker_kernel_wrapper.sm_gis_wrapper",
     "-m",
-    "aws_glue_interactive_sessions_kernel.glue_pyspark.GlueKernel",
+    "aws_glue_interactive_sessions_kernel.glue_spark.GlueKernel",
     "-f",
     "{connection_file}"
   ],
@@ -12,3 +12,4 @@
   "env": {"request_origin": "SageMakerStudioSparkNotebook", "glue_version": "3.0"},
   "language": "python"
 }
+
