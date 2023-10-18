@@ -10,7 +10,7 @@ RUN sudo apt-get update && \
     git clone --recursive https://github.com/altair-viz/altair_notebooks.git && \
     :
 
-WORKDIR "notebooks/"
+WORKDIR "altair_notebooks/notebooks"
 COPY --chown=$MAMBA_USER:$MAMBA_USER scripts/run_altair_example_notebooks.sh ./
 RUN chmod +x run_altair_example_notebooks.sh
 

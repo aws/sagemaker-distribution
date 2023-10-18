@@ -8,10 +8,8 @@ example_notebooks=('02-Tutorial.ipynb'
    '03-ScatterCharts.ipynb'
    '04-BarCharts.ipynb'
    '05-LineCharts.ipynb'
-   '06-AreaCharts.ipynb'
    '07-LayeredCharts.ipynb'
    '08-CarsDataset.ipynb'
-   '09-Measles.ipynb'
 )
 
 for nb in ${example_notebooks[@]}; do
