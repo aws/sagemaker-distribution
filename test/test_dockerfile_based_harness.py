@@ -32,6 +32,7 @@ _docker_client = docker.from_env()
     ("jupyter-lsp-server.test.Dockerfile", ['jupyter-lsp-server']),
     ("notebook.test.Dockerfile", ['notebook']),
     ("glue-sessions.test.Dockerfile", ['aws-glue-sessions'])])
+    ("altair.test.Dockerfile", ['altair'])])
 def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
     _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, 'cpu')
@@ -54,6 +55,7 @@ def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
     ("jupyter-lsp-server.test.Dockerfile", ['jupyter-lsp-server']),
     ("notebook.test.Dockerfile", ['notebook']),
     ("glue-sessions.test.Dockerfile", ['aws-glue-sessions'])])
+    ("altair.test.Dockerfile", ['altair'])])
 def test_dockerfiles_for_gpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
     _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, 'gpu')
