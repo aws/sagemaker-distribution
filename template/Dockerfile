@@ -54,7 +54,7 @@ RUN sudo ln -s $(which python3) /usr/bin/python
 
 # Install glue kernels, and move to shared directory
 RUN install-glue-kernels && \
-    SITE_PACKAGES=$(pip show aws-glue-sessions | grep Location | awk '{print $2}')
+    SITE_PACKAGES=$(pip show aws-glue-sessions | grep Location | awk '{print $2}') && \
     jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_pyspark --user && \
     jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_spark --user && \
     mv /home/sagemaker-user/.local/share/jupyter/kernels/glue_pyspark /opt/conda/share/jupyter/kernels && \
