@@ -27,6 +27,7 @@ _docker_client = docker.from_env()
     ("sm-python-sdk.test.Dockerfile", ['sagemaker-python-sdk']),
     ("pytorch.examples.Dockerfile", ['pytorch']),
     ("tensorflow.examples.Dockerfile", ['tensorflow']),
+    ("glue-sessions.test.Dockerfile", ['aws-glue-sessions']),
     ("sagemaker-studio-analytics-extension.test.Dockerfile", ['sagemaker-studio-analytics-extension'])])
 def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
@@ -45,6 +46,7 @@ def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
     ("sm-python-sdk.test.Dockerfile", ['sagemaker-python-sdk']),
     ("pytorch.examples.Dockerfile", ['pytorch']),
     ("tensorflow.examples.Dockerfile", ['tensorflow']),
+    ("glue-sessions.test.Dockerfile", ['aws-glue-sessions']),
     ("sagemaker-studio-analytics-extension.test.Dockerfile", ['sagemaker-studio-analytics-extension'])])
 def test_dockerfiles_for_gpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
