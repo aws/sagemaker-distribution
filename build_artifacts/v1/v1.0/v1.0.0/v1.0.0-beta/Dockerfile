@@ -25,9 +25,9 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git build-essential && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata awscli krb5-user libkrb5-dev && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends awscli tzdata krb5-user && \
     chmod g+w /etc/passwd && \
     echo "ALL    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
     touch /etc/krb5.conf.lock && chown ${NB_USER}:${MAMBA_USER} /etc/krb5.conf* && \

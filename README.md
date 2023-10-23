@@ -76,6 +76,19 @@ docker run -it \
 
 (If you have access to Nvidia GPUs, you can pass `--gpus=all` to the Docker command.)
 
+In the image, we also have entrypoints built in, that automatically starts IDE server and automatically restarts
+IDE server in case of minor IDE server interruptions or crashes. For example, to start JupyterLab server using the
+entrypoint built in:
+```shell
+export ECR_IMAGE_ID='INSERT_IMAGE_YOU_WANT_TO_USE'
+docker run -it \
+    -p 8888:8888 \
+    --entrypoint entrypoint-jupyter-server \
+    --user `id -u`:`id -g` \
+    -v `pwd`/sample-notebooks:/home/sagemaker-user/sample-notebooks \
+    $ECR_IMAGE_ID
+```
+
 In the console output, you'll then see a URL similar to `http://127.0.0.1:8888/lab?token=foo`. Just open that URL in
 your browser, create a Jupyter Lab notebook or open a terminal, and start hacking.
 
