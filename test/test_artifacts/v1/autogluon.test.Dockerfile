@@ -3,7 +3,7 @@ FROM $COSMOS_IMAGE as base
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
-RUN micromamba install --freeze-installed -y conda-forge::pytest conda-forge::jupyter
+RUN micromamba install --freeze-installed -y conda-forge::pytest
 
 RUN git clone --recursive https://github.com/autogluon/autogluon.git
 
