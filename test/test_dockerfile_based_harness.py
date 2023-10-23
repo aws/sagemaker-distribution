@@ -31,7 +31,8 @@ _docker_client = docker.from_env()
     ("jupyter-lsp.test.Dockerfile", ['jupyter-lsp']),
     ("jupyter-lsp-server.test.Dockerfile", ['jupyter-lsp-server']),
     ("notebook.test.Dockerfile", ['notebook']),
-    ("altair.test.Dockerfile", ['altair'])]),
+    ("glue-sessions.test.Dockerfile", ['aws-glue-sessions']),
+    ("altair.test.Dockerfile", ['altair']),
     ("sagemaker-studio-analytics-extension.test.Dockerfile", ['sagemaker-studio-analytics-extension'])])
 def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
@@ -54,7 +55,8 @@ def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
     ("jupyter-lsp.test.Dockerfile", ['jupyter-lsp']),
     ("jupyter-lsp-server.test.Dockerfile", ['jupyter-lsp-server']),
     ("notebook.test.Dockerfile", ['notebook']),
-    ("altair.test.Dockerfile", ['altair'])]),
+    ("glue-sessions.test.Dockerfile", ['aws-glue-sessions']),
+    ("altair.test.Dockerfile", ['altair']),
     ("sagemaker-studio-analytics-extension.test.Dockerfile", ['sagemaker-studio-analytics-extension'])])
 def test_dockerfiles_for_gpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):

@@ -27,6 +27,7 @@ ENV MAMBA_USER=$NB_USER
 RUN apt-get update && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
+
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends awscli tzdata krb5-user && \
     chmod g+w /etc/passwd && \
     echo "ALL    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
@@ -53,6 +54,18 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
+
+# Install glue kernels, and move to shared directory
+RUN install-glue-kernels && \
+    SITE_PACKAGES=$(pip show aws-glue-sessions | grep Location | awk '{print $2}') && \
+    jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_pyspark --user && \
+    jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_spark --user && \
+    mv /home/sagemaker-user/.local/share/jupyter/kernels/glue_pyspark /opt/conda/share/jupyter/kernels && \
+    mv /home/sagemaker-user/.local/share/jupyter/kernels/glue_spark /opt/conda/share/jupyter/kernels
+
+# Patch glue kernels to use kernel wrapper
+COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
+COPY patch_glue_spark.json /opt/conda/share/jupyter/kernels/glue_spark/kernel.json
 
 USER root
 RUN HOME_DIR="/home/${NB_USER}/licenses" \
