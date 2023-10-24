@@ -1,0 +1,39 @@
+# Release notes: 1.0.0
+
+Package | gpu| cpu
+---|---|---
+python|3.10.12|3.10.12
+numpy|1.26.0|1.26.0
+jinja2|3.1.2|3.1.2
+pandas|2.1.1|2.1.1
+altair|5.1.2|5.1.2
+boto3|1.28.68|1.28.68
+scipy|1.11.3|1.11.3
+scikit-learn|1.3.1|1.3.1
+pip|23.3.1|23.3.1
+torchvision|0.15.2|0.15.2
+autogluon|0.8.2|0.8.2
+ipython|8.16.1|8.16.1
+jupyter_core|5.3.1|5.3.1
+ipywidgets|8.1.1|8.1.1
+jupyter-lsp|2.2.0|2.2.0
+jupyterlab|4.0.7|4.0.7
+notebook|7.0.6|7.0.6
+aws-glue-sessions|1.0.2|1.0.2
+conda|23.9.0|23.9.0
+jupyter-ai|2.3.0|2.3.0
+jupyter-dash|0.4.2|0.4.2
+jupyter-scheduler|2.2.0|2.2.0
+keras|2.12.0|2.12.0
+matplotlib|3.8.0|3.8.0
+py-xgboost-gpu|1.7.6| 
+python-lsp-server|1.8.2|1.8.2
+pytorch-gpu|2.0.0| 
+sagemaker-headless-execution-driver|0.0.9|0.0.9
+sagemaker-kernel-wrapper|0.0.2|0.0.2
+sagemaker-python-sdk|2.194.0|2.194.0
+sagemaker-studio-analytics-extension|0.0.21|0.0.21
+supervisor|4.2.5|4.2.5
+tensorflow|2.12.1|2.12.1
+pytorch| |2.0.0
+py-xgboost-cpu| |1.7.6
