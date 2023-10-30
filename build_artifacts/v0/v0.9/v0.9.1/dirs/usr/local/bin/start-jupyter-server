@@ -1,0 +1,22 @@
+#!/bin/bash
+set -e
+
+eval "$(micromamba shell hook --shell=bash)"
+
+# Activate conda environment 'base', which is the default environment for Cosmos
+micromamba activate base
+
+# Start Jupyter server
+if [ -n "$SAGEMAKER_APP_TYPE" ]; then
+  # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
+  # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
+  SAGEMAKER_APP_TYPE_LOWERCASE=$(echo $SAGEMAKER_APP_TYPE | tr '[:upper:]' '[:lower:]')
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*'
+else
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*'
+fi
