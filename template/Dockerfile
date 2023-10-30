@@ -108,6 +108,7 @@ RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;impor
     # Patch Sparkmagic lib to support Custom Certificates \
     # https://github.com/jupyter-incubator/sparkmagic/pull/435/files \
     cp -a ${SYSTEM_PYTHON_PATH}/sagemaker_studio_analytics_extension/patches/configuration.py ${SYSTEM_PYTHON_PATH}/sparkmagic/utils/ && \
-    cp -a ${SYSTEM_PYTHON_PATH}/sagemaker_studio_analytics_extension/patches/reliablehttpclient.py ${SYSTEM_PYTHON_PATH}/sparkmagic/livyclientlib/reliablehttpclient.py
+    cp -a ${SYSTEM_PYTHON_PATH}/sagemaker_studio_analytics_extension/patches/reliablehttpclient.py ${SYSTEM_PYTHON_PATH}/sparkmagic/livyclientlib/reliablehttpclient.py && \
+    sed -i 's=  "python"=  "/opt/conda/bin/python"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json
 
 ENV SHELL=/bin/bash
