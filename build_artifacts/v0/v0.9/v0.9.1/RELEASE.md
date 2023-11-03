@@ -1,4 +1,4 @@
-# Release notes: 0.9.0
+# Release notes: 0.9.1
 
 Package | gpu| cpu
 ---|---|---
