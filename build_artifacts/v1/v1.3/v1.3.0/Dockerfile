@@ -102,7 +102,7 @@ USER $MAMBA_USER
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 
-# Install Kerberos needed for Astra lib.
+# Install Kerberos.
 # Make sure no dependency is added/updated
 RUN pip install "krb5>=0.5.1,<0.6" && \
     pip show krb5 | grep Require | xargs -i sh -c '[ $(echo {} | cut -d: -f2 | wc -w) -eq 0 ] '
