@@ -27,7 +27,7 @@ ENV MAMBA_USER=$NB_USER
 RUN apt-get update && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata awscli krb5-user libkrb5-dev && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata awscli krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
     chmod g+w /etc/passwd && \
     echo "ALL    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
     touch /etc/krb5.conf.lock && chown ${NB_USER}:${MAMBA_USER} /etc/krb5.conf* && \
@@ -50,6 +50,7 @@ ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
 RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in
+
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
@@ -101,6 +102,11 @@ USER $MAMBA_USER
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 
+# Install Kerberos.
+# Make sure no dependency is added/updated
+RUN pip install "krb5>=0.5.1,<0.6" && \
+    pip show krb5 | grep Require | xargs -i sh -c '[ $(echo {} | cut -d: -f2 | wc -w) -eq 0 ] '
+
 # https://stackoverflow.com/questions/122327
 RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;import sysconfig; print(sysconfig.get_paths().get('purelib'))") && \
     # Remove SparkRKernel as it's not supported \
@@ -109,6 +115,8 @@ RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;impor
     # https://github.com/jupyter-incubator/sparkmagic/pull/435/files \
     cp -a ${SYSTEM_PYTHON_PATH}/sagemaker_studio_analytics_extension/patches/configuration.py ${SYSTEM_PYTHON_PATH}/sparkmagic/utils/ && \
     cp -a ${SYSTEM_PYTHON_PATH}/sagemaker_studio_analytics_extension/patches/reliablehttpclient.py ${SYSTEM_PYTHON_PATH}/sparkmagic/livyclientlib/reliablehttpclient.py && \
-    sed -i 's=  "python"=  "/opt/conda/bin/python"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json
+    sed -i 's=  "python"=  "/opt/conda/bin/python"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
+    sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
+    sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json
 
 ENV SHELL=/bin/bash
