@@ -27,12 +27,16 @@ ENV MAMBA_USER=$NB_USER
 RUN apt-get update && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
-    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata awscli krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
+    DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
     chmod g+w /etc/passwd && \
     echo "ALL    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
     touch /etc/krb5.conf.lock && chown ${NB_USER}:${MAMBA_USER} /etc/krb5.conf* && \
     # Note that we do NOT run `rm -rf /var/lib/apt/lists/*` here. If we did, anyone building on top of our images will
     # not be able to run any `apt-get install` commands and that would hamper customizability of the images.
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
+    sudo ./aws/install && \
+    rm -rf aws awscliv2.zip && \
     :
 RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile
 
