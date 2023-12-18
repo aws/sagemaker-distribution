@@ -25,7 +25,7 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
     chmod g+w /etc/passwd && \
