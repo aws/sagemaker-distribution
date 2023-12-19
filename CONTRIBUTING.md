@@ -40,6 +40,64 @@ GitHub provides additional document on [forking a repository](https://help.githu
 [creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
 
 
+## For adding new Python packages to SageMaker Distribution
+SageMaker Distribution will add new Python packages only during a minor/major version release. 
+New packages will not be added during a patch version release.
+
+Follow these steps for sending out a pull request for adding new packages:
+1. Identify the latest version of SageMaker Distribution.
+2. Create the next minor/major version's build artifacts folder here: https://github.com/aws/sagemaker-distribution/tree/main/build_artifacts
+3. Currently, SageMaker Distribution is using Conda forge channel as our source (for Python 
+   packages). 
+   Ensure that the new package which you are trying to add is present in Conda forge channel. https://conda-forge.org/feedstock-outputs/
+4. Create {cpu/gpu}.additional_packages_env.in file in that folder containing the new packages. 
+   Specify the new package based on the following examples:
+
+   i. conda-forge::new-package
+   
+   ii. conda-forge::new-package[version='>=some-version-number,<some-version-number']
+5. Run the following commands to verify whether the new package which you are trying to add is 
+   compatible with the existing packages in SageMaker Distribution
+   ```
+   This project uses Conda to manage its dependencies. Run the following to setup your local environment:
+
+   conda env update --file environment.yml -n sagemaker-distribution
+   
+   conda activate sagemaker-distribution
+   
+   export BASE_PATCH_VERSION='current.latest.version'
+   
+   # NEXT_VERSION refers to the version number corresponding to the folder you created as part 
+   of Step 2.
+   
+   export NEXT_VERSION='specify.next.version'
+   
+   # If NEXT_VERSION is a new minor version:
+   
+   python src/main.py create-minor-version-artifacts --base-patch-version=$BASE_PATCH_VERSION --force
+   
+   # Or for a new major version:
+   
+   python src/main.py create-major-version-artifacts --base-patch-version=$BASE_PATCH_VERSION --force
+   
+   # Build the image:
+   python src/main.py build \
+     --target-patch-version=$NEXT_VERSION --skip-tests
+
+   ```
+6. Ensure that the build command succeeds. If it fails, then it means that the package isn't 
+   compatible with the existing packages in SageMaker Distribution. Create a Github Issue, so 
+   that we can look more into it.
+7. Add the relevant tests in https://github.com/aws/sagemaker-distribution/blob/main/test/test_dockerfile_based_harness.py 
+    and run the build command once again without `--skip-tests` flag.
+8. Submit the PR containing the following files.
+   * {cpu/gpu}.additional_packages_env.in files
+   * All the test files and test_dockerfile_based_harness.py changes
+   
+   Note: you don't have to include other files such as env.in/ env.out/ Dockerfile etc in your PR
+   
+   Also Note: We might ask you to include the test results as part of the PR.
+
 ## Finding contributions to work on
 Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any 'help wanted' issues is a great place to start.
 
