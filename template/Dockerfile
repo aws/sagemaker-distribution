@@ -23,6 +23,7 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
     echo "${NB_USER}" > "/etc/arg_mamba_user" && \
     :
 ENV MAMBA_USER=$NB_USER
+ENV USER=$NB_USER
 
 RUN apt-get update && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client && \
