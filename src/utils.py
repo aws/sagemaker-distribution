@@ -12,12 +12,14 @@ def get_dir_for_version(version: Version) -> str:
                            f'{version_prerelease_suffix}')
 
 
-def is_exists_dir_for_version(version: Version) -> bool:
+def is_exists_dir_for_version(version: Version, file_name_to_verify_existence='Dockerfile') -> bool:
     dir_path = get_dir_for_version(version)
-    # Also validate whether this directory is not generated due to any pre-release builds
+    # Also validate whether this directory is not generated due to any pre-release builds/
+    # additional packages.
     # This can be validated by checking whether {cpu/gpu}.env.{in/out}/Dockerfile exists in the
     # directory.
-    return os.path.exists(dir_path) and os.path.exists(dir_path + "/" + 'Dockerfile')
+    return os.path.exists(dir_path) and os.path.exists(dir_path + "/" +
+                                                       file_name_to_verify_existence)
 
 
 def get_semver(version_str) -> Version:

@@ -36,10 +36,26 @@ def create_and_get_semver_dir(version: Version, exist_ok: bool = False):
             raise Exception()
         if not os.path.isdir(dir):
             raise Exception()
-        shutil.rmtree(dir)
-
-    os.makedirs(dir)
+        # Delete all files except the additional_packages_env_in_file
+        _delete_all_files_except_additional_packages_input_files(dir)
+    else:
+        os.makedirs(dir)
     return dir
+
+
+def _delete_all_files_except_additional_packages_input_files(base_version_dir):
+    additional_package_env_in_files = [image_generator_config['additional_packages_env_in_file']
+                                       for image_generator_config in _image_generator_configs]
+    for filename in os.listdir(base_version_dir):
+        if filename not in additional_package_env_in_files:
+            file_path = os.path.join(base_version_dir, filename)
+            try:
+                if os.path.isfile(file_path) or os.path.islink(file_path):
+                    os.unlink(file_path)
+                elif os.path.isdir(file_path):
+                    shutil.rmtree(file_path)
+            except Exception as e:
+                print('Failed to delete %s. Reason: %s' % (file_path, e))
 
 
 def _create_new_version_artifacts(args):
@@ -91,14 +107,22 @@ def _copy_static_files(base_version_dir, new_version_dir):
 def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_version_upgrade_type,
                                     image_generator_config):
     env_in_filename = image_generator_config['build_args']['ENV_IN_FILENAME']
+    additional_packages_env_in_filename = image_generator_config['additional_packages_env_in_file']
     env_out_filename = image_generator_config['env_out_filename']
 
     base_match_specs_in = get_match_specs(f'{base_version_dir}/{env_in_filename}')
 
     base_match_specs_out = get_match_specs(f'{base_version_dir}/{env_out_filename}')
+    additional_packages_match_specs_in = \
+        get_match_specs(f'{new_version_dir}/{additional_packages_env_in_filename}')
+
+    # Add all the match specs from the previous version.
+    # If a package is present in both additional packages as well as the previous version, then
+    # use the values in the previous version
+    additional_packages_match_specs_in.update(base_match_specs_in)
 
     out = []
-    for package_name in base_match_specs_in:
+    for package_name in additional_packages_match_specs_in:
         match_out: MatchSpec = base_match_specs_out.get(package_name)
 
         if match_out is None:
@@ -227,7 +251,7 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
         # of the actual env.in file instead of the 'config'.
         generate_change_log(target_version, image_generator_config)
 
-        version_tags_to_apply = _get_version_tags(target_version)
+        version_tags_to_apply = _get_version_tags(target_version, config["env_out_filename"])
         image_tags_to_apply = [config['image_tag_generator'].format(image_version=i) for i in version_tags_to_apply]
 
         if target_ecr_repo_list is not None:
@@ -247,7 +271,7 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
 # versions for both of them. Now, for the new 2.6.x, we can tag it as '2.6.x-cpu' and '2.6-cpu' but NOT '2-cpu' because
 # there is a more recent version (i.e. 2.7.x) that should be considered '2-cpu'. So, given a patch version, the
 # following function returns a list of versions for which the current patch version is latest for.
-def _get_version_tags(target_version: Version) -> list[str]:
+def _get_version_tags(target_version: Version, env_out_file_name: str) -> list[str]:
     # First, add '2.6.x' as is.
     res = [str(target_version)]
     # If this is a pre-release version, then don't add additional tags
@@ -255,19 +279,19 @@ def _get_version_tags(target_version: Version) -> list[str]:
         return res
 
     # If we were to add '2.6', check if '2.6.(x+1)' is present.
-    if not is_exists_dir_for_version(target_version.bump_patch()):
+    if not is_exists_dir_for_version(target_version.bump_patch(), env_out_file_name):
         res.append(f'{target_version.major}.{target_version.minor}')
     else:
         return res
 
     # If we were to add '2', check if '2.7' is present.
-    if not is_exists_dir_for_version(target_version.bump_minor()):
+    if not is_exists_dir_for_version(target_version.bump_minor(), env_out_file_name):
         res.append(str(target_version.major))
     else:
         return res
 
     # If we were to add 'latest', check if '3.0.0' is present.
-    if not is_exists_dir_for_version(target_version.bump_major()):
+    if not is_exists_dir_for_version(target_version.bump_major(), env_out_file_name):
         res.append('latest')
 
     return res
