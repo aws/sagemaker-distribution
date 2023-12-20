@@ -88,20 +88,23 @@ def _create_new_version_artifacts(args):
         _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_version_upgrade_type,
                                         image_generator_config)
 
-    _copy_static_files(base_version_dir, new_version_dir)
+    _copy_static_files(base_version_dir, new_version_dir, str(next_version.major))
     with open(f'{new_version_dir}/source-version.txt', 'w') as f:
         f.write(args.base_patch_version)
 
 
-def _copy_static_files(base_version_dir, new_version_dir):
+def _copy_static_files(base_version_dir, new_version_dir, new_version_major):
     for f in glob.glob(f'{base_version_dir}/gpu.arg_based_env.in'):
         shutil.copy2(f, new_version_dir)
     for f in glob.glob(f'{base_version_dir}/patch_*'):
         shutil.copy2(f, new_version_dir)
-    for f in glob.glob(os.path.relpath(f'template/Dockerfile')):
+    for f in glob.glob(os.path.relpath(f'template/v{new_version_major}/Dockerfile')):
         shutil.copy2(f, new_version_dir)
-    for f in glob.glob(os.path.relpath(f'template/dirs')):
-        shutil.copytree(f, os.path.join(new_version_dir, 'dirs'))
+    if int(new_version_major) >= 1:
+        # dirs directory doesn't exist for v0. It was introduced only for v1
+        dirs_relative_path = os.path.relpath(f'template/v{new_version_major}/dirs')
+        for f in glob.glob(dirs_relative_path):
+            shutil.copytree(f, os.path.join(new_version_dir, 'dirs'))
 
 
 def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_version_upgrade_type,
