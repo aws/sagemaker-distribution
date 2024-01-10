@@ -1,0 +1,3 @@
+conda-forge::langchain[version='>=0.0.352,<1']
+conda-forge::fastapi[version='>=0.105.0,<1']
+conda-forge::uvicorn[version='>=0.25.0,<1']
