@@ -41,7 +41,7 @@ sagemaker-headless-execution-driver|0.0.12|0.0.12
 sagemaker-jupyterlab-emr-extension|0.1.9|0.1.9
 sagemaker-jupyterlab-extension|0.2.0|0.2.0
 sagemaker-kernel-wrapper|0.0.2|0.0.2
-sagemaker-python-sdk|2.198.0|2.198.0
+sagemaker-python-sdk|2.198.1|2.198.1
 sagemaker-studio-analytics-extension|0.0.21|0.0.21
 sasl|0.3.1|0.3.1
 supervisor|4.2.5|4.2.5
