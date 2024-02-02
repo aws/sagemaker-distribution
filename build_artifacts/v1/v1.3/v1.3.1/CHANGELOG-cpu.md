@@ -12,3 +12,4 @@ amazon-sagemaker-jupyter-scheduler|3.0.5|3.0.6
 pip|23.3.1|23.3.2
 notebook|7.0.6|7.0.7
 jupyterlab-lsp|5.0.1|5.0.2
+sagemaker-python-sdk|2.198.0|2.198.1
