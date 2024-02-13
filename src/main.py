@@ -193,7 +193,7 @@ def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: 
 def _test_local_images(image_ids_to_test: list[str], target_version: str):
     assert len(image_ids_to_test) == len(_image_generator_configs)
     for (image_id, config) in zip(image_ids_to_test, _image_generator_configs):
-        exit_code = pytest.main(['-n', '2', '-m', config['image_type'], '--local-image-version',
+        exit_code = pytest.main(['-n', 'auto', '-m', config['image_type'], '--local-image-version',
                                  target_version, *config['pytest_flags']])
 
         assert exit_code == 0, f'Tests failed with exit code: {exit_code} against: {image_id}'
@@ -262,10 +262,10 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
                 for t in image_tags_to_apply:
                     image.tag(target_ecr_repo, tag=t)
                     generated_image_versions.append({'repository': target_ecr_repo, 'tag': t})
-        else:
-            # Tag the image for testing
-            image.tag('localhost/sagemaker-distribution',
-                      config['image_tag_generator'].format(image_version=str(target_version)))
+
+        # Tag the image for testing
+        image.tag('localhost/sagemaker-distribution',
+                  config['image_tag_generator'].format(image_version=str(target_version)))
 
     return generated_image_ids, generated_image_versions
 
