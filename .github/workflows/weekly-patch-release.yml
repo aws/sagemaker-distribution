@@ -38,6 +38,7 @@ jobs:
       id-token: write
     strategy:
       matrix: ${{ fromJson(needs.generate-version-matrix.outputs.matrix) }}
+      fail-fast: false
     uses: aws/sagemaker-distribution/.github/workflows/build-image.yml@main
     with:
       release-type: "patch"
