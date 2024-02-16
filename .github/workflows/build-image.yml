@@ -35,7 +35,7 @@ jobs:
       pull-requests: write
       contents: write
     outputs:
-      pr_id: ${{ steps.open_pr.outputs.pr_id }}
+      pr_id: ${{ steps.get_pr_id.outputs.pr_id }}
       target_version: ${{ steps.calc_target.outputs.target_version }}
     steps:
       - uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
           git commit -m 'chore: Generate build artifacts for ${{ steps.calc_target.outputs.target_version }} release'
           git push --set-upstream origin release-${{ steps.calc_target.outputs.target_version }}
       - name: Open pull request
-        id: open_pr
+        id: get_pr_id
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
