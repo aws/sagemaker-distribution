@@ -54,6 +54,7 @@ jobs:
           TARGET_VERSION=$(python -c 'import semver; print(semver.bump_${{ inputs.release-type }}("${{ inputs.base-version }}"))')
           echo "target_version=$TARGET_VERSION" >> $GITHUB_OUTPUT
       - name: Create new branch
+        # Note - CodeBuild depends on this branch name. Don't change without corresponding backend change.
         run: git checkout -b release-${{ steps.calc_target.outputs.target_version }}
       - name: Generate artifacts
         run: python ./src/main.py create-${{ inputs.release-type }}-version-artifacts --base-patch-version ${{ inputs.base-version }}
@@ -70,6 +71,7 @@ jobs:
         id: get_pr_id
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Note - CodeBuild depends on this PR title. Don't change without corresponding backend change.
         run: |
           URL=$(gh pr create -H release-${{ steps.calc_target.outputs.target_version }} \
                     --title 'release: v${{ steps.calc_target.outputs.target_version }}' -F ./.github/workflows/PR_TEMPLATE.md)
