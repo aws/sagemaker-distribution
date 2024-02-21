@@ -44,8 +44,14 @@ RUN apt-get update && \
     :
 RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile
 
+# CodeEditor - create server, user data dirs
+RUN mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
+    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data
+
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
+
+# TODO - Add sagemaker-code-editor to env.in file
 
 # Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
 # will happen.
@@ -62,6 +68,14 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
+
+# Merge in OS directory tree contents.
+RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
+COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
+RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
+    rm -rf ${DIRECTORY_TREE_STAGE_DIR}
+
+# TODO - Configure CodeEditor - Install extensions and set preferences
 
 # Install glue kernels, and move to shared directory
 # Also patching base kernel so Studio background code doesn't start session silently
@@ -89,12 +103,6 @@ RUN HOME_DIR="/home/${NB_USER}/licenses" \
     && chmod +x ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
-
-# Merge in OS directory tree contents.
-RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
-COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
-RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
-    rm -rf ${DIRECTORY_TREE_STAGE_DIR}
 
 # Create logging directories for supervisor
 RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
