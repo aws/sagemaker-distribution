@@ -105,7 +105,7 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
         base_path = base_version_dir
     else:
         base_path = f'template/v{new_version_major}'
-    for f in glob.glob(f'{base_path}/Dockerfile'):
+    for f in glob.glob(os.path.relpath(f'{base_path}/Dockerfile')):
         shutil.copy2(f, new_version_dir)
     if int(new_version_major) >= 1:
         # dirs directory doesn't exist for v0. It was introduced only for v1
