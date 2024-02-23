@@ -79,13 +79,13 @@ https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.cond
 def _create_template_docker_file(file_path):
     with open(file_path, 'w') as docker_file:
         docker_file.write('''ARG TAG_FOR_BASE_MICROMAMBA_IMAGE
-        FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\ntemplate_dockerfile''')
+        FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\ntemplate_dockerfile\n''')
 
 
 def _create_prev_docker_file(file_path):
     with open(file_path, 'w') as docker_file:
         docker_file.write('''ARG TAG_FOR_BASE_MICROMAMBA_IMAGE
-        FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\nprevious_dockerfile''')
+        FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\nprevious_dockerfile\n''')
 
 def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_version):
 
