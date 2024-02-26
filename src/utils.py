@@ -1,7 +1,7 @@
 import os
 from semver import Version
 from conda.models.match_spec import MatchSpec
-from conda_env.specs import RequirementsSpec
+from conda.env.specs import RequirementsSpec
 
 
 def get_dir_for_version(version: Version) -> str:
