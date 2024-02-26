@@ -1,0 +1,44 @@
+name: Generate monthly minor release(s)
+on:
+  # Run first day of the month at 8AM PST / 9AM PDT
+  schedule:
+    - cron: '0 16 1 * *'
+jobs:
+  generate-version-matrix:
+    name: Generate version matrix
+    runs-on: ubuntu-latest
+    if: github.repository == 'aws/sagemaker-distribution'
+    outputs:
+      matrix: ${{ steps.gen-mat.outputs.matrix }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Generate base patch version matrix
+        id: gen-mat
+        # Output looks like: matrix={"version":["0.11.0","1.4.1"]}
+        # For each major, get highest minor version. Then get highest patch
+        # for that minor. Use this patch as base version.
+        run: |
+          versions=("{\"version\":[")
+          for major in build_artifacts/v*; do
+            highest_minor=$(ls $major | sort -t. -k2n | tail -n1)
+            highest_patch=$(ls $major/$highest_minor | sort -t. -k2n | tail -n1)
+            versions+="\"${highest_patch#v}\""
+            versions+=","
+          done
+          versions=${versions::-1}
+          versions+="]}"
+          echo "matrix=$versions" >> $GITHUB_OUTPUT
+  start-monthly-minor:
+    name: Start monthly minor release
+    needs: generate-version-matrix
+    permissions:
+      pull-requests: write
+      contents: write
+      id-token: write
+    strategy:
+      matrix: ${{ fromJson(needs.generate-version-matrix.outputs.matrix) }}
+      fail-fast: false
+    uses: aws/sagemaker-distribution/.github/workflows/build-image.yml@main
+    with:
+      release-type: "minor"
+      base-version: ${{ matrix.version }}
