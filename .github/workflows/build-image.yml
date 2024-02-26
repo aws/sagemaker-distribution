@@ -98,4 +98,4 @@ jobs:
           CODEBUILD__sourceVersion: 'pr/${{ needs.open-pr.outputs.pr_id }}'
         with:
           projectName: 'buildtestpublicimage1C7307A-9AzES2hf19lW'
-	  buildspec: '{"imageOverride": "aws/codebuild/standard:7.0"}'
+          buildspec: '{"imageOverride": "aws/codebuild/standard:7.0"}'
