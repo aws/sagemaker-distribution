@@ -9,8 +9,8 @@ pandas|2.1.4|2.1.4
 altair|5.2.0|5.2.0
 boto3|1.28.64|1.28.64
 ipython|8.21.0|8.21.0
-jupyter-lsp|2.2.2|2.2.2
-jupyterlab|4.0.12|4.0.12
+jupyter-lsp|2.2.3|2.2.3
+jupyterlab|4.0.13|4.1.2
 amazon-codewhisperer-jupyterlab-ext|2.0.1|2.0.1
 jupyter-scheduler|2.5.1|2.5.1
 amazon-sagemaker-jupyter-scheduler|3.0.7|3.0.7
@@ -20,11 +20,11 @@ pip|23.3.2|23.3.2
 torchvision|0.15.2|0.15.2
 autogluon|0.8.2|0.8.2
 ipywidgets|8.1.2|8.1.2
-notebook|7.0.7|7.0.7
+notebook|7.0.7|7.1.1
 aws-glue-sessions|1.0.4|1.0.4
 conda|23.11.0|23.11.0
 fastapi|0.103.2|0.103.2
-langchain|0.1.8|0.1.8
+langchain|0.1.9|0.1.9
 jupyter-ai|2.9.1|2.9.1
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.1.0|4.1.0
