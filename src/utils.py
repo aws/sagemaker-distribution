@@ -23,6 +23,11 @@ def is_exists_dir_for_version(version: Version, file_name_to_verify_existence='D
 
 
 def get_semver(version_str) -> Version:
+    # Version strings on conda-forge follow PEP standards rather than SemVer, which support
+    # version strings such as X.Y.Z.postN, X.Y.Z.preN. These cause errors in semver.Version.parse
+    # so we keep the first 3 entries as version string.
+    if version_str.count('.') > 2:
+        version_str = '.'.join(version_str.split('.')[:3])
     version = Version.parse(version_str)
     if version.build is not None:
         raise Exception()

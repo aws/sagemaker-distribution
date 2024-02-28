@@ -10,6 +10,11 @@ def _get_dependency_upper_bound_for_runtime_upgrade(dependency_name: str, lower_
     version_upgrade_strategy = 'semver' if metadata is None else metadata['version_upgrade_strategy']
 
     func = _version_upgrade_metadata[version_upgrade_strategy]['func']
+    # Version strings on conda-forge follow PEP standards rather than SemVer, which support
+    # version strings such as X.Y.Z.postN, X.Y.Z.preN. These cause errors in semver.Version.parse
+    # so we keep the first 3 entries as version string.
+    if lower_bound.count('.') > 2:
+        lower_bound = '.'.join(lower_bound.split('.')[:3])
     return func(lower_bound, runtime_upgrade_type)
 
 
