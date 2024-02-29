@@ -76,11 +76,16 @@ def _create_docker_gpu_env_out_file(file_path):
 https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.conda#05592c85b9f6931dc2df1e80c0d56294\n''')
 
 
-def _create_docker_file(file_path):
+def _create_template_docker_file(file_path):
     with open(file_path, 'w') as docker_file:
         docker_file.write('''ARG TAG_FOR_BASE_MICROMAMBA_IMAGE
-        FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\n''')
+        FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\ntemplate_dockerfile\n''')
 
+
+def _create_prev_docker_file(file_path):
+    with open(file_path, 'w') as docker_file:
+        docker_file.write('''ARG TAG_FOR_BASE_MICROMAMBA_IMAGE
+        FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\nprevious_dockerfile\n''')
 
 def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_version):
 
@@ -100,6 +105,7 @@ def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_versi
     _create_docker_gpu_env_in_file(input_version_dir + '/gpu.env.in')
     _create_docker_cpu_env_out_file(input_version_dir + '/cpu.env.out')
     _create_docker_gpu_env_out_file(input_version_dir + '/gpu.env.out')
+    _create_prev_docker_file(input_version_dir + '/Dockerfile')
     os.makedirs(tmp_path / 'template')
     next_version = get_semver(target_version)
     next_major_version = 'v' + str(next_version.major)
@@ -107,7 +113,7 @@ def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_versi
     if next_version.major == 1:
         # Create dirs directory under template
         os.makedirs(tmp_path / 'template' / next_major_version / 'dirs')
-    _create_docker_file(tmp_path / 'template' / next_major_version / 'Dockerfile')
+    _create_template_docker_file(tmp_path / 'template' / next_major_version / 'Dockerfile')
 
 
 def _create_additional_packages_env_in_file_helper(mocker, tmp_path, version,
@@ -201,16 +207,14 @@ def _create_and_assert_patch_version_upgrade(rel_path, mocker, tmp_path,
     input_version = '0.2.5'
     next_version = get_semver('0.2.6')
     new_version_dir = tmp_path / ('v' + str(next_version))
+    base_version_dir = tmp_path / ('v' + input_version)
     if pre_release_identifier:
         new_version_dir = new_version_dir / ('v' + str(next_version) + '-' + pre_release_identifier)
     next_major_version_dir_name = 'v' + str(next_version.major)
     if next_version.major == 0:
-        rel_path.side_effect = [str(tmp_path / 'template' / next_major_version_dir_name /
-                                'Dockerfile')]
+        rel_path.side_effect = [str(base_version_dir / 'Dockerfile')]
     else:
-        rel_path.side_effect = [str(tmp_path / 'template' / next_major_version_dir_name /
-                                'Dockerfile'), str(tmp_path / 'template' /
-                                                   next_major_version_dir_name / 'dirs')]
+        rel_path.side_effect = [str(base_version_dir, 'Dockerfile'), str(base_version_dir / 'dirs')]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version, str(next_version))
     _create_additional_packages_env_in_file_helper(mocker, tmp_path, str(next_version),
                                                    include_additional_package,
@@ -230,6 +234,8 @@ def _create_and_assert_patch_version_upgrade(rel_path, mocker, tmp_path,
     assert 'cpu.env.in' in new_version_dir_files
     assert 'gpu.env.in' in new_version_dir_files
     assert 'Dockerfile' in new_version_dir_files
+    with open(new_version_dir / 'Dockerfile', 'r') as f:
+        assert 'previous_dockerfile' in f.read()
     if next_version.major >= 1:
         assert 'dirs' in new_version_dir_files
     if include_additional_package:
@@ -313,6 +319,8 @@ def _create_and_assert_minor_version_upgrade(rel_path, mocker, tmp_path,
     assert 'cpu.env.in' in new_version_dir_files
     assert 'gpu.env.in' in new_version_dir_files
     assert 'Dockerfile' in new_version_dir_files
+    with open(new_version_dir / 'Dockerfile', 'r') as f:
+        assert 'template_dockerfile' in f.read()
     if next_version.major >= 1:
         assert 'dirs' in new_version_dir_files
     if include_additional_package:
@@ -397,6 +405,8 @@ def _create_and_assert_major_version_upgrade(rel_path, mocker, tmp_path,
     assert 'cpu.env.in' in new_version_dir_files
     assert 'gpu.env.in' in new_version_dir_files
     assert 'Dockerfile' in new_version_dir_files
+    with open(new_version_dir / 'Dockerfile', 'r') as f:
+        assert 'template_dockerfile' in f.read()
     if next_version.major >= 1:
         assert 'dirs' in new_version_dir_files
     if include_additional_package:
@@ -463,7 +473,7 @@ def test_build_images(mocker, tmp_path):
     # Create env.in for base version
     _create_docker_cpu_env_in_file(input_version_dir + '/cpu.env.in')
     _create_docker_cpu_env_in_file(input_version_dir + '/gpu.env.in')
-    _create_docker_file(input_version_dir + '/Dockerfile')
+    _create_prev_docker_file(input_version_dir + '/Dockerfile')
     # Assert env.out doesn't exist
     assert os.path.exists(input_version_dir + '/cpu.env.out') is False
     assert os.path.exists(input_version_dir + '/gpu.env.out') is False

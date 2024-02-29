@@ -88,24 +88,30 @@ def _create_new_version_artifacts(args):
         _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_version_upgrade_type,
                                         image_generator_config)
 
-    _copy_static_files(base_version_dir, new_version_dir, str(next_version.major))
+    _copy_static_files(base_version_dir, new_version_dir, str(next_version.major), runtime_version_upgrade_type)
     with open(f'{new_version_dir}/source-version.txt', 'w') as f:
         f.write(args.base_patch_version)
 
 
-def _copy_static_files(base_version_dir, new_version_dir, new_version_major):
+def _copy_static_files(base_version_dir, new_version_dir, new_version_major, runtime_version_upgrade_type):
     for f in glob.glob(f'{base_version_dir}/gpu.arg_based_env.in'):
         shutil.copy2(f, new_version_dir)
     for f in glob.glob(f'{base_version_dir}/patch_*'):
         shutil.copy2(f, new_version_dir)
-    for f in glob.glob(os.path.relpath(f'template/v{new_version_major}/Dockerfile')):
+
+    # For patches, get Dockerfile+dirs from base patch
+    # For minor/major, get Dockerfile+dirs from template
+    if runtime_version_upgrade_type == _PATCH:
+        base_path = base_version_dir
+    else:
+        base_path = f'template/v{new_version_major}'
+    for f in glob.glob(os.path.relpath(f'{base_path}/Dockerfile')):
         shutil.copy2(f, new_version_dir)
     if int(new_version_major) >= 1:
         # dirs directory doesn't exist for v0. It was introduced only for v1
-        dirs_relative_path = os.path.relpath(f'template/v{new_version_major}/dirs')
+        dirs_relative_path = os.path.relpath(f'{base_path}/dirs')
         for f in glob.glob(dirs_relative_path):
             shutil.copytree(f, os.path.join(new_version_dir, 'dirs'))
-
 
 def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_version_upgrade_type,
                                     image_generator_config):
