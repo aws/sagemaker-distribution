@@ -15,6 +15,7 @@ ARG FIPS_VALIDATED_SSL=3.0.8
 
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
+ENV EDITOR="nano"
 
 USER root
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
@@ -27,7 +28,7 @@ ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
     chmod g+w /etc/passwd && \
