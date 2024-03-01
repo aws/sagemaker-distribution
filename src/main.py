@@ -88,24 +88,30 @@ def _create_new_version_artifacts(args):
         _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_version_upgrade_type,
                                         image_generator_config)
 
-    _copy_static_files(base_version_dir, new_version_dir, str(next_version.major))
+    _copy_static_files(base_version_dir, new_version_dir, str(next_version.major), runtime_version_upgrade_type)
     with open(f'{new_version_dir}/source-version.txt', 'w') as f:
         f.write(args.base_patch_version)
 
 
-def _copy_static_files(base_version_dir, new_version_dir, new_version_major):
+def _copy_static_files(base_version_dir, new_version_dir, new_version_major, runtime_version_upgrade_type):
     for f in glob.glob(f'{base_version_dir}/gpu.arg_based_env.in'):
         shutil.copy2(f, new_version_dir)
     for f in glob.glob(f'{base_version_dir}/patch_*'):
         shutil.copy2(f, new_version_dir)
-    for f in glob.glob(os.path.relpath(f'template/v{new_version_major}/Dockerfile')):
+
+    # For patches, get Dockerfile+dirs from base patch
+    # For minor/major, get Dockerfile+dirs from template
+    if runtime_version_upgrade_type == _PATCH:
+        base_path = base_version_dir
+    else:
+        base_path = f'template/v{new_version_major}'
+    for f in glob.glob(os.path.relpath(f'{base_path}/Dockerfile')):
         shutil.copy2(f, new_version_dir)
     if int(new_version_major) >= 1:
         # dirs directory doesn't exist for v0. It was introduced only for v1
-        dirs_relative_path = os.path.relpath(f'template/v{new_version_major}/dirs')
+        dirs_relative_path = os.path.relpath(f'{base_path}/dirs')
         for f in glob.glob(dirs_relative_path):
             shutil.copytree(f, os.path.join(new_version_dir, 'dirs'))
-
 
 def _create_new_version_conda_specs(base_version_dir, new_version_dir, runtime_version_upgrade_type,
                                     image_generator_config):
@@ -193,7 +199,7 @@ def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: 
 def _test_local_images(image_ids_to_test: list[str], target_version: str):
     assert len(image_ids_to_test) == len(_image_generator_configs)
     for (image_id, config) in zip(image_ids_to_test, _image_generator_configs):
-        exit_code = pytest.main(['-n', '2', '-m', config['image_type'], '--local-image-version',
+        exit_code = pytest.main(['-n', 'auto', '-m', config['image_type'], '--local-image-version',
                                  target_version, *config['pytest_flags']])
 
         assert exit_code == 0, f'Tests failed with exit code: {exit_code} against: {image_id}'
@@ -262,10 +268,10 @@ def _build_local_images(target_version: Version, target_ecr_repo_list: list[str]
                 for t in image_tags_to_apply:
                     image.tag(target_ecr_repo, tag=t)
                     generated_image_versions.append({'repository': target_ecr_repo, 'tag': t})
-        else:
-            # Tag the image for testing
-            image.tag('localhost/sagemaker-distribution',
-                      config['image_tag_generator'].format(image_version=str(target_version)))
+
+        # Tag the image for testing
+        image.tag('localhost/sagemaker-distribution',
+                  config['image_tag_generator'].format(image_version=str(target_version)))
 
     return generated_image_ids, generated_image_versions
 

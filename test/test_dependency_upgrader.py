@@ -43,3 +43,11 @@ def test_get_dependency_upper_bound_for_pythonesque():
     with pytest.raises(Exception):
         _get_dependency_upper_bound_for_pythonesque('1.2.5', 'prerelease')
 
+
+def test_get_dependency_upper_bound_for_post_pre_release():
+    assert _get_dependency_upper_bound_for_runtime_upgrade('python', '1.2.5.post1', _PATCH) == ',<1.3.0'
+    assert _get_dependency_upper_bound_for_runtime_upgrade('node', '1.2.5.post1', _PATCH) == ',<1.3.0'
+    assert _get_dependency_upper_bound_for_runtime_upgrade('python', '1.2.5.post1', _MINOR) == ',<1.3.0'
+    assert _get_dependency_upper_bound_for_runtime_upgrade('node', '1.2.5.post1', _MINOR) == ',<2.0.0'
+    assert _get_dependency_upper_bound_for_runtime_upgrade('python', '1.2.5.post1', _MAJOR) == ''
+    assert _get_dependency_upper_bound_for_runtime_upgrade('node', '1.2.5.post1', _MAJOR) == ''
