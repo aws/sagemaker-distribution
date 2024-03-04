@@ -15,6 +15,6 @@ langchain|0.1.9|0.1.10
 jupyter-ai|2.9.1|2.10.0
 jupyterlab-lsp|5.0.3|5.1.0
 keras|2.12.0|2.15.0
-nodejs|18.18.2|20.9.0
+nodejs|18.18.2|18.18.2
 sagemaker-python-sdk|2.198.1|2.210.0
 tensorflow|2.12.1|2.15.0

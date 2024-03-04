@@ -33,7 +33,7 @@ jupyterlab-git|0.50.0|0.50.0
 jupyterlab-lsp|5.1.0|5.1.0
 keras|2.15.0|2.15.0
 matplotlib|3.8.3|3.8.3
-nodejs|20.9.0|20.9.0
+nodejs|18.18.2|18.18.2
 py-xgboost-gpu|1.7.6| 
 thrift_sasl|0.4.3|0.4.3
 pyhive|0.7.0|0.7.0
