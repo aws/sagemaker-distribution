@@ -10,6 +10,9 @@ ARG NB_USER="sagemaker-user"
 ARG NB_UID=1000
 ARG NB_GID=100
 
+# https://www.openssl.org/source/
+ARG FIPS_VALIDATED_SSL=3.0.8
+
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 
@@ -96,6 +99,32 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
 USER $MAMBA_USER
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
+
+# Install FIPS Provider for OpenSSL, on top of existing OpenSSL installation
+# v3.0.8 is latest FIPS validated provider, so this is the one we install
+# But we need to run tests against the installed version.
+# see https://github.com/openssl/openssl/blob/master/README-FIPS.md https://www.openssl.org/source/
+RUN INSTALLED_SSL=$(micromamba list | grep openssl | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
+    # download source code for installed, and FIPS validated openssl versions
+    curl -L https://www.openssl.org/source/openssl-$FIPS_VALIDATED_SSL.tar.gz > openssl-$FIPS_VALIDATED_SSL.tar.gz &&  \
+    curl -L https://www.openssl.org/source/openssl-$INSTALLED_SSL.tar.gz > openssl-$INSTALLED_SSL.tar.gz &&  \
+    tar -xf openssl-$FIPS_VALIDATED_SSL.tar.gz && tar -xf openssl-$INSTALLED_SSL.tar.gz && cd openssl-$FIPS_VALIDATED_SSL && \
+    # Configure both versions to enable FIPS and build
+    ./Configure enable-fips --prefix=/opt/conda --openssldir=/opt/conda/ssl && make && \
+    cd ../openssl-$INSTALLED_SSL && \
+    ./Configure enable-fips --prefix=/opt/conda --openssldir=/opt/conda/ssl && make && \
+    # Copy validated provider to installed version for testing
+    cp ../openssl-$FIPS_VALIDATED_SSL/providers/fips.so providers/. && \
+    cp ../openssl-$FIPS_VALIDATED_SSL/providers/fipsmodule.cnf providers/. && \
+    make tests && cd ../openssl-$FIPS_VALIDATED_SSL && \
+    # After tests pass, install FIPS provider and remove source code
+    make install_fips && cd .. && rm -rf ./openssl-*
+# Create new config file with fips-enabled. Then user can override OPENSSL_CONF to enable FIPS
+# e.g. export OPENSSL_CONF=/opt/conda/ssl/openssl-fips.cnf
+RUN cp /opt/conda/ssl/openssl.cnf /opt/conda/ssl/openssl-fips.cnf && \
+    sed -i "s:# .include fipsmodule.cnf:.include /opt/conda/ssl/fipsmodule.cnf:" /opt/conda/ssl/openssl-fips.cnf && \
+    sed -i 's:# fips = fips_sect:fips = fips_sect:' /opt/conda/ssl/openssl-fips.cnf
+ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
 
 # Install Kerberos.
 # Make sure no dependency is added/updated

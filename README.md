@@ -123,6 +123,15 @@ USER $MAMBA_USER
 RUN micromamba install sagemaker-inference --freeze-installed --yes --channel conda-forge --name base
 ```
 
+## FIPS
+
+As of sagemaker-distribution: v0.12+, v1.6+, and v2+, the images come with FIPS 140-2 validated openssl provider 
+available for use. You can enable the FIPS provider by running: 
+
+`export OPENSSL_CONF=/opt/conda/ssl/openssl-fips.cnf`
+
+For more info on the FIPS provider see: https://github.com/openssl/openssl/blob/master/README-FIPS.md
+
 ## Security
 
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
