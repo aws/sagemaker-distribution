@@ -88,7 +88,7 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::700843992353:role/codebuild-start-build-role
+          role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
           aws-region: us-west-2
           # CodeBuild timeout of 8 hours
           role-duration-seconds: 3840
