@@ -48,10 +48,14 @@ RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/pr
 RUN mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 
+# Merge in OS directory tree contents.
+RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
+COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
+RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
+    rm -rf ${DIRECTORY_TREE_STAGE_DIR}
+
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
-
-# TODO - Add sagemaker-code-editor to env.in file
 
 # Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
 # will happen.
@@ -69,13 +73,16 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
 
-# Merge in OS directory tree contents.
-RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
-COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
-RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
-    rm -rf ${DIRECTORY_TREE_STAGE_DIR}
-
-# TODO - Configure CodeEditor - Install extensions and set preferences
+# Configure CodeEditor - Install extensions and set preferences
+RUN \
+    extensionloc=/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions && mkdir -p "${extensionloc}" \
+    # Loop through all vsix files in /tmp/exts and install them
+    && for ext in /etc/code-editor/extensions/*.vsix; do \
+        echo "Installing extension ${ext}..."; \
+        sagemaker-code-editor --install-extension "${ext}" --extensions-dir "${extensionloc}" --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data; \
+       done \
+    # Copy the settings
+    && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json
 
 # Install glue kernels, and move to shared directory
 # Also patching base kernel so Studio background code doesn't start session silently
@@ -109,6 +116,9 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     chmod a+rw $SAGEMAKER_LOGGING_DIR && \
     mkdir -p ${STUDIO_LOGGING_DIR} && \
     chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR}
+
+# Clean up CodeEditor artifacts
+RUN rm -rf /etc/code-editor
 
 # Create supervisord runtime directory
 RUN mkdir -p /var/run/supervisord && \

@@ -1,2 +1,3 @@
 conda-forge::jupyter_server_fileid
 conda-forge::jupyter_ydoc
+conda-forge::sagemaker-code-editor[version='>=0.1.0']
