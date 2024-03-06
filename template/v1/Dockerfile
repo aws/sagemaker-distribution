@@ -141,6 +141,12 @@ ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
 RUN pip install "krb5>=0.5.1,<0.6" && \
     pip show krb5 | grep Require | xargs -i sh -c '[ $(echo {} | cut -d: -f2 | wc -w) -eq 0 ] '
 
+# Install snowflake-connector-python connector python manually. Snowflake connector python does not yet support
+# platformdirs 4.2, which is supported by conda
+# Remove after https://github.com/snowflakedb/snowflake-connector-python/issues/1876 is fixed
+RUN pip install snowflake-connector-python --no-deps \
+    pip show snowflake-connector-python | grep Require | xargs -i sh -c '[ $(echo {} | cut -d: -f2 | wc -w) -eq 0 ] '
+
 # https://stackoverflow.com/questions/122327
 RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;import sysconfig; print(sysconfig.get_paths().get('purelib'))") && \
     # Remove SparkRKernel as it's not supported \
