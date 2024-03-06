@@ -3,7 +3,7 @@ set -e
 
 eval "$(micromamba shell hook --shell=bash)"
 
-# Activate conda environment 'base', which is the default environment for Cosmos
+# Activate conda environment 'base', which is the default environment for sagemaker-distribution
 micromamba activate base
 
 # Start code-editor server
