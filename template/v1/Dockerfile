@@ -54,6 +54,13 @@ COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
 RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     rm -rf ${DIRECTORY_TREE_STAGE_DIR}
 
+# CodeEditor - download the extensions
+RUN mkdir -p /etc/code-editor/extensions && \
+    while IFS= read -r url; do \
+        echo "Downloading extension from ${url}..." && \
+        wget --no-check-certificate -P /etc/code-editor/extensions "${url}"; \
+    done < /etc/code-editor/extensions.txt
+
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
 
@@ -76,7 +83,7 @@ RUN sudo ln -s $(which python3) /usr/bin/python
 # Configure CodeEditor - Install extensions and set preferences
 RUN \
     extensionloc=/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions && mkdir -p "${extensionloc}" \
-    # Loop through all vsix files in /tmp/exts and install them
+    # Loop through all vsix files in /etc/code-editor/extensions and install them
     && for ext in /etc/code-editor/extensions/*.vsix; do \
         echo "Installing extension ${ext}..."; \
         sagemaker-code-editor --install-extension "${ext}" --extensions-dir "${extensionloc}" --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data; \
