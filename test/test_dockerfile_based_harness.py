@@ -40,7 +40,9 @@ _docker_client = docker.from_env()
     ("jupyterlab-git.test.Dockerfile", ['jupyterlab-git']),
     ("serve.test.Dockerfile", ['serve-langchain']),
     ("jupyter-server-fileid.test.Dockerfile", ['jupyter_server_fileid']),
-    ("jupyter-ydoc.test.Dockerfile", ['jupyter_ydoc'])])
+    ("jupyter-ydoc.test.Dockerfile", ['jupyter_ydoc'])],
+    ("amazon-sagemaker-sql-magic.test.Dockerfile", ['amazon-sagemaker-sql-magic']),
+    ("amazon_sagemaker_sql_editor.test.Dockerfile", ['amazon_sagemaker_sql_editor']))
 def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
     _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, 'cpu')
@@ -72,7 +74,9 @@ def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
     ("jupyterlab-git.test.Dockerfile", ['jupyterlab-git']),
     ("serve.test.Dockerfile", ['serve-langchain']),
     ("jupyter-server-fileid.test.Dockerfile", ['jupyter_server_fileid']),
-    ("jupyter-ydoc.test.Dockerfile", ['jupyter_ydoc'])])
+    ("jupyter-ydoc.test.Dockerfile", ['jupyter_ydoc'])],
+    ("amazon-sagemaker-sql-magic.test.Dockerfile", ['amazon-sagemaker-sql-magic']),
+    ("amazon_sagemaker_sql_editor.test.Dockerfile", ['amazon_sagemaker_sql_editor']))
 def test_dockerfiles_for_gpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
     _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, 'gpu')
