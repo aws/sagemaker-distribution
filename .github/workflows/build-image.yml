@@ -57,7 +57,7 @@ jobs:
         # Note - CodeBuild depends on this branch name. Don't change without corresponding backend change.
         run: git checkout -b release-${{ steps.calc_target.outputs.target_version }}
       - name: Generate artifacts
-        run: python ./src/main.py create-${{ inputs.release-type }}-version-artifacts --base-patch-version ${{ inputs.base-version }}
+        run: python ./src/main.py create-${{ inputs.release-type }}-version-artifacts --base-patch-version ${{ inputs.base-version }} --force
       - name: Commit .in artifacts to branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
