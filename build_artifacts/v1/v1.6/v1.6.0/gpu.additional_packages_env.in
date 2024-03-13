@@ -1,2 +1,3 @@
+conda-forge::sagemaker-code-editor[version='>=1.0.0']
 conda-forge::amazon_sagemaker_sql_editor[version='>=0.1.0,<2']
 conda-forge::amazon-sagemaker-sql-magic[version='>=0.1.0,<2']
