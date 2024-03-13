@@ -51,6 +51,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi
 
+COPY local-packages /tmp/local-packages
+
 ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
 RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
     micromamba clean --all --yes --force-pkgs-dirs && \
