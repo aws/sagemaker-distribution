@@ -5,6 +5,8 @@ ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 
+ARG AMZN_BASE="/opt/amazon/sagemaker"
+ARG DIRECTORY_TREE_STAGE_DIR="${AMZN_BASE}/dir-staging"
 
 ARG NB_USER="sagemaker-user"
 ARG NB_UID=1000
@@ -89,13 +91,21 @@ RUN HOME_DIR="/home/${NB_USER}/licenses" \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
 
+# Merge in OS directory tree contents.
+RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
+COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
+RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
+    rm -rf ${DIRECTORY_TREE_STAGE_DIR}
 
-# Create logging directories for Studio Analytics extension
+# Create logging directories for supervisor
 RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     chmod a+rw $SAGEMAKER_LOGGING_DIR && \
     mkdir -p ${STUDIO_LOGGING_DIR} && \
     chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR}
 
+# Create supervisord runtime directory
+RUN mkdir -p /var/run/supervisord && \
+    chmod a+rw /var/run/supervisord
 
 USER $MAMBA_USER
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
