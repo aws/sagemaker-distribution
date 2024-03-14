@@ -30,7 +30,7 @@ fastapi|0.103.2|0.103.2
 langchain|0.1.9|0.1.9
 jupyter-ai|2.11.0|2.11.0
 jupyter-dash|0.4.2|0.4.2
-jupyter-server-proxy|4.1.0|4.1.0
+jupyter-server-proxy|4.1.2|4.1.2
 jupyterlab-git|0.50.0|0.50.0
 keras|2.12.0|2.12.0
 matplotlib|3.8.3|3.8.3
@@ -39,8 +39,9 @@ py-xgboost-gpu|1.7.6|
 thrift_sasl|0.4.3|0.4.3
 pyhive|0.7.0|0.7.0
 python-gssapi|1.8.3|1.8.3
-python-lsp-server|1.10.0|1.10.0
+python-lsp-server|1.10.1|1.10.1
 pytorch-gpu|2.0.0| 
+sagemaker-code-editor|1.0.0|1.0.0
 sagemaker-headless-execution-driver|0.0.12|0.0.12
 sagemaker-jupyterlab-emr-extension|0.1.9|0.1.9
 sagemaker-jupyterlab-extension|0.2.0|0.2.0
