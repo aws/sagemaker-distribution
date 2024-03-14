@@ -175,6 +175,7 @@ def build_images(args):
     generate_release_notes(target_version)
 
     # Upload to ECR before running tests so that only the exact image which we tested goes to public
+    # TODO: Move after tests are stabilized
     if args.target_ecr_repo is not None:
         _push_images_upstream(image_versions, args.region)
 
