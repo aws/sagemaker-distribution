@@ -174,15 +174,16 @@ def build_images(args):
                                                     args.force, args.skip_tests)
     generate_release_notes(target_version)
 
+    # Upload to ECR before running tests so that only the exact image which we tested goes to public
+    # TODO: Move after tests are stabilized
+    if args.target_ecr_repo is not None:
+        _push_images_upstream(image_versions, args.region)
+
     if not args.skip_tests:
         print(f'Will now run tests against: {image_ids}')
         _test_local_images(image_ids, args.target_patch_version)
     else:
         print('Will skip tests.')
-
-    # We only upload to ECR once all images are successfully built locally.
-    if args.target_ecr_repo is not None:
-        _push_images_upstream(image_versions, args.region)
 
 
 def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: str):
