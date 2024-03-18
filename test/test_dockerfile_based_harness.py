@@ -132,7 +132,7 @@ def _validate_docker_images(dockerfile_path: str, required_packages: List[str],
         image, _ = _docker_client.images.build(path=test_artifacts_path,
                                                dockerfile=dockerfile_path,
                                                tag=dockerfile_path.lower().replace('.', '-'),
-                                               rm=True, buildargs={'COSMOS_IMAGE': docker_image_identifier})
+                                               rm=True, buildargs={'SAGEMAKER_DISTRIBUTION_IMAGE': docker_image_identifier})
     except BuildError as e:
         for line in e.build_log:
             if 'stream' in line:
