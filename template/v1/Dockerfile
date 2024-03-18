@@ -6,6 +6,7 @@ ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
+ARG DB_ROOT_DIR="/opt/db"
 ARG DIRECTORY_TREE_STAGE_DIR="${AMZN_BASE}/dir-staging"
 
 ARG NB_USER="sagemaker-user"
@@ -108,6 +109,9 @@ RUN install-glue-kernels && \
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
 COPY patch_glue_spark.json /opt/conda/share/jupyter/kernels/glue_spark/kernel.json
 
+# Configure RTC - disable jupyter_collaboration by default
+RUN jupyter labextension disable @jupyter/collaboration-extension
+
 USER root
 RUN HOME_DIR="/home/${NB_USER}/licenses" \
     && mkdir -p ${HOME_DIR} \
@@ -131,6 +135,11 @@ RUN rm -rf /etc/code-editor
 # Create supervisord runtime directory
 RUN mkdir -p /var/run/supervisord && \
     chmod a+rw /var/run/supervisord
+
+# Create root directory for DB
+# Create logging directories for supervisor
+RUN mkdir -p $DB_ROOT_DIR && \
+    chmod a+rw $DB_ROOT_DIR
 
 USER $MAMBA_USER
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
