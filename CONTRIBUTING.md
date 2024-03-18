@@ -98,7 +98,7 @@ Follow these steps for sending out a pull request for adding new packages:
    # Runs only tests for cpu image, verbose, shows reason for skipped tests
    python -m pytest -n auto -m cpu -vv -rs --local-image-version $VERSION
 
-   # In addition to above, running a specific package's test
+   # In addition to above, running only tests matching a name pattern
    python -m pytest -n auto -m cpu -vv -rs -k "<test_name>" --local-image-version $VERSION
     ```
 8. Submit the PR containing the following files.
