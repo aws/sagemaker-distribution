@@ -6,6 +6,25 @@ set -e
 sagemaker-code-editor --version
 echo "Verified that sagemaker-code-editor is installed"
 
+# Verify that data dirs are created and have correct ownership
+data_dirs=("/opt/amazon/sagemaker/sagemaker-code-editor-server-data" "/opt/amazon/sagemaker/sagemaker-code-editor-user-data")
+data_dirs_owner="sagemaker-user"
+
+for dir in "${data_dirs[@]}"; do
+    if [[ -d "$dir" ]]; then
+        echo "$dir exists."
+        if [[ $(stat -c '%U' "$dir") == "$data_dirs_owner" ]]; then
+            echo "$dir is owned by $data_dirs_owner."
+        else
+            echo "Error: $dir is not owned by $data_dirs_owner."
+            exit 1
+        fi
+    else
+        echo "Error: $dir does not exist."
+        exit 1
+    fi
+done
+
 # Check that extensions are installed correctly
 extensions_base_dir="/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions"
 if [[ ! -d $extensions_base_dir ]]; then
@@ -40,3 +59,12 @@ if [ ! -f "$MACHINE_SETTINGS_FILE_PATH" ]; then
 fi
 
 echo "Settings file exists at $FILE_PATH."
+
+# Check that code-editor artifacts folder is deleted
+ARTIFACTS_DIR="/etc/code-editor"
+if [ ! -d "$ARTIFACTS_DIR" ]; then
+    echo "Directory $ARTIFACTS_DIR has been successfully removed."
+else
+    echo "Error: Directory $ARTIFACTS_DIR still exists."
+    exit 1
+fi
