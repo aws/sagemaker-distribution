@@ -91,7 +91,7 @@ Follow these steps for sending out a pull request for adding new packages:
 7. Add the relevant tests in https://github.com/aws/sagemaker-distribution/blob/main/test/test_dockerfile_based_harness.py 
     and run the build command once again without `--skip-tests` flag.
    ```
-   When writing or debugging tests, you can use standard pytest commands and arguments (https://docs.pytest.org/en/8.0.x/how-to/usage.html) to run specific tests and change test execution behavior. Some useful commands: 
+   # When writing or debugging tests, you can use standard pytest commands and arguments (https://docs.pytest.org/en/8.0.x/how-to/usage.html) to run specific tests and change test execution behavior. Some useful commands: 
 
    # The sagemaker-distribution conda env set up earlier should be activated before running below commands
    
