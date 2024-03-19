@@ -1,6 +1,6 @@
 #!/bin/bash
 
-AUTOGLUON_VERSION=$(micromamba list | grep autogluon | tr -s ' ' | cut -d ' ' -f 3)
+AUTOGLUON_VERSION=$(micromamba list | grep autogluon | tr -s ' ' | head -n 1 | cut -d ' ' -f 3)
 git checkout tags/v$AUTOGLUON_VERSION
 
 # Run autogluon quick start as end-to-end check
