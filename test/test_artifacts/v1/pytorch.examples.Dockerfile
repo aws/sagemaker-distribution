@@ -2,10 +2,11 @@ ARG SAGEMAKER_DISTRIBUTION_IMAGE
 FROM $SAGEMAKER_DISTRIBUTION_IMAGE
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-RUN sudo apt-get update && \
-    sudo apt-get install -y git && \
-    git clone --recursive https://github.com/pytorch/examples && \
-    :
+RUN git clone --recursive https://github.com/pytorch/examples
+
+# During automation some tests fails with `libcuda.so: cannot open shared object file: No such file or directory`
+# But libcuda.so.1 exists. Adding this resolves, but also adding `2>/dev/null` to ignore if not needed.
+RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libcuda.so.1 /usr/lib/x86_64-linux-gnu/libcuda.so 2>/dev/null
 
 WORKDIR "examples"
 
