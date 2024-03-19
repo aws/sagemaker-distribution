@@ -199,11 +199,16 @@ def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: 
 
 def _test_local_images(image_ids_to_test: list[str], target_version: str):
     assert len(image_ids_to_test) == len(_image_generator_configs)
+    exit_codes = []
+    image_ids = []
     for (image_id, config) in zip(image_ids_to_test, _image_generator_configs):
-        exit_code = pytest.main(['-n', 'auto', '-m', config['image_type'], '--local-image-version',
+        exit_code = pytest.main(['-n', '2', '-m', config['image_type'], '--local-image-version',
                                  target_version, *config['pytest_flags']])
+        if exit_code != 0:
+            exit_codes.append(exit_code)
+            image_ids.append(image_id)
 
-        assert exit_code == 0, f'Tests failed with exit code: {exit_code} against: {image_id}'
+    assert len(exit_codes) == 0, f'Tests failed with exit codes: {exit_codes} against: {image_ids}'
 
     print(f'Tests ran successfully against: {image_ids_to_test}')
 
