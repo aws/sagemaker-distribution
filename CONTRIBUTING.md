@@ -40,14 +40,14 @@ GitHub provides additional document on [forking a repository](https://help.githu
 [creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
 
 
-## For adding new Python packages to SageMaker Distribution
-SageMaker Distribution will add new Python packages only during a minor/major version release. 
+## For adding new Conda packages to SageMaker Distribution
+SageMaker Distribution will add new Conda packages only during a minor/major version release. 
 New packages will not be added during a patch version release.
 
 Follow these steps for sending out a pull request for adding new packages:
 1. Identify the latest version of SageMaker Distribution.
 2. Create the next minor/major version's build artifacts folder here: https://github.com/aws/sagemaker-distribution/tree/main/build_artifacts
-3. Currently, SageMaker Distribution is using Conda forge channel as our source (for Python 
+3. Currently, SageMaker Distribution is using Conda forge channel as our source (for Conda 
    packages). 
    Ensure that the new package which you are trying to add is present in Conda forge channel. https://conda-forge.org/feedstock-outputs/
 4. Create {cpu/gpu}.additional_packages_env.in file in that folder containing the new packages. 
@@ -90,6 +90,17 @@ Follow these steps for sending out a pull request for adding new packages:
    that we can look more into it.
 7. Add the relevant tests in https://github.com/aws/sagemaker-distribution/blob/main/test/test_dockerfile_based_harness.py 
     and run the build command once again without `--skip-tests` flag.
+   ```
+   # When writing or debugging tests, you can use standard pytest commands and arguments (https://docs.pytest.org/en/8.0.x/how-to/usage.html) to run specific tests and change test execution behavior. Some useful commands: 
+
+   # The sagemaker-distribution conda env set up earlier should be activated before running below commands
+   
+   # Runs only tests for cpu image, verbose, shows reason for skipped tests
+   python -m pytest -n auto -m cpu -vv -rs --local-image-version $VERSION
+
+   # In addition to above, running only tests matching a name pattern
+   python -m pytest -n auto -m cpu -vv -rs -k "<test_name>" --local-image-version $VERSION
+    ```
 8. Submit the PR containing the following files.
    * {cpu/gpu}.additional_packages_env.in files
    * All the test files and test_dockerfile_based_harness.py changes
