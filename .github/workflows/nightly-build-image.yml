@@ -1,101 +1,20 @@
 name: Build New Image Version
-on:
-  # Manually call
-  workflow_dispatch:
-    inputs:
-      release-type:
-        required: true
-        type: choice
-        description: Type of release
-        options:
-          - patch
-          - minor
-          - major
-      base-version:
-        required: true
-        description: Base version=
-  # Call from other workflow
-  workflow_call:
-    inputs:
-      release-type:
-        type: string
-        required: true
-      base-version:
-        type: string
-        required: true
 defaults:
   run:
     shell: bash -l {0}
 jobs:
-  open-pr:
-    name: Open Pull Request
-    runs-on: ubuntu-latest
-    if: github.repository == 'aws/sagemaker-distribution'
-    permissions:
-      pull-requests: write
-      contents: write
-    outputs:
-      pr_id: ${{ steps.get_pr_id.outputs.pr_id }}
-      target_version: ${{ steps.calc_target.outputs.target_version }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: mamba-org/setup-micromamba@v1
-        with:
-          environment-file: ./environment.yml
-          environment-name: sagemaker-distribution
-          init-shell: bash
-      - name: Free up disk space
-        run: rm -rf /opt/hostedtoolcache
-      - name: Activate sagemaker-distribution
-        run: micromamba activate sagemaker-distribution
-      - name: Calculate target version
-        id: calc_target
-        run: |
-          TARGET_VERSION=$(python -c 'import semver; print(semver.bump_${{ inputs.release-type }}("${{ inputs.base-version }}"))')
-          echo "target_version=$TARGET_VERSION" >> $GITHUB_OUTPUT
-      - name: Create new branch
-        # Note - CodeBuild depends on this branch name. Don't change without corresponding backend change.
-        run: git checkout -b 2.0.0-beta
-      - name: Generate artifacts
-        run: python ./src/main.py create-${{ inputs.release-type }}-version-artifacts --base-patch-version ${{ inputs.base-version }}
-      - name: Commit .in artifacts to branch
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add ./build_artifacts
-          git commit -m 'chore: Generate build artifacts for ${{ steps.calc_target.outputs.target_version }} release'
-          git push --set-upstream origin 2.0.0-beta
-      - name: Open pull request
-        id: get_pr_id
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Note - CodeBuild depends on this PR title. Don't change without corresponding backend change.
-        run: |
-          URL=$(gh pr create -H 2.0.0-beta \
-                    --title 'release: v${{ steps.calc_target.outputs.target_version }}' -F ./.github/workflows/PR_TEMPLATE.md)
-          PR=$(echo $URL | sed 's:.*/::')
-          echo "pr_id=$PR" >> $GITHUB_OUTPUT
   call-codebuild-project:
     runs-on: ubuntu-latest
-    needs: open-pr
-    permissions:
-      pull-requests: write
-      contents: write
-      id-token: write
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::700843992353:role/codebuild-start-build-role
+          role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
           aws-region: us-west-2
           # CodeBuild timeout of 8 hours
-          role-duration-seconds: 3840
+          role-duration-seconds: 28800
       - name: Run CodeBuild
         uses: dark-mechanicum/aws-codebuild@v1
-        env:
-          CODEBUILD__sourceVersion: 'pr/${{ needs.open-pr.outputs.pr_id }}'
         with:
-          projectName: 'buildtestpublicimage1C7307A-9AzES2hf19lW'
+          projectName: 'betaimagerelease92AD4800-5O3Rv5xogtpw'
           buildspec: '{"imageOverride": "aws/codebuild/standard:7.0"}'

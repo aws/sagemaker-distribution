@@ -40,7 +40,4 @@ jobs:
     strategy:
       matrix: ${{ fromJson(needs.generate-version-matrix.outputs.matrix) }}
       fail-fast: false
-    uses: aws/sagemaker-distribution/.github/workflows/nightly-build-image.yml@main
-    with:
-      release-type: "patch"
-      base-version: ${{ matrix.version }}
+    uses: aws/sagemaker-distribution/.github/workflows/nightly-build-image.yml@2.0.0-beta
