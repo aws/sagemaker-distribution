@@ -23,4 +23,4 @@ jobs:
         uses: dark-mechanicum/aws-codebuild@v1
         with:
           projectName: 'betaimagerelease92AD4800-5O3Rv5xogtpw'
-          buildspec: '{"imageOverride": "aws/codebuild/standard:7.0"}'
+          buildspec: '{"imageOverride": "aws/codebuild/standard:7.0","imagePullCredentialsTypeOverride": "CODEBUILD"}'
