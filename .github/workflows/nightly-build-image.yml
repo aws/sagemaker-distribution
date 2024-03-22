@@ -1,0 +1,27 @@
+name: Build New Image Version
+on: workflow_dispatch
+#on:
+#  # Run every night at 5:15PM PST
+#  # Run before monthly, so we don't immediately patch a new minor version
+#  schedule:
+#    - cron: '0 15 17 ? * *'
+defaults:
+  run:
+    shell: bash -l {0}
+jobs:
+  call-codebuild-project:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
+          aws-region: us-east-1
+          # CodeBuild timeout of 8 hours
+          role-duration-seconds: 28800
+          audience: https://sts.us-east-1.amazonaws.com
+      - name: Run CodeBuild
+        uses: dark-mechanicum/aws-codebuild@v1
+        with:
+          projectName: 'betaimagerelease92AD4800-5O3Rv5xogtpw'
+          buildspec: '{"imageOverride": "aws/codebuild/standard:7.0", "imagePullCredentialsTypeOverride": "CODEBUILD"}'
