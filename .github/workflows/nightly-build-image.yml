@@ -11,6 +11,8 @@ defaults:
 jobs:
   call-codebuild-project:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
     steps:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
