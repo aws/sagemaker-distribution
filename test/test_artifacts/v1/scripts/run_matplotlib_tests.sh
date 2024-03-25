@@ -3,5 +3,3 @@
 for file in *.py; do
      python "$file" || exit $?
 done
-
-
