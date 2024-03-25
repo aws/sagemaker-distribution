@@ -24,6 +24,23 @@ Run the following to invoke those tests:
 pytest --local-image-id REPLACE_ME_WITH_IMAGE_ID
 ```
 
+## Code Style
+
+Install pre-commit to run code style checks before each commit:
+
+```shell
+pip install pre-commit
+pre-commit install
+```
+
+To run formatters for all existing files, use:
+
+```shell
+pre-commit run --all-files
+```
+
+pre-commit checks can be disabled for a particular commit with git commit -n.
+
 You can also pass a `--use-gpu` flag if the test machine has Nvidia GPU(s) and necessary Nvidia drivers.
 
 ### Unit tests for the project's source code
