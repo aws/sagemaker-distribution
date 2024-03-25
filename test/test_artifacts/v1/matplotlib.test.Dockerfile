@@ -16,4 +16,3 @@ COPY --chown=$MAMBA_USER:$MAMBA_USER scripts/run_matplotlib_tests.sh .
 RUN chmod +x run_matplotlib_tests.sh
 # Run tests in run_matplotlib_tests.sh
 CMD ["./run_matplotlib_tests.sh"]
-

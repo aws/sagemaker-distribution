@@ -9,8 +9,8 @@ micromamba activate base
 # Start Jupyter server in rtc mode for shared spaces
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ]; then
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
-  # app. Configure the base url to be `/<app-type-in-lower-case>/default`. 
-  # SAGEMAKER_SPACE_TYPE_LOWERCASE flag is used to determine if the server should start 
+  # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
+  # SAGEMAKER_SPACE_TYPE_LOWERCASE flag is used to determine if the server should start
   # in real-time-collaboration mode for a given space.
   jupyter lab --ip 0.0.0.0 --port 8888 \
     --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \

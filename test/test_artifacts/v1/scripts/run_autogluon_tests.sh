@@ -12,6 +12,6 @@ python -c "import torch; exit(0) if torch.cuda.is_available() else exit(1)"
 ret=$?
 
 if [ $ret -eq 0 ]
-then 
+then
     jupyter nbconvert --execute --to python docs/tutorials/multimodal/multimodal_prediction/multimodal-quick-start.ipynb
 fi

@@ -51,7 +51,7 @@ python src/main.py build \
 
 Note:
 
-- As you can see above, the `--target-ecr-repo` parameter can be supplied zero or multiple times. If not supplied, the 
+- As you can see above, the `--target-ecr-repo` parameter can be supplied zero or multiple times. If not supplied, the
 tool will just build a local image. If supplied multiple times, it'll upload the images to all those ECR repositories.
 - There is also a `--skip-tests` flag which, by default, is `false`. You can supply it if you'd like to skip tests
 locally. However, we'll make sure the tests succeed before any image is release publicly.
