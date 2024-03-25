@@ -130,7 +130,7 @@ def _validate_docker_images(dockerfile_path: str, required_packages: List[str],
 
     try:
         image, _ = _docker_client.images.build(path=test_artifacts_path,
-                                               dockerfile=dockerfile_path, shmsize='256000000',
+                                               dockerfile=dockerfile_path, shmsize='512000000',
                                                tag=dockerfile_path.lower().replace('.', '-'),
                                                rm=True, buildargs={'SAGEMAKER_DISTRIBUTION_IMAGE': docker_image_identifier})
     except BuildError as e:
