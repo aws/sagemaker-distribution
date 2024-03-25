@@ -23,7 +23,7 @@ try:
     module = __import__("amazon_sagemaker_sql_editor")
     module_location = os.path.dirname(module.__file__)
     c.LanguageServerManager.extra_node_roots = [
-        f'{module_location}/sql_language_server'
+        f'{module_location}/sql-language-server'
     ]
 except:
     pass
