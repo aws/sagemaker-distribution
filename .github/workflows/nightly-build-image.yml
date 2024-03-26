@@ -1,10 +1,9 @@
 name: Build New Image Version
-on: workflow_dispatch
-#on:
-#  # Run every night at 5:15PM PST
-#  # Run before monthly, so we don't immediately patch a new minor version
-#  schedule:
-#    - cron: '0 15 17 ? * *'
+on: 
+  workflow_dispatch:
+  # Run every night at 4:00PM PDT
+  schedule:
+    - cron: '0 23 * * *'
 defaults:
   run:
     shell: bash -l {0}
