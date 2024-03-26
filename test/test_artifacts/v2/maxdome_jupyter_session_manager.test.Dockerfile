@@ -3,6 +3,6 @@ FROM $COSMOS_IMAGE
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
-# Test import for current stage
-# TODO: update the test to run unit tests of the package when available
-CMD ["python", "-c", "import maxdome_jupyter_session_manager.maxdome_session_manager"]
+COPY --chown=$MAMBA_USER:$MAMBA_USER scripts/run_maxdome_jupyter_session_manager_test.sh .
+RUN chmod +x run_maxdome_jupyter_session_manager_test.sh
+CMD ["./run_maxdome_jupyter_session_manager_test.sh"]
