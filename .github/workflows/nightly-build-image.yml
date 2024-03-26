@@ -1,5 +1,6 @@
 name: Build New Image Version
 on: 
+  workflow_dispatch:
   # Run every night at 4:00PM PDT
   schedule:
     - cron: '0 23 * * *'
