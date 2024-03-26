@@ -22,7 +22,7 @@ in the relevant _RELEASE.md_ file in the [build_artifacts](build_artifacts) dire
 
 ### Versioning strategy
 
-Amazon SageMaker Distribution supports semantic versioning as described on [semver.org](https://semver.org/). A major 
+Amazon SageMaker Distribution supports semantic versioning as described on [semver.org](https://semver.org/). A major
 version upgrade of Amazon SageMaker Distribution allows major version upgrades of all its dependencies, and similarly
 for minor and patch version upgrades. However, it is important to note that Amazon SageMaker Distribution’s ability to
 follow semver guidelines is currently dependent on how its dependencies adhere to them.
@@ -47,7 +47,7 @@ will remain the same over time.
 
 ### Package Staleness Report
 
-If you want to generate/view the staleness report for each of the individual packages in a given 
+If you want to generate/view the staleness report for each of the individual packages in a given
 SageMaker distribution image version, then run the following command:
 
 ```
@@ -98,7 +98,7 @@ directory (such as Jupyter Lab notebooks) will persist.
 
 ### Amazon SageMaker Studio
 
-> [Amazon SageMaker Studio](https://docs.aws.amazon.com/sagemaker/latest/dg/studio.html) is a web-based, integrated 
+> [Amazon SageMaker Studio](https://docs.aws.amazon.com/sagemaker/latest/dg/studio.html) is a web-based, integrated
 > development environment (IDE) for machine learning that lets you build, train, debug, deploy, and monitor your
 > machine learning models.
 
@@ -125,8 +125,8 @@ RUN micromamba install sagemaker-inference --freeze-installed --yes --channel co
 
 ## FIPS
 
-As of sagemaker-distribution: v0.12+, v1.6+, and v2+, the images come with FIPS 140-2 validated openssl provider 
-available for use. You can enable the FIPS provider by running: 
+As of sagemaker-distribution: v0.12+, v1.6+, and v2+, the images come with FIPS 140-2 validated openssl provider
+available for use. You can enable the FIPS provider by running:
 
 `export OPENSSL_CONF=/opt/conda/ssl/openssl-fips.cnf`
 

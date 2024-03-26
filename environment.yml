@@ -10,3 +10,7 @@ dependencies:
   - pytest-mock
   - pytest-xdist
   - semver
+  - autoflake
+  - black
+  - isort
+  - pre-commit

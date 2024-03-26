@@ -3,15 +3,14 @@ import pytest
 
 def pytest_addoption(parser):
     parser.addoption(
-        "--local-image-version", help="Version of a locally available SageMaker Distribution "
-                                      "Docker image against which the tests should run. Note: "
-                                      "We expect the local docker image to have "
-                                      "'localhost/sagemaker-distribution' as the repository and "
-                                      "'<version>-{cpu/gpu}' as the tag"
+        "--local-image-version",
+        help="Version of a locally available SageMaker Distribution "
+        "Docker image against which the tests should run. Note: "
+        "We expect the local docker image to have "
+        "'localhost/sagemaker-distribution' as the repository and "
+        "'<version>-{cpu/gpu}' as the tag",
     )
-    parser.addoption(
-        "--use-gpu", action='store_true', help="Boolean on whether to use GPUs or not"
-    )
+    parser.addoption("--use-gpu", action="store_true", help="Boolean on whether to use GPUs or not")
 
 
 @pytest.fixture

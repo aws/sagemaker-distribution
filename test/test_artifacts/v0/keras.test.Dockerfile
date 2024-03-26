@@ -17,4 +17,3 @@ COPY --chown=$MAMBA_USER:$MAMBA_USER scripts/run_keras_tests.sh .
 RUN chmod +x run_keras_tests.sh
 # Run tests in run_keras_tests.sh
 CMD ["./run_keras_tests.sh"]
-
