@@ -29,7 +29,6 @@ pytest --local-image-id REPLACE_ME_WITH_IMAGE_ID
 Install pre-commit to run code style checks before each commit:
 
 ```shell
-pip install pre-commit
 pre-commit install
 ```
 
