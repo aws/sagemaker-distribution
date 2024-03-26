@@ -38,6 +38,9 @@ _docker_client = docker.from_env()
     ("sagemaker-studio-analytics-extension.test.Dockerfile", ['sagemaker-studio-analytics-extension']),
     ("amazon-codewhisperer-jupyterlab-ext.test.Dockerfile", ['amazon-codewhisperer-jupyterlab-ext']),
     ("jupyterlab-git.test.Dockerfile", ['jupyterlab-git']),
+    ("maxdome_jupyter_server_extension.test.Dockerfile", ['maxdome_jupyter_server_extension']),
+    ("maxdome_jupyter_session_manager.test.Dockerfile", ['maxdome_jupyter_session_manager']),
+    ("maxdome_toolkit_cli.test.Dockerfile",['maxdome_toolkit_cli']),
     ("serve.test.Dockerfile", ['serve-langchain'])])
 def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
@@ -68,6 +71,9 @@ def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
     ("sagemaker-studio-analytics-extension.test.Dockerfile", ['sagemaker-studio-analytics-extension']),
     ("amazon-codewhisperer-jupyterlab-ext.test.Dockerfile", ['amazon-codewhisperer-jupyterlab-ext']),
     ("jupyterlab-git.test.Dockerfile", ['jupyterlab-git']),
+    ("maxdome_jupyter_server_extension.test.Dockerfile", ['maxdome_jupyter_server_extension']),
+    ("maxdome_jupyter_session_manager.test.Dockerfile", ['maxdome_jupyter_session_manager']),
+    ("maxdome_toolkit_cli.test.Dockerfile",['maxdome_toolkit_cli']),
     ("serve.test.Dockerfile", ['serve-langchain'])])
 def test_dockerfiles_for_gpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):

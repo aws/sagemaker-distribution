@@ -1,1 +1,4 @@
 #Add any additional packages here
+/tmp/local-packages::maxdome_jupyter_server_extension[version='>=0.1.0']
+/tmp/local-packages::maxdome_jupyter_session_manager[version='>=0.1.0']
+/tmp/local-packages::maxdome_toolkit_cli[version='>=0.1.0']
