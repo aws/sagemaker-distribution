@@ -41,6 +41,7 @@ _docker_client = docker.from_env()
     ("maxdome_jupyter_server_extension.test.Dockerfile", ['maxdome_jupyter_server_extension']),
     ("maxdome_jupyter_session_manager.test.Dockerfile", ['maxdome_jupyter_session_manager']),
     ("maxdome_toolkit_cli.test.Dockerfile",['maxdome_toolkit_cli']),
+    ("git-remote-codecommit.test.Dockerfile",['git-remote-codecommit']),
     ("serve.test.Dockerfile", ['serve-langchain'])])
 def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
@@ -74,6 +75,7 @@ def test_dockerfiles_for_cpu(dockerfile_path: str, required_packages: List[str],
     ("maxdome_jupyter_server_extension.test.Dockerfile", ['maxdome_jupyter_server_extension']),
     ("maxdome_jupyter_session_manager.test.Dockerfile", ['maxdome_jupyter_session_manager']),
     ("maxdome_toolkit_cli.test.Dockerfile",['maxdome_toolkit_cli']),
+    ("git-remote-codecommit.test.Dockerfile",['git-remote-codecommit']),
     ("serve.test.Dockerfile", ['serve-langchain'])])
 def test_dockerfiles_for_gpu(dockerfile_path: str, required_packages: List[str],
                              local_image_version: str, use_gpu: bool):
