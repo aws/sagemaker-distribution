@@ -1,0 +1,18 @@
+{
+  "argv": [
+    "/opt/conda/share/jupyter/kernels/glue/kernel_launcher.sh",
+    "-m",
+    "aws_glue_interactive_sessions_kernel.glue_spark.GlueKernel",
+    "-f",
+    "{connection_file}"
+  ],
+  "env": {
+    "AWS_PROFILE":"kernel",
+    "glue_version": "3.0"
+  },
+  "display_name": "Glue Spark",
+  "language": "python",
+  "interrupt_mode": "signal",
+  "metadata": {}
+}
+
