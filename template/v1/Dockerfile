@@ -49,9 +49,9 @@ RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/pr
 RUN mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 
-# SQLEditor - create dir to store user data files
-RUN mkdir -p /opt/amazon/sagemaker/sagemaker-sql-experience-user-data \
-    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-sql-experience-user-data
+# create dir to store user data files
+RUN mkdir -p /opt/amazon/sagemaker/user-data \
+    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/user-data
 
 
 # Merge in OS directory tree contents.
