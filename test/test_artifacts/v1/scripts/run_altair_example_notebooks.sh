@@ -15,4 +15,3 @@ example_notebooks=('02-Tutorial.ipynb'
 for nb in ${example_notebooks[@]}; do
      papermill $nb 'nb_output.ipynb'
 done
-
