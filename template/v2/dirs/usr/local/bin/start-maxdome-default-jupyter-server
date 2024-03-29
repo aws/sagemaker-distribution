@@ -1,0 +1,33 @@
+#!/bin/bash
+set -e
+
+eval "$(micromamba shell hook --shell=bash)"
+
+# Activate conda environment 'base', which is the default environment for Cosmos
+micromamba activate base
+
+sudo cp -r /etc/maxdome/kernels/. /opt/conda/share/jupyter/kernels/
+
+aws configure set credential_source EcsContainer
+aws configure set credential_process "/etc/maxdome/get_credential.sh" --profile kernel
+
+git config --global user.email "$maxDomeProjectRepoEmail"
+git config --global user.name "$maxDomeProjectRepoUser"
+
+if [ ! -d $HOME/$maxDomeProjectRepo ]; then
+  mkdir -p $HOME/$maxDomeProjectRepo/
+  nohup git clone codecommit::$AWS_REGION://$maxDomeProjectRepo $HOME/$maxDomeProjectRepo/ &
+fi
+
+export MD_REPO_HOME=$HOME/$maxDomeProjectRepo/
+
+mkdir -p /opt/conda/share/jupyter/lab/settings
+cp /etc/maxdome/page_config.json /opt/conda/share/jupyter/lab/settings
+
+jupyter-kernelspec remove -f -y pysparkkernel
+jupyter-kernelspec remove -f -y sparkkernel
+
+jupyter lab --ip 0.0.0.0 --port 8888 \
+  --ServerApp.token='' \
+  --ServerApp.session_manager_class='maxdome_jupyter_session_manager.maxdome_session_manager.MaxDomeSessionManager' \
+  --ServerApp.allow_origin='*'
