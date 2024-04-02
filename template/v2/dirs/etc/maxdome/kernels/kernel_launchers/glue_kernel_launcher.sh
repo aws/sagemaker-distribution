@@ -1,4 +1,5 @@
 #!/bin/bash
+MAXDOME_CONNECTION_NAME=default.spark_glue
 
 export_if_key_exists() {
     local json="$1"
