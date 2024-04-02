@@ -28,8 +28,8 @@ export_if_key_exists() {
 kernel_type=$2
 connection_file=$4
 
-glue_connection=`maxdome-toolkit connection read -n $MAXDOME_CONNECTION_NAME -ws`
-export glue_role_arn=$(echo "$glue_connection" | jq .environmentRoleArn -r)
+glue_connection=`maxdome get connection --name $MAXDOME_CONNECTION_NAME --authorization-mode PROJECT --with-secret`
+export glue_role_arn=$(echo "$glue_connection" | jq .environmentUserRoleArn -r)
 export AWS_REGION=$(echo "$glue_connection" | jq .location.awsRegion -r)
 
 export_if_key_exists "$glue_connection" "sparkGlueProperties.glueConnection.Name" "glue_connections" 

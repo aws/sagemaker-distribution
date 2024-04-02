@@ -7,12 +7,11 @@ eval "$(micromamba shell hook --shell=bash)"
 # Activate conda environment 'base', which is the default environment for Cosmos
 micromamba activate base
 
-if [ ! -d $HOME/$maxDomeProjectRepo ]; then
-  mkdir -p $HOME/$maxDomeProjectRepo/
-  nohup git clone codecommit::$AWS_REGION://$maxDomeProjectRepo $HOME/$maxDomeProjectRepo/ &
+if [ ! -d $HOME/$DataZoneProjectRepositoryName ]; then
+  mkdir -p $HOME/$DataZoneProjectRepositoryName/
+  nohup git clone codecommit::$AWS_REGION://$DataZoneProjectRepositoryName $HOME/$DataZoneProjectRepositoryName/ &
 fi
 
-export MD_REPO_HOME=$HOME/$maxDomeProjectRepo/
 
 start-maxdome-jupyter-server
 
