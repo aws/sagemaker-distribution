@@ -1,6 +1,6 @@
 {
   "argv": [
-    "/opt/conda/share/jupyter/kernels/glue/kernel_launcher.sh",
+    "/opt/conda/share/jupyter/kernels/kernel_launchers/glue_kernel_launcher.sh",
     "-m",
     "aws_glue_interactive_sessions_kernel.glue_pyspark.GlueKernel",
     "-f",
