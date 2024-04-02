@@ -1,4 +1,8 @@
-import pandas, sys, os, site
+import os
+import site
+import sys
+
+import pandas
 
 # We change the working directory here because there is at least one test (`test_html_template_extends_options`) which
 # expects the directory to be 'pandas'. Ideally, we would have changed directories through a `WORKDIR` in Dockerfile
