@@ -1,3 +1,2 @@
 #!/bin/bash
-
-maxdome-toolkit connection read -n $MAXDOME_CONNECTION_NAME -ws | jq .environmentCredentials -r
+maxdome get connection --name $MAXDOME_CONNECTION_NAME --authorization-mode PROJECT --with-secret | jq .environmentCredentials -r
