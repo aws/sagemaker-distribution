@@ -1,1 +1,0 @@
-conda-forge::cudatoolkit=$CUDA_MAJOR_MINOR_VERSION
