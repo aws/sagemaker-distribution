@@ -57,7 +57,7 @@ jobs:
         # Note - CodeBuild depends on this branch name. Don't change without corresponding backend change.
         run: git checkout -b release-${{ steps.calc_target.outputs.target_version }}
       - name: Generate artifacts
-        run: python ./src/main.py create-${{ inputs.release-type }}-version-artifacts --base-patch-version ${{ inputs.base-version }}
+        run: python ./src/main.py create-${{ inputs.release-type }}-version-artifacts --base-patch-version ${{ inputs.base-version }} --force
       - name: Commit .in artifacts to branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -88,14 +88,15 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::700843992353:role/codebuild-start-build-role
-          aws-region: us-west-2
+          role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
+          aws-region: us-east-1
           # CodeBuild timeout of 8 hours
-          role-duration-seconds: 3840
+          role-duration-seconds: 28800
+          audience: https://sts.us-east-1.amazonaws.com
       - name: Run CodeBuild
         uses: dark-mechanicum/aws-codebuild@v1
         env:
           CODEBUILD__sourceVersion: 'pr/${{ needs.open-pr.outputs.pr_id }}'
         with:
-          projectName: 'buildtestpublicimage1C7307A-9AzES2hf19lW'
-          buildspec: '{"imageOverride": "aws/codebuild/standard:7.0"}'
+          projectName: ${{ secrets.CODEBUILD_JOB_NAME }}
+          buildspec: '{"imageOverride": "aws/codebuild/standard:7.0", "imagePullCredentialsTypeOverride": "CODEBUILD"}'

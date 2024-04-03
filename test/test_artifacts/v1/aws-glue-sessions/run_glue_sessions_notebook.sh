@@ -8,4 +8,3 @@ nb='script'
 for kernel in ${kernels[@]}; do
      papermill 'glue_notebook.ipynb' 'nb_output.ipynb' -k $kernel
 done
-
