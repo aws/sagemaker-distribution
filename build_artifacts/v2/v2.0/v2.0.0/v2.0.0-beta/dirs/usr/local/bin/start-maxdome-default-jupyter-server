@@ -7,6 +7,8 @@ eval "$(micromamba shell hook --shell=bash)"
 # Activate conda environment 'base', which is the default environment for Cosmos
 micromamba activate base
 
+aws configure set credential_source EcsContainer
+
 if [ ! -d $HOME/$DataZoneProjectRepositoryName ]; then
   mkdir -p $HOME/$DataZoneProjectRepositoryName/
   nohup git clone codecommit::$AWS_REGION://$DataZoneProjectRepositoryName $HOME/$DataZoneProjectRepositoryName/ &
