@@ -71,6 +71,9 @@ RUN mkdir -p /etc/code-editor/extensions && \
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
 
+# Util tool for collecting python package metadata
+COPY --chown=$MAMBA_USER:$MAMBA_USER ./collect_pkg_metadata.p[y] /tmp/
+
 # Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
 # will happen.
 RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \

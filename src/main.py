@@ -20,7 +20,10 @@ from dependency_upgrader import (
     _PATCH,
     _get_dependency_upper_bound_for_runtime_upgrade,
 )
-from package_staleness import generate_package_staleness_report
+from package_report import (
+    generate_package_size_report,
+    generate_package_staleness_report,
+)
 from release_notes_generator import generate_release_notes
 from utils import (
     get_dir_for_version,
@@ -237,6 +240,9 @@ def _build_local_images(
     target_version: Version, target_ecr_repo_list: list[str], force: bool, skip_tests=False
 ) -> (list[str], list[dict[str, str]]):
     target_version_dir = get_dir_for_version(target_version)
+    # Copy the script for collecting python package metadata to target version directory.
+    # This is a temporary solution, should be modified once we separate the SMD tool and the build artifacts.
+    shutil.copy("src/collect_pkg_metadata.py", target_version_dir)
 
     generated_image_ids = []
     generated_image_versions = []
@@ -267,6 +273,9 @@ def _build_local_images(
         with open(f'{target_version_dir}/{config["env_out_filename"]}', "wb") as f:
             f.write(container_logs)
 
+        # Generate Python package metadata for the image built.
+        _generate_python_package_metadata(target_version_dir, image, config)
+
         # Generate change logs. Use the original image generator config which contains the name
         # of the actual env.in file instead of the 'config'.
         generate_change_log(target_version, image_generator_config)
@@ -284,6 +293,10 @@ def _build_local_images(
         image.tag(
             "localhost/sagemaker-distribution", config["image_tag_generator"].format(image_version=str(target_version))
         )
+
+    # Clean up the script for collecting python package metadata from build artifacts.
+    if os.path.exists(f"{target_version_dir}/collect_pkg_metadata.py"):
+        os.remove(f"{target_version_dir}/collect_pkg_metadata.py")
 
     return generated_image_ids, generated_image_versions
 
@@ -326,6 +339,19 @@ def _get_ecr_credentials(region, repository: str) -> (str, str):
         # If we are using the ecr private client, then fetch the first index from authorizationData
         _authorization_data = _authorization_data[0]
     return base64.b64decode(_authorization_data["authorizationToken"]).decode().split(":")
+
+
+def _generate_python_package_metadata(target_version_dir, image, image_config):
+    try:
+        pkg_metadata = _docker_client.containers.run(
+            image=image.id, detach=False, auto_remove=True, command=f"python /tmp/collect_pkg_metadata.py"
+        )
+        with open(f'{target_version_dir}/{image_config["package_metadata_filename"]}', "wb") as f:
+            f.write(pkg_metadata)
+    except ContainerError as e:
+        print(e.container.logs().decode("utf-8"))
+        # After printing the logs, raise the exception (which is the old behavior)
+        raise
 
 
 def get_arg_parser():
@@ -398,6 +424,21 @@ def get_arg_parser():
         "--target-patch-version",
         required=True,
         help="Specify the base patch version for which the package staleness report needs to be " "generated.",
+    )
+    package_size_parser = subparsers.add_parser(
+        "generate-size-report",
+        help="Generates package size report for each of the packages in the given " "image version.",
+    )
+    package_size_parser.set_defaults(func=generate_package_size_report)
+    package_size_parser.add_argument(
+        "--base-patch-version",
+        required=True,
+        help="Specify the base patch version for which the package size report needs to be " "generated.",
+    )
+    package_size_parser.add_argument(
+        "--target-patch-version",
+        required=True,
+        help="Specify the target patch version for which the package size report needs to be " "generated.",
     )
     return parser
 

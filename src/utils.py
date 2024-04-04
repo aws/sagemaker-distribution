@@ -50,3 +50,12 @@ def get_match_specs(file_path) -> dict[str, MatchSpec]:
     assert "conda" in requirement_spec.environment.dependencies
 
     return {MatchSpec(i).get("name"): MatchSpec(i) for i in requirement_spec.environment.dependencies["conda"]}
+
+
+def sizeof_fmt(num):
+    # Convert byte to human-readable size units.
+    for unit in ("B", "KB", "MB", "GB"):
+        if abs(num) < 1024.0:
+            return f"{num:3.2f}{unit}"
+        num /= 1024.0
+    return f"{num:.2f}TB"

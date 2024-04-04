@@ -1,11 +1,12 @@
 import json
+import os
 
 import conda.cli.python_api
 from conda.models.match_spec import MatchSpec
 
 from config import _image_generator_configs
 from dependency_upgrader import _dependency_metadata
-from utils import get_dir_for_version, get_match_specs, get_semver
+from utils import get_dir_for_version, get_match_specs, get_semver, sizeof_fmt
 
 
 def _get_package_versions_in_upstream(target_packages_match_spec_out, target_version) -> dict[str, str]:
@@ -48,7 +49,9 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
     return package_to_version_mapping
 
 
-def _generate_report(package_versions_in_upstream, target_packages_match_spec_out, image_config, version):
+def _generate_staleness_report_per_image(
+    package_versions_in_upstream, target_packages_match_spec_out, image_config, version
+):
     print("\n# Staleness Report: " + str(version) + "(" + image_config["image_type"] + ")\n")
     print("Package | Current Version in the Distribution image | Latest Relevant Version in " "Upstream")
     print("---|---|---")
@@ -89,6 +92,90 @@ def _get_installed_package_versions_and_conda_versions(
     return target_packages_match_spec_out, latest_package_versions_in_upstream
 
 
+def _generate_python_package_size_report_per_image(base_version_dir, target_version_dir, image_config, target_version):
+    print("\n# Python Package Size Report: " + str(target_version) + "(" + image_config["image_type"] + ")\n")
+    target_pkg_metadata_file = f'{target_version_dir}/{image_config["package_metadata_filename"]}'
+    base_pkg_metadata_file = f'{base_version_dir}/{image_config["package_metadata_filename"]}'
+    if not os.path.exists(target_pkg_metadata_file):
+        raise Exception("No Python package metadata file found for target version, please try re-build the image.")
+    with open(target_pkg_metadata_file) as jsonfile:
+        target_pkg_metadata = json.load(jsonfile)
+    base_pkg_metadata = None
+    base_total_size = None
+    if not os.path.exists(base_pkg_metadata_file):
+        print("WARNING: No Python package metadata file found for base version, only partial results will be shown.")
+    else:
+        with open(base_pkg_metadata_file) as jsonfile:
+            base_pkg_metadata = json.load(jsonfile)
+        base_total_size = sum(d["size"] for d in base_pkg_metadata.values())
+
+    # Print out the total size change of all Python packages in the image.
+    target_total_size = sum(d["size"] for d in target_pkg_metadata.values())
+    total_size_delta_val = (target_total_size - base_total_size) if base_total_size else None
+    total_size_delta_rel = (total_size_delta_val / base_total_size) if base_total_size else None
+    print("\n## Python Packages Total Size Delta\n")
+    print("Current Version Total Size | Base Version Total Size | Size Change (abs) | Size Change (%)")
+    print("---|---|---|---")
+    print(
+        sizeof_fmt(target_total_size)
+        + "|"
+        + (sizeof_fmt(base_total_size) if base_total_size else "-")
+        + "|"
+        + (sizeof_fmt(total_size_delta_val) if total_size_delta_val else "-")
+        + "|"
+        + (str(round(total_size_delta_rel * 100, 2)) if total_size_delta_rel else "-")
+    )
+
+    # Print out the largest 20 Python packages in the image, sorted decending by size.
+    print("\n## Top-20 Largest Python Packages\n")
+    print("Package | Current Version in the Distribution image | Size")
+    print("---|---|---")
+
+    for i, (k, v) in enumerate(target_pkg_metadata.items()):
+        if i >= 20:
+            break
+        print(k + "|" + v["version"] + "|" + sizeof_fmt(v["size"]))
+
+    # Print out the size delta for each changed/new package in the image, sorted decending by size.
+    if base_pkg_metadata:
+        print("\n## Python Package Size Delta\n")
+        print(
+            "Package | Current Version in the Distribution image | Latest Relevant Version in Upstream | Size Change (abs) | Size Change (%)"
+        )
+        print("---|---|---|---|---")
+        package_size_delta_dict = dict()
+        for k, v in target_pkg_metadata.items():
+            if k not in base_pkg_metadata or base_pkg_metadata[k]["version"] != v["version"]:
+                base_pkg_size = base_pkg_metadata[k]["size"] if k in base_pkg_metadata else 0
+                size_delta_abs = v["size"] - base_pkg_size
+                package_size_delta_dict[k] = {
+                    "current_version": v["version"],
+                    "base_version": base_pkg_metadata[k]["version"] if k in base_pkg_metadata else "-",
+                    "size_delta_abs": size_delta_abs,
+                    "size_delta_rel": (size_delta_abs / base_pkg_size) if base_pkg_size else None,
+                }
+        # Sort the package size delta based on absolute size diff in decending order.
+        package_size_delta_dict = {
+            k: v
+            for k, v in sorted(
+                package_size_delta_dict.items(), key=lambda item: item[1]["size_delta_abs"], reverse=True
+            )
+        }
+
+        for k, v in package_size_delta_dict.items():
+            print(
+                k
+                + "|"
+                + v["current_version"]
+                + "|"
+                + v["base_version"]
+                + "|"
+                + sizeof_fmt(v["size_delta_abs"])
+                + "|"
+                + (str(round(v["size_delta_rel"] * 100, 2)) if v["size_delta_rel"] else "-")
+            )
+
+
 def generate_package_staleness_report(args):
     target_version = get_semver(args.target_patch_version)
     target_version_dir = get_dir_for_version(target_version)
@@ -97,6 +184,18 @@ def generate_package_staleness_report(args):
             target_packages_match_spec_out,
             latest_package_versions_in_upstream,
         ) = _get_installed_package_versions_and_conda_versions(image_config, target_version_dir, target_version)
-        _generate_report(
+        _generate_staleness_report_per_image(
             latest_package_versions_in_upstream, target_packages_match_spec_out, image_config, target_version
+        )
+
+
+def generate_package_size_report(args):
+    target_version = get_semver(args.target_patch_version)
+    target_version_dir = get_dir_for_version(target_version)
+
+    base_version = get_semver(args.base_patch_version)
+    base_version_dir = get_dir_for_version(base_version)
+    for image_config in _image_generator_configs:
+        _generate_python_package_size_report_per_image(
+            base_version_dir, target_version_dir, image_config, target_version
         )

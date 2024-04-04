@@ -55,6 +55,16 @@ VERSION=<Insert SageMaker Distribution version in semver format here. example: 0
 python ./src/main.py generate-staleness-report --target-patch-version $VERSION
 ```
 
+### Package Size Delta Report
+
+If you want to generate/view the package size delta report for a given
+SageMaker distribution image version comparing to a base image version, then run the following command:
+
+```
+BASE_PATCH_VERSION=<Insert SageMaker Distribution version of the base image in semver format here. example: 1.6.1>
+VERSION=<Insert SageMaker Distribution version of the target image in semver format here. example: 1.6.2>
+python ./src/main.py generate-size-report --base-patch-version $BASE_PATCH_VERSION --target-patch-version $VERSION
+```
 
 
 ## Example use cases
