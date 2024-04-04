@@ -29,6 +29,7 @@ _docker_client = docker.from_env()
         ("pytorch.examples.Dockerfile", ["pytorch"]),
         ("tensorflow.examples.Dockerfile", ["tensorflow"]),
         ("jupyter-ai.test.Dockerfile", ["jupyter-ai"]),
+        ("jupyter-collaboration.test.Dockerfile", ["jupyter-collaboration"]),
         ("jupyter-dash.test.Dockerfile", ["jupyter-dash"]),
         ("jupyterlab-lsp.test.Dockerfile", ["jupyterlab-lsp"]),
         ("jupyter-lsp-server.test.Dockerfile", ["jupyter-lsp-server"]),
