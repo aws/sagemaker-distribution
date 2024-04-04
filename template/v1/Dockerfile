@@ -50,6 +50,11 @@ RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/pr
 RUN mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 
+# create dir to store user data files
+RUN mkdir -p /opt/amazon/sagemaker/user-data \
+    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/user-data
+
+
 # Merge in OS directory tree contents.
 RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
 COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
@@ -189,3 +194,4 @@ RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;impor
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json
 
 ENV SHELL=/bin/bash
+
