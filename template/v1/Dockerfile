@@ -6,6 +6,7 @@ ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
+ARG DB_ROOT_DIR="/opt/db"
 ARG DIRECTORY_TREE_STAGE_DIR="${AMZN_BASE}/dir-staging"
 
 ARG NB_USER="sagemaker-user"
@@ -30,7 +31,7 @@ ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
     chmod g+w /etc/passwd && \
@@ -48,6 +49,11 @@ RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/pr
 # CodeEditor - create server, user data dirs
 RUN mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data
+
+# create dir to store user data files
+RUN mkdir -p /opt/amazon/sagemaker/user-data \
+    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/user-data
+
 
 # Merge in OS directory tree contents.
 RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
@@ -108,6 +114,9 @@ RUN install-glue-kernels && \
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
 COPY patch_glue_spark.json /opt/conda/share/jupyter/kernels/glue_spark/kernel.json
 
+# Configure RTC - disable jupyter_collaboration by default
+RUN jupyter labextension disable @jupyter/collaboration-extension
+
 USER root
 RUN HOME_DIR="/home/${NB_USER}/licenses" \
     && mkdir -p ${HOME_DIR} \
@@ -131,6 +140,11 @@ RUN rm -rf /etc/code-editor
 # Create supervisord runtime directory
 RUN mkdir -p /var/run/supervisord && \
     chmod a+rw /var/run/supervisord
+
+# Create root directory for DB
+# Create logging directories for supervisor
+RUN mkdir -p $DB_ROOT_DIR && \
+    chmod a+rw $DB_ROOT_DIR
 
 USER $MAMBA_USER
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
@@ -180,3 +194,4 @@ RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;impor
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json
 
 ENV SHELL=/bin/bash
+

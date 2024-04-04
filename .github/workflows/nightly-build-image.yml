@@ -1,4 +1,4 @@
-name: Build New Image Version
+name: Build New Image Version (Beta)
 on: 
   workflow_dispatch:
   # Run every night at 4:00PM PDT

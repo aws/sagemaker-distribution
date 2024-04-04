@@ -15,12 +15,12 @@ jobs:
       - uses: actions/checkout@v4
       - name: Generate patch version matrix
         id: gen-mat
-        # Output looks like :matrix={"version":["0.0.2","0.1.2",..."1.4.1"]}
+        # Output looks like :matrix={"version":["1.0.2","1.1.2",..."1.4.1"]}
         # For each minor, get highest patch version. Use each patch
-        # as base version. Use this patch as base version.
+        # as base version.
         run: |
           versions=("{\"version\":[")
-          for minor in build_artifacts/v*/*; do
+          for minor in build_artifacts/v1/*; do
             minor_version="${minor##*/}"
             highest_patch=$(ls $minor | sort -t. -k3,3n | tail -n1)
             versions+="\"${highest_patch#v}\""
@@ -41,6 +41,7 @@ jobs:
       matrix: ${{ fromJson(needs.generate-version-matrix.outputs.matrix) }}
       fail-fast: false
     uses: aws/sagemaker-distribution/.github/workflows/build-image.yml@main
+    secrets: inherit
     with:
       release-type: "patch"
       base-version: ${{ matrix.version }}
