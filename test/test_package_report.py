@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import json
+
 import pytest
 
 pytestmark = pytest.mark.unit
@@ -8,7 +9,10 @@ pytestmark = pytest.mark.unit
 from unittest.mock import patch
 
 from config import _image_generator_configs
-from package_report import _get_installed_package_versions_and_conda_versions, _generate_python_package_size_report_per_image
+from package_report import (
+    _generate_python_package_size_report_per_image,
+    _get_installed_package_versions_and_conda_versions,
+)
 from utils import get_match_specs, get_semver
 
 
@@ -34,18 +38,9 @@ https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.cond
 
 def _create_base_image_package_metadata(file_path):
     metadata = {
-        "libllvm18": {
-            "version": "18.1.1",
-            "size": 37301754
-        },
-        "python": {
-            "version": "3.12.1",
-            "size": 30213651
-        },
-        "tqdm": {
-            "version": "4.66.2",
-            "size": 89567
-        }
+        "libllvm18": {"version": "18.1.1", "size": 37301754},
+        "python": {"version": "3.12.1", "size": 30213651},
+        "tqdm": {"version": "4.66.2", "size": 89567},
     }
     with open(file_path, "w") as metadata_file:
         json.dump(metadata, metadata_file)
@@ -53,22 +48,10 @@ def _create_base_image_package_metadata(file_path):
 
 def _create_target_image_package_metadata(file_path):
     metadata = {
-        "libllvm18": {
-            "version": "18.1.2",
-            "size": 38407510
-        },
-        "python": {
-            "version": "3.12.2",
-            "size": 32312631
-        },
-        "libclang": {
-            "version": "18.1.2",
-            "size": 19272925
-        },
-        "tqdm": {
-            "version": "4.66.2",
-            "size": 89567
-        }
+        "libllvm18": {"version": "18.1.2", "size": 38407510},
+        "python": {"version": "3.12.2", "size": 32312631},
+        "libclang": {"version": "18.1.2", "size": 19272925},
+        "tqdm": {"version": "4.66.2", "size": 89567},
     }
     with open(file_path, "w") as metadata_file:
         json.dump(metadata, metadata_file)
@@ -148,7 +131,9 @@ def test_generate_package_size_report(capsys, tmp_path):
     target_version_metadata_file = target_version_path / _image_generator_configs[1]["package_metadata_filename"]
     _create_target_image_package_metadata(target_version_metadata_file)
 
-    _generate_python_package_size_report_per_image(base_version_path, target_version_path, _image_generator_configs[1], "1.6.2")
+    _generate_python_package_size_report_per_image(
+        base_version_path, target_version_path, _image_generator_configs[1], "1.6.2"
+    )
 
     captured = capsys.readouterr()
     # Assert total size delta report
