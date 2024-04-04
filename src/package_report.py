@@ -92,8 +92,11 @@ def _get_installed_package_versions_and_conda_versions(
     return target_packages_match_spec_out, latest_package_versions_in_upstream
 
 
-def _generate_python_package_size_report_per_image(base_version_dir, target_version_dir, image_config, target_version):
-    print("\n# Python Package Size Report: " + str(target_version) + "(" + image_config["image_type"] + ")\n")
+def _generate_python_package_size_report_per_image(
+    base_version_dir, target_version_dir, image_config, base_version, target_version
+):
+    print("\n# Python Package Size Report " + "(" + image_config["image_type"].upper() + ")\n")
+    print("\n### Target Version: " + str(target_version) + " | Base Version:" + str(base_version) + "\n")
     target_pkg_metadata_file = f'{target_version_dir}/{image_config["package_metadata_filename"]}'
     base_pkg_metadata_file = f'{base_version_dir}/{image_config["package_metadata_filename"]}'
     if not os.path.exists(target_pkg_metadata_file):
@@ -114,7 +117,7 @@ def _generate_python_package_size_report_per_image(base_version_dir, target_vers
     total_size_delta_val = (target_total_size - base_total_size) if base_total_size else None
     total_size_delta_rel = (total_size_delta_val / base_total_size) if base_total_size else None
     print("\n## Python Packages Total Size Delta\n")
-    print("Current Version Total Size | Base Version Total Size | Size Change (abs) | Size Change (%)")
+    print("Target Version Total Size | Base Version Total Size | Size Change (abs) | Size Change (%)")
     print("---|---|---|---")
     print(
         sizeof_fmt(target_total_size)
@@ -128,7 +131,7 @@ def _generate_python_package_size_report_per_image(base_version_dir, target_vers
 
     # Print out the largest 20 Python packages in the image, sorted decending by size.
     print("\n## Top-20 Largest Python Packages\n")
-    print("Package | Current Version in the Distribution image | Size")
+    print("Package | Version in the Target Image | Size")
     print("---|---|---")
 
     for i, (k, v) in enumerate(target_pkg_metadata.items()):
@@ -139,9 +142,7 @@ def _generate_python_package_size_report_per_image(base_version_dir, target_vers
     # Print out the size delta for each changed/new package in the image, sorted decending by size.
     if base_pkg_metadata:
         print("\n## Python Package Size Delta\n")
-        print(
-            "Package | Current Version in the Distribution image | Latest Relevant Version in Upstream | Size Change (abs) | Size Change (%)"
-        )
+        print("Package | Version in the Target Image | Version in the Base Image | Size Change (abs) | Size Change (%)")
         print("---|---|---|---|---")
         package_size_delta_dict = dict()
         for k, v in target_pkg_metadata.items():
@@ -149,7 +150,7 @@ def _generate_python_package_size_report_per_image(base_version_dir, target_vers
                 base_pkg_size = base_pkg_metadata[k]["size"] if k in base_pkg_metadata else 0
                 size_delta_abs = v["size"] - base_pkg_size
                 package_size_delta_dict[k] = {
-                    "current_version": v["version"],
+                    "target_version": v["version"],
                     "base_version": base_pkg_metadata[k]["version"] if k in base_pkg_metadata else "-",
                     "size_delta_abs": size_delta_abs,
                     "size_delta_rel": (size_delta_abs / base_pkg_size) if base_pkg_size else None,
@@ -166,7 +167,7 @@ def _generate_python_package_size_report_per_image(base_version_dir, target_vers
             print(
                 k
                 + "|"
-                + v["current_version"]
+                + v["target_version"]
                 + "|"
                 + v["base_version"]
                 + "|"
@@ -197,5 +198,5 @@ def generate_package_size_report(args):
     base_version_dir = get_dir_for_version(base_version)
     for image_config in _image_generator_configs:
         _generate_python_package_size_report_per_image(
-            base_version_dir, target_version_dir, image_config, target_version
+            base_version_dir, target_version_dir, image_config, base_version, target_version
         )
