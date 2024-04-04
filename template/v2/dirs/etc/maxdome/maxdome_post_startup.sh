@@ -7,7 +7,7 @@ dataZoneUserId=$(grep -o '"DataZoneUserId":"[^"]*"' "$sourceMetaData" | cut -d '
 dataZoneProjectRepositoryName=$(grep -o '"DataZoneProjectRepositoryName":"[^"]*"' "$sourceMetaData" | cut -d ':' -f 2 | tr -d '"')
 
 # Run AWS CLI command to get the username from DataZone User Profile.
-response=$( aws datazone get-user-profile --domain-identifier "$dataZoneDomainId" --user-identifier "$dataZoneUserId" )
+response=$( aws datazone get-user-profile --domain-identifier "$dataZoneDomainId" --user-identifier "$dataZoneUserId" --region "$AWS_REGION" )
 username=$(echo "$response" | awk -F':' '/"username"/{print $2}' | tr -d '"'| xargs)
 
 # Setting up the Git identity for the user . 
