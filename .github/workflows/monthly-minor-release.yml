@@ -39,6 +39,7 @@ jobs:
       matrix: ${{ fromJson(needs.generate-version-matrix.outputs.matrix) }}
       fail-fast: false
     uses: aws/sagemaker-distribution/.github/workflows/build-image.yml@main
+    secrets: inherit
     with:
       release-type: "minor"
       base-version: ${{ matrix.version }}
