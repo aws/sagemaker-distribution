@@ -96,7 +96,7 @@ def _generate_python_package_size_report_per_image(
     base_version_dir, target_version_dir, image_config, base_version, target_version
 ):
     print("\n# Python Package Size Report " + "(" + image_config["image_type"].upper() + ")\n")
-    print("\n### Target Version: " + str(target_version) + " | Base Version:" + str(base_version) + "\n")
+    print("\n### Target Image Version: " + str(target_version) + " | Base Image Version:" + str(base_version) + "\n")
     target_pkg_metadata_file = f'{target_version_dir}/{image_config["package_metadata_filename"]}'
     base_pkg_metadata_file = f'{base_version_dir}/{image_config["package_metadata_filename"]}'
     if not os.path.exists(target_pkg_metadata_file):
@@ -116,7 +116,7 @@ def _generate_python_package_size_report_per_image(
     target_total_size = sum(d["size"] for d in target_pkg_metadata.values())
     total_size_delta_val = (target_total_size - base_total_size) if base_total_size else None
     total_size_delta_rel = (total_size_delta_val / base_total_size) if base_total_size else None
-    print("\n## Python Packages Total Size Delta\n")
+    print("\n## Python Packages Total Size Summary\n")
     print("Target Version Total Size | Base Version Total Size | Size Change (abs) | Size Change (%)")
     print("---|---|---|---")
     print(
