@@ -96,7 +96,7 @@ def _generate_python_package_size_report_per_image(
     base_version_dir, target_version_dir, image_config, base_version, target_version
 ):
     print("\n# Python Package Size Report " + "(" + image_config["image_type"].upper() + ")\n")
-    print("\n### Target Image Version: " + str(target_version) + " | Base Image Version:" + str(base_version) + "\n")
+    print("\n### Target Image Version: " + str(target_version) + " | Base Image Version: " + str(base_version) + "\n")
     target_pkg_metadata_file = f'{target_version_dir}/{image_config["package_metadata_filename"]}'
     base_pkg_metadata_file = f'{base_version_dir}/{image_config["package_metadata_filename"]}'
     if not os.path.exists(target_pkg_metadata_file):
