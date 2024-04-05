@@ -132,7 +132,7 @@ def test_generate_package_size_report(capsys, tmp_path):
     _create_target_image_package_metadata(target_version_metadata_file)
 
     _generate_python_package_size_report_per_image(
-        base_version_path, target_version_path, _image_generator_configs[1], "1.6.2"
+        base_version_path, target_version_path, _image_generator_configs[1], "1.6.1", "1.6.2"
     )
 
     captured = capsys.readouterr()
@@ -144,6 +144,35 @@ def test_generate_package_size_report(capsys, tmp_path):
     assert "python|3.12.2|3.12.1|2.00MB|6.95" in captured.out
     assert "libllvm18|18.1.2|18.1.1|1.05MB|2.96" in captured.out
     assert "tqdm|4.66.2|4.66.2" not in captured.out
+
+    # Assert top-k largest package report
+    assert "libllvm18|18.1.2|36.63MB" in captured.out
+    assert "python|3.12.2|30.82MB" in captured.out
+    assert "libclang|18.1.2|18.38MB" in captured.out
+    assert "tqdm|4.66.2|87.47KB" in captured.out
+
+
+def test_generate_package_size_report_when_base_version_is_not_present(capsys, tmp_path):
+    base_version_path = tmp_path / "base"
+    base_version_path.mkdir()
+    base_version_metadata_file = base_version_path / _image_generator_configs[1]["package_metadata_filename"]
+    _create_base_image_package_metadata(base_version_metadata_file)
+    target_version_path = tmp_path / "target"
+    target_version_path.mkdir()
+    target_version_metadata_file = target_version_path / _image_generator_configs[1]["package_metadata_filename"]
+    _create_target_image_package_metadata(target_version_metadata_file)
+
+    _generate_python_package_size_report_per_image(
+        None, target_version_path, _image_generator_configs[1], None, "1.6.2"
+    )
+
+    captured = capsys.readouterr()
+    # Assert total size delta report
+    assert (
+        "WARNING: No Python package metadata file found for base image, only partial results will be shown."
+        in captured.out
+    )
+    assert "85.91MB|-|-|-" in captured.out
 
     # Assert top-k largest package report
     assert "libllvm18|18.1.2|36.63MB" in captured.out

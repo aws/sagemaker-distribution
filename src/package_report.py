@@ -98,15 +98,17 @@ def _generate_python_package_size_report_per_image(
     print("\n# Python Package Size Report " + "(" + image_config["image_type"].upper() + ")\n")
     print("\n### Target Image Version: " + str(target_version) + " | Base Image Version: " + str(base_version) + "\n")
     target_pkg_metadata_file = f'{target_version_dir}/{image_config["package_metadata_filename"]}'
-    base_pkg_metadata_file = f'{base_version_dir}/{image_config["package_metadata_filename"]}'
+    base_pkg_metadata_file = (
+        f'{base_version_dir}/{image_config["package_metadata_filename"]}' if base_version_dir else None
+    )
     if not os.path.exists(target_pkg_metadata_file):
-        raise Exception("No Python package metadata file found for target version, please try re-build the image.")
+        raise Exception("No Python package metadata file found for target image, please try re-build the image.")
     with open(target_pkg_metadata_file) as jsonfile:
         target_pkg_metadata = json.load(jsonfile)
     base_pkg_metadata = None
     base_total_size = None
-    if not os.path.exists(base_pkg_metadata_file):
-        print("WARNING: No Python package metadata file found for base version, only partial results will be shown.")
+    if not base_pkg_metadata_file or not os.path.exists(base_pkg_metadata_file):
+        print("WARNING: No Python package metadata file found for base image, only partial results will be shown.")
     else:
         with open(base_pkg_metadata_file) as jsonfile:
             base_pkg_metadata = json.load(jsonfile)
@@ -194,8 +196,8 @@ def generate_package_size_report(args):
     target_version = get_semver(args.target_patch_version)
     target_version_dir = get_dir_for_version(target_version)
 
-    base_version = get_semver(args.base_patch_version)
-    base_version_dir = get_dir_for_version(base_version)
+    base_version = get_semver(args.base_patch_version) if args.base_patch_version else None
+    base_version_dir = get_dir_for_version(base_version) if base_version else None
     for image_config in _image_generator_configs:
         _generate_python_package_size_report_per_image(
             base_version_dir, target_version_dir, image_config, base_version, target_version
