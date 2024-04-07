@@ -14,8 +14,13 @@ aws configure set credential_process "/etc/maxdome/get_credential.sh" --profile 
 mkdir -p /opt/conda/share/jupyter/lab/settings
 cp /etc/maxdome/page_config.json /opt/conda/share/jupyter/lab/settings
 
-jupyter-kernelspec remove -f -y pysparkkernel
-jupyter-kernelspec remove -f -y sparkkernel
+if [[ $(jupyter kernelspec list | grep pysparkkernel) ]]; then
+  jupyter-kernelspec remove -f -y pysparkkernel
+fi
+
+if [[ $(jupyter kernelspec list | grep sparkkernel) ]]; then
+  jupyter-kernelspec remove -f -y sparkkernel
+fi
 
 jupyter lab --ip 0.0.0.0 --port 8888 \
   --ServerApp.token='' \
