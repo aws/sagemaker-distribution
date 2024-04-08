@@ -29,7 +29,6 @@ kernel_type=$2
 connection_file=$4
 
 maxdome_connection=`maxdome get connection --name $MAXDOME_CONNECTION_NAME --authorization-mode PROJECT --with-secret`
-export glue_role_arn=$(echo "$maxdome_connection" | jq .environmentUserRoleArn -r)
 export AWS_REGION=$(echo "$maxdome_connection" | jq .location.awsRegion -r)
 
 export_if_key_exists "$maxdome_connection" "sparkGlueProperties.glueConnection.Name" "glue_connections" 
