@@ -1,2 +1,1 @@
 #Add any additional packages here
-conda-forge::git-remote-codecommit[version='>=0.0.0']
