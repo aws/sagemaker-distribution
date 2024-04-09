@@ -59,3 +59,26 @@ def sizeof_fmt(num):
             return f"{num:3.2f}{unit}"
         num /= 1024.0
     return f"{num:.2f}TB"
+
+
+def create_markdown_table(headers, rows):
+    """Loop through a data rows and return a markdown table as a multi-line string.
+
+    headers -- A list of strings, each string represents a column name
+    rows -- A list of dicts, each dict is a row
+    """
+    markdowntable = ""
+    # Make a string of all the keys in the first dict with pipes before after and between each key
+    markdownheader = " | ".join(headers)
+    # Make a header separator line with dashes instead of key names
+    markdownheaderseparator = "---|" * (len(headers) - 1) + "---"
+    # Add the header row and separator to the table
+    markdowntable += markdownheader + "\n"
+    markdowntable += markdownheaderseparator + "\n"
+    # Loop through the list of dictionaries outputting the rows
+    for row in rows:
+        markdownrow = ""
+        for k, v in row.items():
+            markdownrow += str(v) + "|"
+        markdowntable += markdownrow[:-1] + "\n"
+    return markdowntable

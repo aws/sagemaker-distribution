@@ -1,12 +1,19 @@
 import json
 import os
+from itertools import islice
 
 import conda.cli.python_api
 from conda.models.match_spec import MatchSpec
 
 from config import _image_generator_configs
 from dependency_upgrader import _dependency_metadata
-from utils import get_dir_for_version, get_match_specs, get_semver, sizeof_fmt
+from utils import (
+    create_markdown_table,
+    get_dir_for_version,
+    get_match_specs,
+    get_semver,
+    sizeof_fmt,
+)
 
 
 def _get_package_versions_in_upstream(target_packages_match_spec_out, target_version) -> dict[str, str]:
@@ -119,64 +126,67 @@ def _generate_python_package_size_report_per_image(
     total_size_delta_val = (target_total_size - base_total_size) if base_total_size else None
     total_size_delta_rel = (total_size_delta_val / base_total_size) if base_total_size else None
     print("\n## Python Packages Total Size Summary\n")
-    print("Target Version Total Size | Base Version Total Size | Size Change (abs) | Size Change (%)")
-    print("---|---|---|---")
     print(
-        sizeof_fmt(target_total_size)
-        + "|"
-        + (sizeof_fmt(base_total_size) if base_total_size else "-")
-        + "|"
-        + (sizeof_fmt(total_size_delta_val) if total_size_delta_val else "-")
-        + "|"
-        + (str(round(total_size_delta_rel * 100, 2)) if total_size_delta_rel else "-")
+        create_markdown_table(
+            ["Target Version Total Size", "Base Version Total Size", "Size Change (abs)", "Size Change (%)"],
+            [
+                {
+                    "target_total_size": sizeof_fmt(target_total_size),
+                    "base_total_size": sizeof_fmt(base_total_size) if base_total_size else "-",
+                    "size_delta_val": sizeof_fmt(total_size_delta_val) if total_size_delta_val else "-",
+                    "size_delta_rel": str(round(total_size_delta_rel * 100, 2)) if total_size_delta_rel else "-",
+                }
+            ],
+        )
     )
 
     # Print out the largest 20 Python packages in the image, sorted decending by size.
     print("\n## Top-20 Largest Python Packages\n")
-    print("Package | Version in the Target Image | Size")
-    print("---|---|---")
-
-    for i, (k, v) in enumerate(target_pkg_metadata.items()):
-        if i >= 20:
-            break
-        print(k + "|" + v["version"] + "|" + sizeof_fmt(v["size"]))
+    print(
+        create_markdown_table(
+            ["Package", "Version in the Target Image", "Size"],
+            [
+                {"pkg": k, "version": v["version"], "size": sizeof_fmt(v["size"])}
+                for k, v in islice(target_pkg_metadata.items(), None, 20)
+            ],
+        )
+    )
 
     # Print out the size delta for each changed/new package in the image, sorted decending by size.
     if base_pkg_metadata:
         print("\n## Python Package Size Delta\n")
-        print("Package | Version in the Target Image | Version in the Base Image | Size Change (abs) | Size Change (%)")
-        print("---|---|---|---|---")
-        package_size_delta_dict = dict()
+        package_size_delta_list = []
         for k, v in target_pkg_metadata.items():
             if k not in base_pkg_metadata or base_pkg_metadata[k]["version"] != v["version"]:
                 base_pkg_size = base_pkg_metadata[k]["size"] if k in base_pkg_metadata else 0
                 size_delta_abs = v["size"] - base_pkg_size
-                package_size_delta_dict[k] = {
-                    "target_version": v["version"],
-                    "base_version": base_pkg_metadata[k]["version"] if k in base_pkg_metadata else "-",
-                    "size_delta_abs": size_delta_abs,
-                    "size_delta_rel": (size_delta_abs / base_pkg_size) if base_pkg_size else None,
-                }
+                package_size_delta_list.append(
+                    {
+                        "package": k,
+                        "target_version": v["version"],
+                        "base_version": base_pkg_metadata[k]["version"] if k in base_pkg_metadata else "-",
+                        "size_delta_abs": size_delta_abs,
+                        "size_delta_rel": (size_delta_abs / base_pkg_size) if base_pkg_size else None,
+                    }
+                )
         # Sort the package size delta based on absolute size diff in decending order.
-        package_size_delta_dict = {
-            k: v
-            for k, v in sorted(
-                package_size_delta_dict.items(), key=lambda item: item[1]["size_delta_abs"], reverse=True
-            )
-        }
+        package_size_delta_list = sorted(package_size_delta_list, key=lambda item: item["size_delta_abs"], reverse=True)
+        for v in package_size_delta_list:
+            v["size_delta_rel"] = str(round(v["size_delta_rel"] * 100, 2)) if v["size_delta_rel"] else "-"
+            v["size_delta_abs"] = sizeof_fmt(v["size_delta_abs"])
 
-        for k, v in package_size_delta_dict.items():
-            print(
-                k
-                + "|"
-                + v["target_version"]
-                + "|"
-                + v["base_version"]
-                + "|"
-                + sizeof_fmt(v["size_delta_abs"])
-                + "|"
-                + (str(round(v["size_delta_rel"] * 100, 2)) if v["size_delta_rel"] else "-")
+        print(
+            create_markdown_table(
+                [
+                    "Package",
+                    "Version in the Target Image",
+                    "Version in the Base Image",
+                    "Size Change (abs)",
+                    "Size Change (%)",
+                ],
+                package_size_delta_list,
             )
+        )
 
 
 def generate_package_staleness_report(args):
