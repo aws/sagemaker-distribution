@@ -240,9 +240,6 @@ def _build_local_images(
     target_version: Version, target_ecr_repo_list: list[str], force: bool, skip_tests=False
 ) -> (list[str], list[dict[str, str]]):
     target_version_dir = get_dir_for_version(target_version)
-    # Copy the script for collecting python package metadata to target version directory.
-    # This is a temporary solution, should be modified once we separate the SMD tool and the build artifacts.
-    shutil.copy("src/collect_pkg_metadata.py", target_version_dir)
 
     generated_image_ids = []
     generated_image_versions = []
@@ -273,9 +270,6 @@ def _build_local_images(
         with open(f'{target_version_dir}/{config["env_out_filename"]}', "wb") as f:
             f.write(container_logs)
 
-        # Generate Python package metadata for the image built.
-        _generate_python_package_metadata(target_version_dir, image, config)
-
         # Generate change logs. Use the original image generator config which contains the name
         # of the actual env.in file instead of the 'config'.
         generate_change_log(target_version, image_generator_config)
@@ -293,10 +287,6 @@ def _build_local_images(
         image.tag(
             "localhost/sagemaker-distribution", config["image_tag_generator"].format(image_version=str(target_version))
         )
-
-    # Clean up the script for collecting python package metadata from build artifacts.
-    if os.path.exists(f"{target_version_dir}/collect_pkg_metadata.py"):
-        os.remove(f"{target_version_dir}/collect_pkg_metadata.py")
 
     return generated_image_ids, generated_image_versions
 
@@ -339,19 +329,6 @@ def _get_ecr_credentials(region, repository: str) -> (str, str):
         # If we are using the ecr private client, then fetch the first index from authorizationData
         _authorization_data = _authorization_data[0]
     return base64.b64decode(_authorization_data["authorizationToken"]).decode().split(":")
-
-
-def _generate_python_package_metadata(target_version_dir, image, image_config):
-    try:
-        pkg_metadata = _docker_client.containers.run(
-            image=image.id, detach=False, auto_remove=True, command=f"python /tmp/collect_pkg_metadata.py"
-        )
-        with open(f'{target_version_dir}/{image_config["package_metadata_filename"]}', "wb") as f:
-            f.write(pkg_metadata)
-    except ContainerError as e:
-        print(e.container.logs().decode("utf-8"))
-        # After printing the logs, raise the exception (which is the old behavior)
-        raise
 
 
 def get_arg_parser():

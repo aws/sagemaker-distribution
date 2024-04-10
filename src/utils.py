@@ -1,5 +1,7 @@
+import json
 import os
 
+import conda.cli.python_api
 from conda.env.specs import RequirementsSpec
 from conda.models.match_spec import MatchSpec
 from semver import Version
@@ -82,3 +84,22 @@ def create_markdown_table(headers, rows):
             markdownrow += str(v) + "|"
         markdowntable += markdownrow[:-1] + "\n"
     return markdowntable
+
+
+def pull_conda_package_metadata(image_config, image_artifact_dir):
+    results = dict()
+    env_out_file_name = image_config["env_out_filename"]
+    match_spec_out = get_match_specs(image_artifact_dir + "/" + env_out_file_name)
+
+    target_packages_match_spec_out = {k: v for k, v in match_spec_out.items()}
+
+    for package, match_spec_out in target_packages_match_spec_out.items():
+        if str(match_spec_out).startswith("conda-forge"):
+            # Pull package metadata from conda-forge and dump into json file
+            search_result = conda.cli.python_api.run_command("search", str(match_spec_out), "--json")
+            package_metadata = json.loads(search_result[0])[package][0]
+            results[package] = {"version": package_metadata["version"], "size": package_metadata["size"]}
+    # Sort the pakcage sizes in decreasing order
+    results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1]["size"], reverse=True)}
+
+    return results

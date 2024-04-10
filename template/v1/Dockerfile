@@ -71,9 +71,6 @@ RUN mkdir -p /etc/code-editor/extensions && \
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
 
-# Util tool for collecting python package metadata
-COPY --chown=$MAMBA_USER:$MAMBA_USER ./collect_pkg_metadata.p[y] /tmp/
-
 # Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
 # will happen.
 RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
@@ -197,4 +194,3 @@ RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;impor
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json
 
 ENV SHELL=/bin/bash
-
