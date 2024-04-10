@@ -1,7 +1,5 @@
 from __future__ import absolute_import
 
-import json
-
 import pytest
 
 pytestmark = pytest.mark.unit
@@ -36,25 +34,21 @@ https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.cond
         )
 
 
-def _create_base_image_package_metadata(file_path):
-    metadata = {
+def _create_base_image_package_metadata():
+    return {
         "libllvm18": {"version": "18.1.1", "size": 37301754},
         "python": {"version": "3.12.1", "size": 30213651},
         "tqdm": {"version": "4.66.2", "size": 89567},
     }
-    with open(file_path, "w") as metadata_file:
-        json.dump(metadata, metadata_file)
 
 
-def _create_target_image_package_metadata(file_path):
-    metadata = {
+def _create_target_image_package_metadata():
+    return {
         "libllvm18": {"version": "18.1.2", "size": 38407510},
         "python": {"version": "3.12.2", "size": 32312631},
         "libclang": {"version": "18.1.2", "size": 19272925},
         "tqdm": {"version": "4.66.2", "size": 89567},
     }
-    with open(file_path, "w") as metadata_file:
-        json.dump(metadata, metadata_file)
 
 
 def test_get_match_specs(tmp_path):
@@ -121,18 +115,12 @@ def test_get_installed_package_versions_and_conda_versions(mock_run_command, tmp
     assert latest_package_versions_in_conda_forge["numpy"] == "2.1.0"
 
 
-def test_generate_package_size_report(capsys, tmp_path):
-    base_version_path = tmp_path / "base"
-    base_version_path.mkdir()
-    base_version_metadata_file = base_version_path / _image_generator_configs[1]["package_metadata_filename"]
-    _create_base_image_package_metadata(base_version_metadata_file)
-    target_version_path = tmp_path / "target"
-    target_version_path.mkdir()
-    target_version_metadata_file = target_version_path / _image_generator_configs[1]["package_metadata_filename"]
-    _create_target_image_package_metadata(target_version_metadata_file)
+def test_generate_package_size_report(capsys):
+    base_pkg_metadata = _create_base_image_package_metadata()
+    target_pkg_metadata = _create_target_image_package_metadata()
 
     _generate_python_package_size_report_per_image(
-        base_version_path, target_version_path, _image_generator_configs[1], "1.6.1", "1.6.2"
+        base_pkg_metadata, target_pkg_metadata, _image_generator_configs[1], "1.6.1", "1.6.2"
     )
 
     captured = capsys.readouterr()
@@ -152,18 +140,11 @@ def test_generate_package_size_report(capsys, tmp_path):
     assert "tqdm|4.66.2|87.47KB" in captured.out
 
 
-def test_generate_package_size_report_when_base_version_is_not_present(capsys, tmp_path):
-    base_version_path = tmp_path / "base"
-    base_version_path.mkdir()
-    base_version_metadata_file = base_version_path / _image_generator_configs[1]["package_metadata_filename"]
-    _create_base_image_package_metadata(base_version_metadata_file)
-    target_version_path = tmp_path / "target"
-    target_version_path.mkdir()
-    target_version_metadata_file = target_version_path / _image_generator_configs[1]["package_metadata_filename"]
-    _create_target_image_package_metadata(target_version_metadata_file)
+def test_generate_package_size_report_when_base_version_is_not_present(capsys):
+    target_pkg_metadata = _create_target_image_package_metadata()
 
     _generate_python_package_size_report_per_image(
-        None, target_version_path, _image_generator_configs[1], None, "1.6.2"
+        None, target_pkg_metadata, _image_generator_configs[1], None, "1.6.2"
     )
 
     captured = capsys.readouterr()
