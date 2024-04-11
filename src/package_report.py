@@ -66,11 +66,14 @@ def _generate_staleness_report_per_image(
         version_in_sagemaker_distribution = str(target_packages_match_spec_out[package].get("version")).removeprefix(
             "=="
         )
+        package_string = (
+            package
+            if version_in_sagemaker_distribution == package_versions_in_upstream[package]
+            else "${\color{red}" + package + "}$"
+        )
         staleness_report_rows.append(
             {
-                "package": package
-                if version_in_sagemaker_distribution == package_versions_in_upstream[package]
-                else "${\color{red}" + package + "}$",
+                "package": package_string,
                 "version_in_sagemaker_distribution": version_in_sagemaker_distribution,
                 "latest_relavant_version": package_versions_in_upstream[package],
             }
