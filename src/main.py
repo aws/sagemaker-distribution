@@ -408,11 +408,6 @@ def get_arg_parser():
     )
     package_size_parser.set_defaults(func=generate_package_size_report)
     package_size_parser.add_argument(
-        "--base-patch-version",
-        required=False,
-        help="Specify the base patch version for which the package size report needs to be " "generated.",
-    )
-    package_size_parser.add_argument(
         "--target-patch-version",
         required=True,
         help="Specify the target patch version for which the package size report needs to be " "generated.",

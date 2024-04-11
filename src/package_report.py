@@ -1,4 +1,5 @@
 import json
+import os
 from itertools import islice
 
 import conda.cli.python_api
@@ -193,7 +194,12 @@ def generate_package_size_report(args):
     target_version = get_semver(args.target_patch_version)
     target_version_dir = get_dir_for_version(target_version)
 
-    base_version = get_semver(args.base_patch_version) if args.base_patch_version else None
+    base_version = None
+    source_version_txt_file_path = f"{target_version_dir}/source-version.txt"
+    if os.path.exists(source_version_txt_file_path):
+        with open(source_version_txt_file_path, "r") as f:
+            source_patch_version = f.readline()
+        base_version = get_semver(source_patch_version)
     base_version_dir = get_dir_for_version(base_version) if base_version else None
     for image_config in _image_generator_configs:
         base_pkg_metadata = pull_conda_package_metadata(image_config, base_version_dir) if base_version else None
