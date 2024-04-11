@@ -61,24 +61,26 @@ def _generate_staleness_report_per_image(
     package_versions_in_upstream, target_packages_match_spec_out, image_config, version
 ):
     print("\n# Staleness Report: " + str(version) + "(" + image_config["image_type"] + ")\n")
-    print("Package | Current Version in the Distribution image | Latest Relevant Version in " "Upstream")
-    print("---|---|---")
+    staleness_report_rows = []
     for package in package_versions_in_upstream:
         version_in_sagemaker_distribution = str(target_packages_match_spec_out[package].get("version")).removeprefix(
             "=="
         )
-        if version_in_sagemaker_distribution == package_versions_in_upstream[package]:
-            print(package + "|" + version_in_sagemaker_distribution + "|" + package_versions_in_upstream[package])
-        else:
-            print(
-                "${\color{red}"
-                + package
-                + "}$"
-                + "|"
-                + version_in_sagemaker_distribution
-                + "|"
-                + package_versions_in_upstream[package]
-            )
+        staleness_report_rows.append(
+            {
+                "package": package
+                if version_in_sagemaker_distribution == package_versions_in_upstream[package]
+                else "${\color{red}" + package + "}$",
+                "version_in_sagemaker_distribution": version_in_sagemaker_distribution,
+                "latest_relavant_version": package_versions_in_upstream[package],
+            }
+        )
+    print(
+        create_markdown_table(
+            ["Package", "Current Version in the Distribution image", "Latest Relevant Version in " "Upstream"],
+            staleness_report_rows,
+        )
+    )
 
 
 def _get_installed_package_versions_and_conda_versions(
