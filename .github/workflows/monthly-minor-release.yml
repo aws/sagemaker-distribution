@@ -43,3 +43,15 @@ jobs:
     with:
       release-type: "minor"
       base-version: ${{ matrix.version }}
+  check-image-size:
+    name: Check Image Size
+    needs: start-monthly-minor
+    permissions:
+      pull-requests: write
+      contents: write
+    strategy:
+      matrix: ${{ fromJson(needs.generate-version-matrix.outputs.matrix) }}
+      fail-fast: false
+    uses: aws/sagemaker-distribution/.github/workflows/check-image-size.yml@main
+    with:
+      base-version: ${{ matrix.version }}

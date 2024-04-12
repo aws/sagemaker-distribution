@@ -412,6 +412,11 @@ def get_arg_parser():
         required=True,
         help="Specify the target patch version for which the package size report needs to be " "generated.",
     )
+    package_size_parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Validate package size delta and raise error if the validation failed.",
+    )
     return parser
 
 

@@ -105,10 +105,42 @@ def _get_installed_package_versions_and_conda_versions(
     return target_packages_match_spec_out, latest_package_versions_in_upstream
 
 
+def _validate_new_package_size(new_package_total_size, target_total_size, image_type, target_version):
+    # Validate if the new packages account for <= 5% of the total python package size of target image.
+    new_package_total_size_percent_threshold = 5
+    validate_result = None
+    new_package_total_size_percent = round(new_package_total_size / target_total_size * 100, 2)
+    new_package_total_size_percent_string = str(new_package_total_size_percent)
+    if new_package_total_size_percent > new_package_total_size_percent_threshold:
+        validate_result = (
+            "The total size of newly introduced Python packages accounts for more than "
+            + str(new_package_total_size_percent_threshold)
+            + "% of the total Python package size of "
+            + image_type
+            + " image, version "
+            + str(target_version)
+            + "! ("
+            + str(new_package_total_size_percent)
+            + "%)"
+        )
+        new_package_total_size_percent_string = "${\color{red}" + str(new_package_total_size_percent) + "}$"
+
+    print(
+        "The total size of newly introduced Python packages is "
+        + sizeof_fmt(new_package_total_size)
+        + ", accounts for "
+        + new_package_total_size_percent_string
+        + "% of the total package size."
+    )
+    return validate_result
+
+
 def _generate_python_package_size_report_per_image(
     base_pkg_metadata, target_pkg_metadata, image_config, base_version, target_version
 ):
-    print("\n# Python Package Size Report " + "(" + image_config["image_type"].upper() + ")\n")
+    validate_result = None
+    image_type = image_config["image_type"].upper()
+    print("\n# Python Package Size Report " + "(" + image_type + ")\n")
     print("\n### Target Image Version: " + str(target_version) + " | Base Image Version: " + str(base_version) + "\n")
     if not base_pkg_metadata or not base_version:
         print("WARNING: No Python package metadata file found for base image, only partial results will be shown.")
@@ -148,6 +180,7 @@ def _generate_python_package_size_report_per_image(
     # Print out the size delta for each changed/new package in the image, sorted decending by size.
     if base_pkg_metadata:
         print("\n## Python Package Size Delta\n")
+        new_package_total_size = 0
         package_size_delta_list = []
         for k, v in target_pkg_metadata.items():
             if k not in base_pkg_metadata or base_pkg_metadata[k]["version"] != v["version"]:
@@ -162,12 +195,17 @@ def _generate_python_package_size_report_per_image(
                         "size_delta_rel": (size_delta_abs / base_pkg_size) if base_pkg_size else None,
                     }
                 )
+                if k not in base_pkg_metadata:
+                    new_package_total_size += v["size"]
         # Sort the package size delta based on absolute size diff in decending order.
         package_size_delta_list = sorted(package_size_delta_list, key=lambda item: item["size_delta_abs"], reverse=True)
         for v in package_size_delta_list:
             v["size_delta_rel"] = str(round(v["size_delta_rel"] * 100, 2)) if v["size_delta_rel"] else "-"
             v["size_delta_abs"] = sizeof_fmt(v["size_delta_abs"])
 
+        validate_result = _validate_new_package_size(
+            new_package_total_size, target_total_size, image_type, target_version
+        )
         print(
             create_markdown_table(
                 [
@@ -180,6 +218,7 @@ def _generate_python_package_size_report_per_image(
                 package_size_delta_list,
             )
         )
+    return validate_result
 
 
 def generate_package_staleness_report(args):
@@ -206,10 +245,16 @@ def generate_package_size_report(args):
             source_patch_version = f.readline()
         base_version = get_semver(source_patch_version)
     base_version_dir = get_dir_for_version(base_version) if base_version else None
+    validate_results = []
     for image_config in _image_generator_configs:
         base_pkg_metadata = pull_conda_package_metadata(image_config, base_version_dir) if base_version else None
         target_pkg_metadata = pull_conda_package_metadata(image_config, target_version_dir)
 
-        _generate_python_package_size_report_per_image(
+        validate_result = _generate_python_package_size_report_per_image(
             base_pkg_metadata, target_pkg_metadata, image_config, base_version, target_version
         )
+        if validate_result:
+            validate_results.append(validate_result)
+
+    if args.validate and validate_results:
+        raise Exception(f"Size Validation Failed! Issues found: {validate_results}")

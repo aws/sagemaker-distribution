@@ -139,6 +139,12 @@ def test_generate_package_size_report(capsys):
     assert "libclang|18.1.2|18.38MB" in captured.out
     assert "tqdm|4.66.2|87.47KB" in captured.out
 
+    # Assert size validation message
+    assert (
+        "The total size of newly introduced Python packages is 18.38MB, accounts for ${\color{red}21.39}$% of the total package size."
+        in captured.out
+    )
+
 
 def test_generate_package_size_report_when_base_version_is_not_present(capsys):
     target_pkg_metadata = _create_target_image_package_metadata()
