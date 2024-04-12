@@ -1,4 +1,4 @@
-name: Check Image Size of Current Release
+name: Check Image Size
 on:
   # Manually call
   workflow_dispatch:
@@ -15,9 +15,9 @@ on:
 
 jobs:
   check-image-size:
-    name: Check image size
+    name: Run image size check
     runs-on: ubuntu-latest
-    if: github.repository == 'aws/sagemaker-distribution'
+    if: endsWith(github.repository, '/sagemaker-distribution')
     permissions:
       pull-requests: write
       contents: write
