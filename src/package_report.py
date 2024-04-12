@@ -256,5 +256,7 @@ def generate_package_size_report(args):
         if validate_result:
             validate_results.append(validate_result)
 
-    if args.validate and validate_results:
-        raise Exception(f"Size Validation Failed! Issues found: {validate_results}")
+    if args.validate:
+        if validate_results:
+            raise Exception(f"Size Validation Failed! Issues found: {validate_results}")
+        print("Pakcage Size Validation Passed!")
