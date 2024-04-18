@@ -1,5 +1,5 @@
 name: 🐛 Bug Report
-description: Create a report to help us reproduce and fix the bug. If you discover a potential security issue, please notify AWS/Amazon Security via our [vulnerability reporting page](http://aws.amazon.com/security/vulnerability-reporting/) or directly via email to [AWS Security](mailto:aws-security@amazon.com). Please do not create a public GitHub issue in this project.
+description: Create a report to help us reproduce and fix the bug.
 
 body:
 - type: markdown
