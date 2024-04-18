@@ -46,8 +46,8 @@ body:
     label: 🐛 Describe the expected behavior
     description: |
       Please provide a clear and concise description of the expected behaviors.
-    validations:
-      required: false
+  validations:
+    required: false
 - type: textarea
   attributes:
     label: Image Tags
