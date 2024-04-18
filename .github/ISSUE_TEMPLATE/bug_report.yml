@@ -15,7 +15,7 @@ body:
       - Compatibility Issue
       - Image Size Issue
       - Performance Issue
-      - Usbaility Issue
+      - Usability Issue
       - Others
   validations:
     required: true
