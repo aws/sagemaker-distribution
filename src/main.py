@@ -20,7 +20,10 @@ from dependency_upgrader import (
     _PATCH,
     _get_dependency_upper_bound_for_runtime_upgrade,
 )
-from package_staleness import generate_package_staleness_report
+from package_report import (
+    generate_package_size_report,
+    generate_package_staleness_report,
+)
 from release_notes_generator import generate_release_notes
 from utils import (
     get_dir_for_version,
@@ -398,6 +401,21 @@ def get_arg_parser():
         "--target-patch-version",
         required=True,
         help="Specify the base patch version for which the package staleness report needs to be " "generated.",
+    )
+    package_size_parser = subparsers.add_parser(
+        "generate-size-report",
+        help="Generates package size report for each of the packages in the given " "image version.",
+    )
+    package_size_parser.set_defaults(func=generate_package_size_report)
+    package_size_parser.add_argument(
+        "--target-patch-version",
+        required=True,
+        help="Specify the target patch version for which the package size report needs to be " "generated.",
+    )
+    package_size_parser.add_argument(
+        "--validate",
+        action="store_true",
+        help="Validate package size delta and raise error if the validation failed.",
     )
     return parser
 

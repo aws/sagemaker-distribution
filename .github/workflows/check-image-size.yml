@@ -1,0 +1,40 @@
+name: Check Image Size
+on:
+  # Manually call
+  workflow_dispatch:
+    inputs:
+      image-version:
+        required: true
+        description: Image version=
+  # Call from other workflow
+  workflow_call:
+    inputs:
+      image-version:
+        type: string
+        required: true
+
+defaults:
+  run:
+    shell: bash -l {0}
+
+jobs:
+  check-image-size:
+    name: Run image size check
+    runs-on: ubuntu-latest
+    if: endsWith(github.repository, '/sagemaker-distribution')
+    permissions:
+      pull-requests: write
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: ./environment.yml
+          environment-name: sagemaker-distribution
+          init-shell: bash
+      - name: Free up disk space
+        run: rm -rf /opt/hostedtoolcache
+      - name: Activate sagemaker-distribution
+        run: micromamba activate sagemaker-distribution
+      - name: Run size validation
+        run: python ./src/main.py generate-size-report --target-patch-version ${{ inputs.image-version }} --validate

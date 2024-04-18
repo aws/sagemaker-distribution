@@ -7,7 +7,10 @@ pytestmark = pytest.mark.unit
 from unittest.mock import patch
 
 from config import _image_generator_configs
-from package_staleness import _get_installed_package_versions_and_conda_versions
+from package_report import (
+    _generate_python_package_size_report_per_image,
+    _get_installed_package_versions_and_conda_versions,
+)
 from utils import get_match_specs, get_semver
 
 
@@ -29,6 +32,23 @@ def _create_env_out_docker_file(file_path):
 https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.3-pyh210e3f2_0.conda#8c1f6bf32a6ca81232c4853d4165ca67
 https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.conda#05592c85b9f6931dc2df1e80c0d56294\n"""
         )
+
+
+def _create_base_image_package_metadata():
+    return {
+        "libllvm18": {"version": "18.1.1", "size": 37301754},
+        "python": {"version": "3.12.1", "size": 30213651},
+        "tqdm": {"version": "4.66.2", "size": 89567},
+    }
+
+
+def _create_target_image_package_metadata():
+    return {
+        "libllvm18": {"version": "18.1.2", "size": 38407510},
+        "python": {"version": "3.12.2", "size": 32312631},
+        "libclang": {"version": "18.1.2", "size": 19272925},
+        "tqdm": {"version": "4.66.2", "size": 89567},
+    }
 
 
 def test_get_match_specs(tmp_path):
@@ -93,3 +113,56 @@ def test_get_installed_package_versions_and_conda_versions(mock_run_command, tmp
     assert latest_package_versions_in_conda_forge["ipykernel"] == "6.21.3"
     # Only for numpy there is a new major version available.
     assert latest_package_versions_in_conda_forge["numpy"] == "2.1.0"
+
+
+def test_generate_package_size_report(capsys):
+    base_pkg_metadata = _create_base_image_package_metadata()
+    target_pkg_metadata = _create_target_image_package_metadata()
+
+    _generate_python_package_size_report_per_image(
+        base_pkg_metadata, target_pkg_metadata, _image_generator_configs[1], "1.6.1", "1.6.2"
+    )
+
+    captured = capsys.readouterr()
+    # Assert total size delta report
+    assert "85.91MB|64.47MB|21.44MB|33.25" in captured.out
+
+    # Assert size delta report for each changed package
+    assert "libclang|18.1.2|-|18.38MB|-" in captured.out
+    assert "python|3.12.2|3.12.1|2.00MB|6.95" in captured.out
+    assert "libllvm18|18.1.2|18.1.1|1.05MB|2.96" in captured.out
+    assert "tqdm|4.66.2|4.66.2" not in captured.out
+
+    # Assert top-k largest package report
+    assert "libllvm18|18.1.2|36.63MB" in captured.out
+    assert "python|3.12.2|30.82MB" in captured.out
+    assert "libclang|18.1.2|18.38MB" in captured.out
+    assert "tqdm|4.66.2|87.47KB" in captured.out
+
+    # Assert size validation message
+    assert (
+        "The total size of newly introduced Python packages is 18.38MB, accounts for ${\color{red}21.39}$% of the total package size."
+        in captured.out
+    )
+
+
+def test_generate_package_size_report_when_base_version_is_not_present(capsys):
+    target_pkg_metadata = _create_target_image_package_metadata()
+
+    _generate_python_package_size_report_per_image(
+        None, target_pkg_metadata, _image_generator_configs[1], None, "1.6.2"
+    )
+
+    captured = capsys.readouterr()
+    # Assert total size delta report
+    assert (
+        "WARNING: No Python package metadata file found for base image, only partial results will be shown."
+        in captured.out
+    )
+    assert "85.91MB|-|-|-" in captured.out
+
+    # Assert top-k largest package report
+    assert "libllvm18|18.1.2|36.63MB" in captured.out
+    assert "python|3.12.2|30.82MB" in captured.out
+    assert "libclang|18.1.2|18.38MB" in captured.out
+    assert "tqdm|4.66.2|87.47KB" in captured.out

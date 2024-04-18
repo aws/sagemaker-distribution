@@ -194,4 +194,3 @@ RUN SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;impor
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json
 
 ENV SHELL=/bin/bash
-
