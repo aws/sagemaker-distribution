@@ -7,18 +7,18 @@ body:
     value: >
       #### Before submitting a bug, please make sure the issue hasn't been already addressed by searching through [the existing and past issues](https://github.com/aws/sagemaker-distribution/issues?q=is%3Aissue+sort%3Acreated-desc+).
 - type: dropdown
-    id: category
-    attributes:
-      label: Category
-      description: What is the type of the bug?
-      options:
-        - Compatibility Issue
-        - Image Size Issue
-        - Performance Issue
-        - Usbaility Issue
-        - Others
-    validations:
-      required: true
+  id: category
+  attributes:
+    label: Category
+    description: What is the type of the bug?
+    options:
+      - Compatibility Issue
+      - Image Size Issue
+      - Performance Issue
+      - Usbaility Issue
+      - Others
+  validations:
+    required: true
 - type: textarea
   attributes:
     label: 🐛 Describe the bug
