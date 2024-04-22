@@ -1,0 +1,4 @@
+contact_links:
+    - name: Report a security vulnerability
+      url: http://aws.amazon.com/security/vulnerability-reporting/
+      about: This issue tracker is not for security vulnerabilities. Please report issues here.
