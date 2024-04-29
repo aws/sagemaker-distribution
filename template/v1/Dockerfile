@@ -30,7 +30,7 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
-RUN apt-get update && \
+RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
@@ -86,6 +86,9 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
+
+# Update npm version
+RUN npm i -g npm
 
 # Configure CodeEditor - Install extensions and set preferences
 RUN \
