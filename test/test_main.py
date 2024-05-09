@@ -169,13 +169,13 @@ def test_get_semver_version():
 
 def test_new_version_artifacts_for_an_input_prerelease_version():
     input_version = "1.23.0-beta"
-    args = CreateVersionArgs("patch", input_version)
+    args = CreateVersionArgs("patch", input_version, pre_release_identifier="new-beta")
     with pytest.raises(Exception):
         create_patch_version_artifacts(args)
-    args = CreateVersionArgs("minor", input_version)
+    args = CreateVersionArgs("minor", input_version, pre_release_identifier="new-beta")
     with pytest.raises(Exception):
         create_minor_version_artifacts(args)
-    args = CreateVersionArgs("major", input_version)
+    args = CreateVersionArgs("major", input_version, pre_release_identifier="new-beta")
     with pytest.raises(Exception):
         create_major_version_artifacts(args)
 
@@ -528,8 +528,38 @@ def test_get_version_tags(mock_path_exists):
     # case 4.2 The patch version is not a prerelease version
     mock_path_exists.side_effect = [True, True]
     assert _get_version_tags(version, file_name) == ["1.124.5"]
-    # case 5: The given version includes a prerelease identifier
-    assert _get_version_tags(get_semver("1.124.5-beta"), file_name) == ["1.124.5-beta"]
+
+
+@patch("os.path.exists")
+def test_get_version_tags_with_prerelease_identifier(mock_path_exists):
+    version = get_semver("1.124.5-beta")
+    file_name = "cpu.env.out"
+    # case 1: The given version is the latest for patch, minor and major
+    mock_path_exists.side_effect = [False, False, False]
+    assert _get_version_tags(version, file_name) == ["1.124.5-beta", "1.124-beta", "1-beta", "latest-beta"]
+    # case 2: The given version is the latest for patch, minor but not major
+    # case 2.1 The major version is a different prerelease version
+    mock_path_exists.side_effect = [False, False, True, False]
+    assert _get_version_tags(version, file_name) == ["1.124.5-beta", "1.124-beta", "1-beta", "latest-beta"]
+    # case 2.2 The major version is not a prerelease version
+    mock_path_exists.side_effect = [False, False, True, True]
+    assert _get_version_tags(version, file_name) == ["1.124.5-beta", "1.124-beta", "1-beta"]
+    # case 3: The given version is the latest for patch and major but not for minor
+    # case 3.1 The minor version is a prerelease version (we need to mock path.exists for major
+    # version twice - one for the actual directory, one for the docker file)
+    mock_path_exists.side_effect = [False, True, False, True, True]
+    assert _get_version_tags(version, file_name) == ["1.124.5-beta", "1.124-beta", "1-beta"]
+    # case 3.2 The minor version is not a prerelease version
+    mock_path_exists.side_effect = [False, True, True]
+    assert _get_version_tags(version, file_name) == ["1.124.5-beta", "1.124-beta"]
+    # case 4: The given version is not the latest for patch, minor, major
+    # case 4.1 The patch version is a prerelease version (we need to mock path.exists for minor
+    # and major twice - one for the actual directory, one for the docker file)
+    mock_path_exists.side_effect = [True, False, True, True, True, True]
+    assert _get_version_tags(version, file_name) == ["1.124.5-beta", "1.124-beta"]
+    # case 4.2 The patch version is not a prerelease version
+    mock_path_exists.side_effect = [True, True]
+    assert _get_version_tags(version, file_name) == ["1.124.5-beta"]
 
 
 def _test_push_images_upstream(mocker, repository):
