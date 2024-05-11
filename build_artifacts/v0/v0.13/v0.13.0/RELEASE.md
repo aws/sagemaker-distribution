@@ -4,11 +4,11 @@ Package | gpu| cpu
 ---|---|---
 python|3.8.19|3.8.19
 ipython|8.12.2|8.12.2
-jinja2|3.1.3|3.1.3
+jinja2|3.1.4|3.1.4
 ipywidgets|7.8.0|7.8.0
 numpy|1.24.4|1.24.4
 pandas|2.0.3|2.0.3
-boto3|1.34.98|1.34.98
+boto3|1.34.101|1.34.101
 aws-glue-sessions|1.0.5|1.0.5
 conda|23.11.0|23.11.0
 jupyterlab|3.6.7|3.6.7
@@ -24,7 +24,7 @@ python-gssapi|1.8.3|1.8.3
 pytorch-gpu|2.0.0| 
 sagemaker-headless-execution-driver|0.0.12|0.0.12
 sagemaker-kernel-wrapper|0.0.2|0.0.2
-sagemaker-python-sdk|2.218.1|2.218.1
+sagemaker-python-sdk|2.219.0|2.219.0
 sagemaker-studio-analytics-extension|0.0.21|0.0.21
 sasl|0.3.1|0.3.1
 tensorflow|2.13.1|2.13.1
