@@ -74,14 +74,14 @@ Follow these steps for sending out a pull request for adding new packages:
 
    # If NEXT_VERSION is a new minor version:
 
-   python src/main.py create-minor-version-artifacts --base-patch-version=$BASE_PATCH_VERSION --force
+   python ./src/main.py create-minor-version-artifacts --base-patch-version=$BASE_PATCH_VERSION --force
 
    # Or for a new major version:
 
    python src/main.py create-major-version-artifacts --base-patch-version=$BASE_PATCH_VERSION --force
 
    # Build the image:
-   python src/main.py build \
+   python ./src/main.py build \
      --target-patch-version=$NEXT_VERSION --skip-tests
 
    ```

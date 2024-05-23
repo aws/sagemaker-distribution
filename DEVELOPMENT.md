@@ -15,7 +15,7 @@ against an Amazon SageMaker Distribution image: this could be a pre-built image 
 an image that you built locally using the `build` command:
 
 ```shell
-python main.py build --target-patch-version x.y.z
+python ./src/main.py build --target-patch-version x.y.z
 ```
 
 Run the following to invoke those tests:
