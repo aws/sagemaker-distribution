@@ -2,8 +2,8 @@ name: Generate weekly patch release(s)
 on:
   # Run every Monday at 6AM PST / 7AM PDT
   # Run before monthly, so we don't immediately patch a new minor version
-  schedule:
-    - cron: '0 14 * * MON'
+  #schedule:
+  #  - cron: '0 14 * * MON'
 jobs:
   generate-version-matrix:
     name: Generate-matrix
