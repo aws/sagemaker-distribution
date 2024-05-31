@@ -1,8 +1,8 @@
 name: Generate monthly minor release(s)
 on:
   # Run first day of the month at 8AM PST / 9AM PDT
-  schedule:
-    - cron: '0 16 1 * *'
+  #schedule:
+  #  - cron: '0 16 1 * *'
 jobs:
   generate-version-matrix:
     name: Generate version matrix
