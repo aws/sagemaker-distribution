@@ -79,7 +79,6 @@ The easiest way to get it running on your laptop is through the Docker CLI:
 export ECR_IMAGE_ID='INSERT_IMAGE_YOU_WANT_TO_USE'
 docker run -it \
     -p 8888:8888 \
-    --user `id -u`:`id -g` \
     -v `pwd`/sample-notebooks:/home/sagemaker-user/sample-notebooks \
     $ECR_IMAGE_ID jupyter-lab --no-browser --ip=0.0.0.0
 ```
@@ -94,7 +93,6 @@ export ECR_IMAGE_ID='INSERT_IMAGE_YOU_WANT_TO_USE'
 docker run -it \
     -p 8888:8888 \
     --entrypoint entrypoint-jupyter-server \
-    --user `id -u`:`id -g` \
     -v `pwd`/sample-notebooks:/home/sagemaker-user/sample-notebooks \
     $ECR_IMAGE_ID
 ```
