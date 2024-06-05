@@ -142,6 +142,16 @@ For more info on the FIPS provider see: https://github.com/openssl/openssl/blob/
 
 ## Security
 
+### What is the image security vulnerability scanning process?
+SageMaker Distribution images have ECR enhanced scanningenabled for detecting Common Vulnerabilities and Exposures (CVE). CVE is a list of publicly known information about security vulnerability and exposure. The National Vulnerability Database (NVD) provides CVE details such as severity, impact rating, and fix information. Both CVE and NVD are available for public consumption and free for security tools and services to use. For more information, see CVE Frequently Asked Questions (FAQs). The scan will be executed continuously for all actively supported image versions, and SageMaker will release new image versions to fix the CVEs based on the scanning results.
+
+### How are security issues fixed?
+SageMaker team will regularly release new image version with fixes to the security issues. If the security fix requires a minor or major version release, SageMaker team may release ad-hoc versions with the fix. Once a new image version is released, the actively supported image versions will be updated with the latest supported image version information. You will then be able to pull the latest images with security fixes from our ECR repositories. 
+
+### Can I still access the older image versions once a newer image version is released?
+We don't take down images once they are released as they would be used by customers and we don't break customers at runtime by removing products. You will still be able to pull older images from our ECR repositories. However, it is highly recommended for you to consume the latest image versions to obtain the most up-to-date functionalities, security patches, and more.
+
+
 See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more information.
 
 ## License
