@@ -1,0 +1,4 @@
+{
+    "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy-cuda-11.8.0",
+    "CUDA_MAJOR_MINOR_VERSION": "11.8"
+}

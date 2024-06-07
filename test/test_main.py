@@ -1,6 +1,7 @@
 from __future__ import absolute_import
 
 import base64
+import json
 
 import pytest
 
@@ -98,6 +99,15 @@ def _create_prev_docker_file(file_path):
             """ARG TAG_FOR_BASE_MICROMAMBA_IMAGE
         FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\nprevious_dockerfile\n"""
         )
+        
+def _create_gpu_cuda_config_file(file_path):
+    gpu_cuda_config_context = {
+        "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy-cuda-test-version",
+        "CUDA_MAJOR_MINOR_VERSION": "test-major-minor-version"
+    }
+     
+    with open(file_path, "w") as gpu_cuda_config:
+        json.dump(gpu_cuda_config_context, gpu_cuda_config, indent=4)
 
 
 def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_version):
@@ -111,12 +121,14 @@ def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_versi
     input_version = get_semver(version)
     # Create directory for base version
     input_version_dir = create_and_get_semver_dir(input_version)
+    print('input_version_dir', input_version_dir)
     # Create env.in and env.out for base version
     _create_docker_cpu_env_in_file(input_version_dir + "/cpu.env.in")
     _create_docker_gpu_env_in_file(input_version_dir + "/gpu.env.in")
     _create_docker_cpu_env_out_file(input_version_dir + "/cpu.env.out")
     _create_docker_gpu_env_out_file(input_version_dir + "/gpu.env.out")
     _create_prev_docker_file(input_version_dir + "/Dockerfile")
+    _create_gpu_cuda_config_file(input_version_dir + "/gpu_cuda_version.json")
     os.makedirs(tmp_path / "template")
     next_version = get_semver(target_version)
     next_major_version = "v" + str(next_version.major)
@@ -125,6 +137,7 @@ def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_versi
         # Create dirs directory under template
         os.makedirs(tmp_path / "template" / next_major_version / "dirs")
     _create_template_docker_file(tmp_path / "template" / next_major_version / "Dockerfile")
+    _create_gpu_cuda_config_file(tmp_path / "template" / next_major_version / "gpu_cuda_version.json")
 
 
 def _create_additional_packages_env_in_file_helper(
@@ -226,9 +239,16 @@ def _create_and_assert_patch_version_upgrade(
         new_version_dir = new_version_dir / ("v" + str(next_version) + "-" + pre_release_identifier)
     next_major_version_dir_name = "v" + str(next_version.major)
     if next_version.major == 0:
-        rel_path.side_effect = [str(base_version_dir / "Dockerfile")]
+        rel_path.side_effect = [
+            str(base_version_dir / "Dockerfile"),
+            str(base_version_dir / "gpu_cuda_version.json"),
+        ]
     else:
-        rel_path.side_effect = [str(base_version_dir, "Dockerfile"), str(base_version_dir / "dirs")]
+        rel_path.side_effect = [
+            str(base_version_dir / "Dockerfile"),
+            str(base_version_dir / "gpu_cuda_version.json"),
+            str(base_version_dir / "dirs"),
+        ]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version, str(next_version))
     _create_additional_packages_env_in_file_helper(
         mocker, tmp_path, str(next_version), include_additional_package, use_existing_package_as_additional_package
@@ -305,10 +325,14 @@ def _create_and_assert_minor_version_upgrade(
         new_version_dir = new_version_dir / ("v" + str(next_version) + "-" + pre_release_identifier)
     next_major_version_dir_name = "v" + str(next_version.major)
     if next_version.major == 0:
-        rel_path.side_effect = [str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile")]
+        rel_path.side_effect = [
+            str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile"),
+            str(tmp_path / "template" / next_major_version_dir_name / "gpu_cuda_version.json"),
+        ]
     else:
         rel_path.side_effect = [
             str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile"),
+            str(tmp_path / "template" / next_major_version_dir_name / "gpu_cuda_version.json"),
             str(tmp_path / "template" / next_major_version_dir_name / "dirs"),
         ]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version, "1.3.0")
@@ -327,8 +351,11 @@ def _create_and_assert_minor_version_upgrade(
     assert "cpu.env.in" in new_version_dir_files
     assert "gpu.env.in" in new_version_dir_files
     assert "Dockerfile" in new_version_dir_files
+    assert "gpu_cuda_version.json" in new_version_dir_files
     with open(new_version_dir / "Dockerfile", "r") as f:
         assert "template_dockerfile" in f.read()
+    with open(new_version_dir / "gpu_cuda_version.json", "r") as f:
+        assert "test-major-minor-version" in f.read()
     if next_version.major >= 1:
         assert "dirs" in new_version_dir_files
     if include_additional_package:
@@ -386,10 +413,14 @@ def _create_and_assert_major_version_upgrade(
         new_version_dir = new_version_dir / ("v" + str(next_version) + "-" + pre_release_identifier)
     next_major_version_dir_name = "v" + str(next_version.major)
     if next_version.major == 0:
-        rel_path.side_effect = [str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile")]
+        rel_path.side_effect = [
+            str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile"),
+            str(tmp_path / "template" / next_major_version_dir_name / "gpu_cuda_version.json"),
+        ]
     else:
         rel_path.side_effect = [
             str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile"),
+            str(tmp_path / "template" / next_major_version_dir_name / "gpu_cuda_version.json"),
             str(tmp_path / "template" / next_major_version_dir_name / "dirs"),
         ]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version, str(next_version))
@@ -471,6 +502,7 @@ def test_build_images(mocker, tmp_path):
     _create_docker_cpu_env_in_file(input_version_dir + "/cpu.env.in")
     _create_docker_cpu_env_in_file(input_version_dir + "/gpu.env.in")
     _create_prev_docker_file(input_version_dir + "/Dockerfile")
+    _create_gpu_cuda_config_file(input_version_dir + "/gpu_cuda_version.json")
     # Assert env.out doesn't exist
     assert os.path.exists(input_version_dir + "/cpu.env.out") is False
     assert os.path.exists(input_version_dir + "/gpu.env.out") is False
