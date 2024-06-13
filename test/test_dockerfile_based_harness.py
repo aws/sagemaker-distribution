@@ -42,6 +42,7 @@ _docker_client = docker.from_env()
         ("amazon-sagemaker-sql-magic.test.Dockerfile", ["amazon-sagemaker-sql-magic"]),
         ("amazon_sagemaker_sql_editor.test.Dockerfile", ["amazon_sagemaker_sql_editor"]),
         ("serve.test.Dockerfile", ["serve-langchain"]),
+        ("mlflow.test.Dockerfile", ["mlflow"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -80,6 +81,7 @@ def test_dockerfiles_for_cpu(
         ("amazon-sagemaker-sql-magic.test.Dockerfile", ["amazon-sagemaker-sql-magic"]),
         ("amazon_sagemaker_sql_editor.test.Dockerfile", ["amazon_sagemaker_sql_editor"]),
         ("serve.test.Dockerfile", ["serve-langchain"]),
+        ("mlflow.test.Dockerfile", ["mlflow"]),
     ],
 )
 def test_dockerfiles_for_gpu(
