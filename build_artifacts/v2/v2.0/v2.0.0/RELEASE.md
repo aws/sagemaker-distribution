@@ -36,6 +36,7 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.2.0|4.2.0
 jupyterlab-git|0.50.0|0.50.0
 keras|2.15.0|2.15.0
+mlflow|2.13.2|2.13.2
 py-xgboost-gpu|2.0.3| 
 thrift_sasl|0.4.3|0.4.3
 pyhive|0.7.0|0.7.0

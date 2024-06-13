@@ -24,3 +24,9 @@ jupyter-server-proxy|4.1.2|4.2.0
 py-xgboost-cpu|1.7.6|2.0.3
 sagemaker-python-sdk|2.219.0|2.222.1
 uvicorn|0.29.0|0.30.1
+
+## What's new: 
+
+Package | Version 
+---|---
+mlflow|2.13.2
