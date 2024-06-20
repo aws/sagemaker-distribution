@@ -1,2 +1,4 @@
 #Add any additional packages here
 conda-forge::mlflow[version='>=2.13.2,<3.0']
+amazon-sagemaker-jupyter-ai-q-developer[version='>=1.0.3,<2.0']
+amazon-q-developer-jupyterlab-ext[version='>=3.1.0,<4.0']
