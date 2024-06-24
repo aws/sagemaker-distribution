@@ -24,6 +24,5 @@ try:
     module = __import__("amazon_sagemaker_sql_editor")
     module_location = os.path.dirname(module.__file__)
     c.LanguageServerManager.extra_node_roots = [f"{module_location}/sql-language-server"]
-    c.AiExtension.default_language_model = "amazon-q:q-developer"
 except:
     pass
