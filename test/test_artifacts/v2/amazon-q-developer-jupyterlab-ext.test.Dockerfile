@@ -3,4 +3,4 @@ FROM $SAGEMAKER_DISTRIBUTION_IMAGE
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
-CMD ["python", "-c", "import amazon_codewhisperer_jupyterlab_ext"]
+CMD ["python", "-c", "import amazon_q_developer_jupyterlab_ext"]
