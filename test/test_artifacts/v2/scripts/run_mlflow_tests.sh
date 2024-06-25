@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -e
+
 # Run examples for keras, pytorch, sklearn, tensorflow
 cd examples
 

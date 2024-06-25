@@ -85,6 +85,7 @@ def test_dockerfiles_for_cpu(
         ("serve.test.Dockerfile", ["serve-langchain"]),
         ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
+        ("sagemaker-mlflow.test.Dockerfile", ["sagemaker-mlflow"]),
     ],
 )
 def test_dockerfiles_for_gpu(
