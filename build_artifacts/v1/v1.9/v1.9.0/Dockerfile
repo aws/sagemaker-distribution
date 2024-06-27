@@ -87,8 +87,7 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
 
-# Uninstall npm, node-gyp. These pull in dependency with restrictive license.
-RUN npm uninstall -g npm node-gyp
+RUN npm i -g npm
 
 # Configure CodeEditor - Install extensions and set preferences
 RUN \

@@ -4,7 +4,7 @@
 
 Package | Previous Version | Current Version
 ---|---|---
-boto3|1.34.51|1.34.106
+boto3|1.34.51|1.34.131
 ipython|8.22.2|8.25.0
 jupyter-ai|2.14.1|2.18.1
 jupyter-scheduler|2.5.2|2.7.1
