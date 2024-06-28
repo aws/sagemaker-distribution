@@ -89,6 +89,7 @@ RUN sudo ln -s $(which python3) /usr/bin/python
 
 # Execute image valudaiton script:
 # 1. Check if TensorFlow is installed with CUDA support for GPU image
+# 2. Check if Pytorch is installed with CUDA support for GPU image
 COPY --chown=$MAMBA_USER:$MAMBA_USER image_validation.py /tmp/
 RUN if echo "$ENV_IN_FILENAME" | grep -q "gpu.env.in"; then \
         python3 /tmp/image_validation.py; \
