@@ -2,6 +2,7 @@ import argparse
 import base64
 import copy
 import glob
+import json
 import os
 import shutil
 
@@ -108,14 +109,19 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
     for f in glob.glob(f"{base_version_dir}/patch_*"):
         shutil.copy2(f, new_version_dir)
 
-    # For patches, get Dockerfile+dirs from base patch
-    # For minor/major, get Dockerfile+dirs from template
+    # For patches, get Dockerfile+dirs+gpu_cuda_version from base patch
+    # For minor/major, get Dockerfile+dirs+gpu_cuda_version from template
     if runtime_version_upgrade_type == _PATCH:
         base_path = base_version_dir
     else:
         base_path = f"template/v{new_version_major}"
+
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
         shutil.copy2(f, new_version_dir)
+
+    for f in glob.glob(os.path.relpath(f"{base_path}/gpu_cuda_version.json")):
+        shutil.copy2(f, new_version_dir)
+
     if int(new_version_major) >= 1:
         # dirs directory doesn't exist for v0. It was introduced only for v1
         dirs_relative_path = os.path.relpath(f"{base_path}/dirs")
@@ -232,6 +238,11 @@ def _get_config_for_image(target_version_dir: str, image_generator_config, force
     config_for_image["build_args"].pop("ARG_BASED_ENV_IN_FILENAME", None)
     return config_for_image
 
+def _get_gpu_cuda_config(target_version_dir: str) -> dict:
+    json_file_path = os.path.join(target_version_dir, "gpu_cuda_version.json")
+    with open(json_file_path, "r") as f:
+        gpu_cuda_config = json.load(f)
+    return gpu_cuda_config
 
 # Returns a tuple of: 1/ list of actual images generated; 2/ list of tagged images. A given image can be tagged by
 # multiple different strings - for e.g., a CPU image can be tagged as '1.3.2-cpu', '1.3-cpu', '1-cpu' and/or
@@ -247,8 +258,14 @@ def _build_local_images(
     for image_generator_config in _image_generator_configs:
         config = _get_config_for_image(target_version_dir, image_generator_config, force)
         try:
+            # Pass in TAG_FOR_BASE_MICROMAMBA_IMAGE and CUDA_MAJOR_MINOR_VERSION into "buildargs"
+            build_args = config["build_args"]
+            if image_generator_config["image_type"] == "gpu":
+                gpu_cuda_config = _get_gpu_cuda_config(target_version_dir)
+                build_args["TAG_FOR_BASE_MICROMAMBA_IMAGE"] = gpu_cuda_config["TAG_FOR_BASE_MICROMAMBA_IMAGE"]
+                build_args["CUDA_MAJOR_MINOR_VERSION"] = gpu_cuda_config["CUDA_MAJOR_MINOR_VERSION"]
             image, log_gen = _docker_client.images.build(
-                path=target_version_dir, rm=True, pull=True, buildargs=config["build_args"]
+                path=target_version_dir, rm=True, pull=True, buildargs=build_args
             )
         except BuildError as e:
             for line in e.build_log:
