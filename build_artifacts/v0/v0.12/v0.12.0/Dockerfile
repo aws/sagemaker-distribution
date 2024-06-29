@@ -58,14 +58,6 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
 
-# Execute image valudaiton script:
-# 1. Check if TensorFlow is installed with CUDA support for GPU image
-# 2. Check if Pytorch is installed with CUDA support for GPU image
-COPY --chown=$MAMBA_USER:$MAMBA_USER image_validation.py /tmp/
-RUN if echo "$ENV_IN_FILENAME" | grep -q "gpu.env.in"; then \
-        python3 /tmp/image_validation.py; \
-    fi && rm -rf /tmp/image_validation.py
-
 # Install glue kernels, and move to shared directory
 # Also patching base kernel so Studio background code doesn't start session silently
 RUN install-glue-kernels && \
