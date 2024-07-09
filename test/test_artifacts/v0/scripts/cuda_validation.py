@@ -11,16 +11,16 @@ print("TensorFlow is built with CUDA support.")
 import subprocess
 
 # Run the micromamba list command and capture the output
-result = subprocess.run(['micromamba', 'list'], stdout=subprocess.PIPE, text=True)
+result = subprocess.run(["micromamba", "list"], stdout=subprocess.PIPE, text=True)
 
 # Split the output into lines
-package_lines = result.stdout.strip().split('\n')
+package_lines = result.stdout.strip().split("\n")
 
 # Find the PyTorch entry
 pytorch_entry = None
 for line in package_lines:
     dependency_info = line.strip().split()
-    if dependency_info and dependency_info[0] == 'pytorch':
+    if dependency_info and dependency_info[0] == "pytorch":
         pytorch_entry = line.split()
         break
 
@@ -31,7 +31,7 @@ if pytorch_entry:
     package_build = pytorch_entry[2]
     print(f"PyTorch: {package_name} {package_version} {package_build}")
 # Raise exception if CUDA is not detected
-if 'cuda' not in package_build: 
+if "cuda" not in package_build:
     raise Exception("Pytorch is installed without CUDA support for GPU image build.")
 
 # Verify Pytorch has CUDA working properly
@@ -40,5 +40,7 @@ if 'cuda' not in package_build:
 import torch
 
 if not torch.cuda.is_available():
-    raise Exception("Pytorch is installed with CUDA support but not working in current environment. \
-                    Make sure to execute this test case in GPU environment if you are not")
+    raise Exception(
+        "Pytorch is installed with CUDA support but not working in current environment. \
+                    Make sure to execute this test case in GPU environment if you are not"
+    )
