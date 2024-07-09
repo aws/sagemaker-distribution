@@ -7,7 +7,7 @@ if not cuda_available:
 print("TensorFlow is built with CUDA support.")
 
 
-# Verify Pytorch CUDA
+# Verify Pytorch is installed with CUDA version
 import subprocess
 
 # Run the micromamba list command and capture the output
@@ -33,3 +33,11 @@ if pytorch_entry:
 # Raise exception if CUDA is not detected
 if 'cuda' not in package_build: 
     raise Exception("Pytorch is installed without CUDA support for GPU image build.")
+
+# Verify Pytorch has CUDA working properly
+# Because this function only works on a GPU instance, so it may fail in local test
+# To test manually on a GPU instance, run: "docker run --gpus all <image id>"
+import torch
+
+if not torch.cuda.is_available():
+    raise Exception("Pytorch CUDA is not working in current environment. Make sure to execute this test case in GPU environment if you are not")
