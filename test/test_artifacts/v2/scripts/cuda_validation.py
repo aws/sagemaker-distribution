@@ -40,4 +40,5 @@ if 'cuda' not in package_build:
 import torch
 
 if not torch.cuda.is_available():
-    raise Exception("Pytorch CUDA is not working in current environment. Make sure to execute this test case in GPU environment if you are not")
+    raise Exception("Pytorch is installed with CUDA support but not working in current environment. \
+                    Make sure to execute this test case in GPU environment if you are not")
