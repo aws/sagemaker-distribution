@@ -88,6 +88,7 @@ def test_dockerfiles_for_cpu(
         ("mlflow.test.Dockerfile", ["mlflow"]),
         ("sagemaker-mlflow.test.Dockerfile", ["sagemaker-mlflow"]),
         ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
+        ("gpu-dependencies.test.Dockerfile", ["pytorch", "tensorflow"]),
     ],
 )
 def test_dockerfiles_for_gpu(
