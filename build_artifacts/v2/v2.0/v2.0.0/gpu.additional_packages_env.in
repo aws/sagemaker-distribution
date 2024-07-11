@@ -1,3 +1,4 @@
 #Add any additional packages here
 conda-forge::mlflow[version='>=2.13.2,<3.0']
 conda-forge::sagemaker-mlflow[version='>=0.1.0,<1.0']
+conda-forge::jupyter-activity-monitor-extension[version'>=0.1.0,<1.0']
