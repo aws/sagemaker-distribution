@@ -76,7 +76,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
 # Enforce dependencies are all installed from conda-forge
-RUN CONDA_OVERRIDE_CUDA=12.4 micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
+RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
