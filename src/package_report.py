@@ -224,7 +224,7 @@ def _generate_python_package_size_report_per_image(
 def generate_package_staleness_report(args):
     target_version = get_semver(args.target_patch_version)
     target_version_dir = get_dir_for_version(target_version)
-    for image_config in _image_generator_configs:
+    for image_config in _image_generator_configs[target_version.major]:
         (
             target_packages_match_spec_out,
             latest_package_versions_in_upstream,
@@ -246,7 +246,7 @@ def generate_package_size_report(args):
         base_version = get_semver(source_patch_version)
     base_version_dir = get_dir_for_version(base_version) if base_version else None
     validate_results = []
-    for image_config in _image_generator_configs:
+    for image_config in _image_generator_configs[target_version.major]:
         base_pkg_metadata = pull_conda_package_metadata(image_config, base_version_dir) if base_version else None
         target_pkg_metadata = pull_conda_package_metadata(image_config, target_version_dir)
 

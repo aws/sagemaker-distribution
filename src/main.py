@@ -45,15 +45,15 @@ def create_and_get_semver_dir(version: Version, exist_ok: bool = False):
         if not os.path.isdir(dir):
             raise Exception()
         # Delete all files except the additional_packages_env_in_file
-        _delete_all_files_except_additional_packages_input_files(dir)
+        _delete_all_files_except_additional_packages_input_files(dir, version)
     else:
         os.makedirs(dir)
     return dir
 
 
-def _delete_all_files_except_additional_packages_input_files(base_version_dir):
+def _delete_all_files_except_additional_packages_input_files(base_version_dir, version: Version):
     additional_package_env_in_files = [
-        image_generator_config["additional_packages_env_in_file"] for image_generator_config in _image_generator_configs
+        image_generator_config["additional_packages_env_in_file"] for image_generator_config in _image_generator_configs[version.major]
     ]
     for filename in os.listdir(base_version_dir):
         if filename not in additional_package_env_in_files:
@@ -93,7 +93,7 @@ def _create_new_version_artifacts(args):
     base_version_dir = get_dir_for_version(base_patch_version)
     new_version_dir = create_and_get_semver_dir(next_version, args.force)
 
-    for image_generator_config in _image_generator_configs:
+    for image_generator_config in _image_generator_configs[next_version.major]:
         _create_new_version_conda_specs(
             base_version_dir, new_version_dir, runtime_version_upgrade_type, image_generator_config
         )
@@ -109,17 +109,14 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
     for f in glob.glob(f"{base_version_dir}/patch_*"):
         shutil.copy2(f, new_version_dir)
 
-    # For patches, get Dockerfile+dirs+gpu_cuda_version from base patch
-    # For minor/major, get Dockerfile+dirs+gpu_cuda_version from template
+    # For patches, get Dockerfile+dirs from base patch
+    # For minor/major, get Dockerfile+dirs from template
     if runtime_version_upgrade_type == _PATCH:
         base_path = base_version_dir
     else:
         base_path = f"template/v{new_version_major}"
 
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
-        shutil.copy2(f, new_version_dir)
-
-    for f in glob.glob(os.path.relpath(f"{base_path}/gpu_cuda_version.json")):
         shutil.copy2(f, new_version_dir)
 
     if int(new_version_major) >= 1:
@@ -214,10 +211,11 @@ def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: 
 
 
 def _test_local_images(image_ids_to_test: list[str], target_version: str):
-    assert len(image_ids_to_test) == len(_image_generator_configs)
+    major_version = get_semver(target_version).major
+    assert len(image_ids_to_test) == len(_image_generator_configs[major_version])
     exit_codes = []
     image_ids = []
-    for image_id, config in zip(image_ids_to_test, _image_generator_configs):
+    for image_id, config in zip(image_ids_to_test, _image_generator_configs[major_version]):
         exit_code = pytest.main(
             ["-n", "2", "-m", config["image_type"], "--local-image-version", target_version, *config["pytest_flags"]]
         )
@@ -238,12 +236,6 @@ def _get_config_for_image(target_version_dir: str, image_generator_config, force
     config_for_image["build_args"].pop("ARG_BASED_ENV_IN_FILENAME", None)
     return config_for_image
 
-def _get_gpu_cuda_config(target_version_dir: str) -> dict:
-    json_file_path = os.path.join(target_version_dir, "gpu_cuda_version.json")
-    with open(json_file_path, "r") as f:
-        gpu_cuda_config = json.load(f)
-    return gpu_cuda_config
-
 # Returns a tuple of: 1/ list of actual images generated; 2/ list of tagged images. A given image can be tagged by
 # multiple different strings - for e.g., a CPU image can be tagged as '1.3.2-cpu', '1.3-cpu', '1-cpu' and/or
 # 'latest-cpu'. Therefore, (1) is strictly a subset of (2).
@@ -255,17 +247,11 @@ def _build_local_images(
     generated_image_ids = []
     generated_image_versions = []
 
-    for image_generator_config in _image_generator_configs:
+    for image_generator_config in _image_generator_configs[target_version.major]:
         config = _get_config_for_image(target_version_dir, image_generator_config, force)
         try:
-            # Pass in TAG_FOR_BASE_MICROMAMBA_IMAGE and CUDA_MAJOR_MINOR_VERSION into "buildargs"
-            build_args = config["build_args"]
-            if image_generator_config["image_type"] == "gpu":
-                gpu_cuda_config = _get_gpu_cuda_config(target_version_dir)
-                build_args["TAG_FOR_BASE_MICROMAMBA_IMAGE"] = gpu_cuda_config["TAG_FOR_BASE_MICROMAMBA_IMAGE"]
-                build_args["CUDA_MAJOR_MINOR_VERSION"] = gpu_cuda_config["CUDA_MAJOR_MINOR_VERSION"]
             image, log_gen = _docker_client.images.build(
-                path=target_version_dir, rm=True, pull=True, buildargs=build_args
+                path=target_version_dir, rm=True, pull=True, buildargs=config["build_args"]
             )
         except BuildError as e:
             for line in e.build_log:
@@ -291,7 +277,7 @@ def _build_local_images(
         # of the actual env.in file instead of the 'config'.
         generate_change_log(target_version, image_generator_config)
 
-        version_tags_to_apply = _get_version_tags(target_version, config["env_out_filename"])
+        version_tags_to_apply = _get_version_tags(target_version, config[target_version.major]["env_out_filename"])
         image_tags_to_apply = [config["image_tag_generator"].format(image_version=i) for i in version_tags_to_apply]
 
         if target_ecr_repo_list is not None:

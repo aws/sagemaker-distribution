@@ -117,7 +117,7 @@ def _check_required_package_constraints(target_version: Version, required_packag
         pytest.skip(f"Skipping test because {target_version_dir} does not exist.")
     # fetch the env.out file for this image_type
     env_out_file_name = next(
-        config["env_out_filename"] for config in _image_generator_configs if config["image_type"] == image_type
+        config["env_out_filename"] for config in _image_generator_configs[target_version.major] if config["image_type"] == image_type
     )
     env_out_path = f"{target_version_dir}/{env_out_file_name}"
     if not os.path.exists(env_out_path):
@@ -136,7 +136,7 @@ def _validate_docker_images(
     _check_docker_file_existence(dockerfile_path, test_artifacts_path)
     _check_required_package_constraints(target_version, required_packages, image_type)
     image_tag_generator_from_config = next(
-        config["image_tag_generator"] for config in _image_generator_configs if config["image_type"] == image_type
+        config["image_tag_generator"] for config in _image_generator_configs[target_version.major] if config["image_type"] == image_type
     )
     docker_image_tag = image_tag_generator_from_config.format(image_version=local_image_version)
     docker_image_identifier = f"localhost/sagemaker-distribution:{docker_image_tag}"
