@@ -17,6 +17,6 @@ matplotlib|3.7.3|3.9.1
 scipy|1.10.1|1.14.0
 scikit-learn|1.3.2|1.5.1
 sagemaker-headless-execution-driver|0.0.12|0.0.13
-sagemaker-python-sdk|2.206.0|2.226.0
+sagemaker-python-sdk|2.206.0|2.226.1
 sagemaker-studio-analytics-extension|0.0.21|0.0.22
 tensorflow|2.13.1|2.14.0

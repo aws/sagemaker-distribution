@@ -24,7 +24,7 @@ python-gssapi|1.8.3|1.8.3
 pytorch-gpu|2.0.0| 
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-kernel-wrapper|0.0.2|0.0.2
-sagemaker-python-sdk|2.226.0|2.226.0
+sagemaker-python-sdk|2.226.1|2.226.1
 sagemaker-studio-analytics-extension|0.0.22|0.0.22
 tensorflow|2.14.0|2.15.0
 torchvision|0.15.2|0.16.1
