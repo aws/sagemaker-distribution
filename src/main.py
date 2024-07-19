@@ -2,7 +2,6 @@ import argparse
 import base64
 import copy
 import glob
-import json
 import os
 import shutil
 
