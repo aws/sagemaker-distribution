@@ -277,7 +277,7 @@ def _build_local_images(
         # of the actual env.in file instead of the 'config'.
         generate_change_log(target_version, image_generator_config)
 
-        version_tags_to_apply = _get_version_tags(target_version, config[target_version.major]["env_out_filename"])
+        version_tags_to_apply = _get_version_tags(target_version, config["env_out_filename"])
         image_tags_to_apply = [config["image_tag_generator"].format(image_version=i) for i in version_tags_to_apply]
 
         if target_ecr_repo_list is not None:

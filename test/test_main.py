@@ -99,13 +99,13 @@ def _create_prev_docker_file(file_path):
             """ARG TAG_FOR_BASE_MICROMAMBA_IMAGE
         FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\nprevious_dockerfile\n"""
         )
-        
+
 def _create_gpu_cuda_config_file(file_path):
     gpu_cuda_config_context = {
         "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy-cuda-test-version",
         "CUDA_MAJOR_MINOR_VERSION": "test-major-minor-version"
     }
-     
+
     with open(file_path, "w") as gpu_cuda_config:
         json.dump(gpu_cuda_config_context, gpu_cuda_config, indent=4)
 
@@ -613,7 +613,7 @@ def test_push_images_upstream_for_public_ecr_repository(mocker):
 @patch("os.path.exists")
 def test_get_build_config_for_image(mock_path_exists, tmp_path):
     input_version_dir = str(tmp_path) + "/v2.0.0"
-    image_generator_config = _image_generator_configs[0]
+    image_generator_config = _image_generator_configs[2][0]
     # Case 1: Mock os.path.exists to return False
     mock_path_exists.return_value = False
     assert image_generator_config == _get_config_for_image(input_version_dir, image_generator_config, False)
@@ -650,7 +650,7 @@ def test_derive_changeset(tmp_path):
     expected_upgrades = {"ipykernel": ["6.21.3", "6.21.6"]}
     expected_new_packages = {"boto3": "1.2"}
     actual_upgrades, actual_new_packages = _derive_changeset(
-        target_version_dir, source_version_dir, _image_generator_configs[1]
+        target_version_dir, source_version_dir, _image_generator_configs[1][1]
     )
     assert expected_upgrades == actual_upgrades
     assert expected_new_packages == actual_new_packages
@@ -658,6 +658,7 @@ def test_derive_changeset(tmp_path):
 
 def test_generate_release_notes(tmp_path):
     target_version_dir = str(tmp_path / "v1.0.6")
+    target_version = get_semver("1.0.6")
     os.makedirs(target_version_dir)
     # Create env.in of the target version, which has additional dependency on boto3
     target_env_in_packages = "conda-forge::ipykernel\nconda-forge::boto3"
@@ -672,7 +673,7 @@ def test_generate_release_notes(tmp_path):
     _create_docker_gpu_env_in_file(target_version_dir + "/gpu.env.in")
     _create_docker_gpu_env_out_file(target_version_dir + "/gpu.env.out")
     # Verify _get_image_type_package_metadata
-    image_type_package_metadata = _get_image_type_package_metadata(target_version_dir)
+    image_type_package_metadata = _get_image_type_package_metadata(target_version_dir, target_version)
     assert len(image_type_package_metadata) == 2
     assert image_type_package_metadata["gpu"] == {"numpy": "1.24.2"}
     assert image_type_package_metadata["cpu"] == {"ipykernel": "6.21.6", "boto3": "1.23.4"}

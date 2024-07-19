@@ -11,7 +11,7 @@ ipython|8.25.0|8.26.0
 jupyterlab|4.1.6|4.1.8
 langchain|0.1.9|0.2.5
 jupyter-ai|2.18.1|2.19.0
-amazon-sagemaker-jupyter-ai-q-developer|1.0.4|1.0.6
+amazon-sagemaker-jupyter-ai-q-developer|1.0.4|1.0.7
 amazon-sagemaker-jupyter-scheduler|3.1.0|3.1.2
 scipy|1.11.4|1.12.0
 matplotlib-base|3.8.4|3.9.1
@@ -27,7 +27,7 @@ langchain-aws|0.1.6|0.1.11
 py-xgboost-cpu|1.7.6|2.0.3
 sagemaker-code-editor|1.1.0|1.2.0
 sagemaker-headless-execution-driver|0.0.12|0.0.13
-sagemaker-python-sdk|2.224.1|2.226.0
+sagemaker-python-sdk|2.224.1|2.226.1
 sagemaker-studio-analytics-extension|0.0.21|0.0.22
 tensorflow|2.15.0|2.16.2
 
@@ -35,6 +35,6 @@ tensorflow|2.15.0|2.16.2
 
 Package | Version 
 ---|---
-jupyter-activity-monitor-extension|0.1.0
+jupyter-activity-monitor-extension|0.2.0
 mlflow|2.14.3
 sagemaker-mlflow|0.1.0
