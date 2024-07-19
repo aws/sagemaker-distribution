@@ -100,10 +100,11 @@ def _create_prev_docker_file(file_path):
         FROM mambaorg / micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE\nprevious_dockerfile\n"""
         )
 
+
 def _create_gpu_cuda_config_file(file_path):
     gpu_cuda_config_context = {
         "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy-cuda-test-version",
-        "CUDA_MAJOR_MINOR_VERSION": "test-major-minor-version"
+        "CUDA_MAJOR_MINOR_VERSION": "test-major-minor-version",
     }
 
     with open(file_path, "w") as gpu_cuda_config:
@@ -121,7 +122,7 @@ def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_versi
     input_version = get_semver(version)
     # Create directory for base version
     input_version_dir = create_and_get_semver_dir(input_version)
-    print('input_version_dir', input_version_dir)
+    print("input_version_dir", input_version_dir)
     # Create env.in and env.out for base version
     _create_docker_cpu_env_in_file(input_version_dir + "/cpu.env.in")
     _create_docker_gpu_env_in_file(input_version_dir + "/gpu.env.in")

@@ -53,7 +53,8 @@ def create_and_get_semver_dir(version: Version, exist_ok: bool = False):
 
 def _delete_all_files_except_additional_packages_input_files(base_version_dir, version: Version):
     additional_package_env_in_files = [
-        image_generator_config["additional_packages_env_in_file"] for image_generator_config in _image_generator_configs[version.major]
+        image_generator_config["additional_packages_env_in_file"]
+        for image_generator_config in _image_generator_configs[version.major]
     ]
     for filename in os.listdir(base_version_dir):
         if filename not in additional_package_env_in_files:
@@ -235,6 +236,7 @@ def _get_config_for_image(target_version_dir: str, image_generator_config, force
     # Remove ARG_BASED_ENV_IN_FILENAME if it exists
     config_for_image["build_args"].pop("ARG_BASED_ENV_IN_FILENAME", None)
     return config_for_image
+
 
 # Returns a tuple of: 1/ list of actual images generated; 2/ list of tagged images. A given image can be tagged by
 # multiple different strings - for e.g., a CPU image can be tagged as '1.3.2-cpu', '1.3-cpu', '1-cpu' and/or

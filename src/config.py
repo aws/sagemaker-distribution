@@ -76,5 +76,5 @@ _image_generator_configs = {
             "pytest_flags": [],
             "image_type": "cpu",
         },
-    ]
+    ],
 }
