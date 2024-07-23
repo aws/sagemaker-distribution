@@ -65,6 +65,7 @@ RUN sudo ln -s $(which python3) /usr/bin/python
 # Enforce dependencies are all installed from conda-forge
 RUN conda config --remove channels defaults
 RUN micromamba config append channels conda-forge --env
+RUN micromamba config set channel_priority strict
 
 # Install glue kernels, and move to shared directory
 # Also patching base kernel so Studio background code doesn't start session silently
