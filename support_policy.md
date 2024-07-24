@@ -20,7 +20,10 @@ The tables below lists the supported SageMaker Distribution image versions and t
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
+<<<<<<< HEAD
 | 1.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.9-cpu  | Jan 15th, 2025 |
+=======
+>>>>>>> 7104883 (Add framework support policy)
 | 1.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.8-cpu  | Dec 31st, 2024 |
 | 1.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.7-cpu  | Dec 15th, 2024 |
 | 1.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.6-cpu  | Dec 15th, 2024 |
@@ -32,7 +35,10 @@ The tables below lists the supported SageMaker Distribution image versions and t
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
+<<<<<<< HEAD
 | 1.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.9-gpu  | Jan 15th, 2025 |
+=======
+>>>>>>> 7104883 (Add framework support policy)
 | 1.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.8-gpu  | Dec 31st, 2024 |
 | 1.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.7-gpu  | Dec 15th, 2024 |
 | 1.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.6-gpu  | Dec 15th, 2024 |
@@ -74,4 +80,8 @@ The tables below list SageMaker Distribution Image versions that are no longer s
 
 **[Q]** Can I still use older images after an image is no longer supported?
 
+<<<<<<< HEAD
 **[A]** Yes, older images remain available in ECR after they reach end of support. However, we highly recommend upgrading to a supported image version that are continuously receiving security updates and bug fixes. It is the customer's responsibility to manage any vulnerabilities that arise due to choosing an image version that is no longer supported by AWS. Do also refer to AWS's [Shared Responsibility Model documentation](https://aws.amazon.com/compliance/shared-responsibility-model/).
+=======
+**[A]** Yes, older images remain available in ECR after they reach end of support. However, we highly recommend upgrading to a supported image version that are continuously receiving security updates and bug fixes. It is the customer's responsibility to manage any vulnerabilities that arise due to choosing an image version that is no longer supported by AWS.
+>>>>>>> 7104883 (Add framework support policy)
