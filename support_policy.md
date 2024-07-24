@@ -72,4 +72,4 @@ The tables below list SageMaker Distribution Image versions that are no longer s
 
 **[Q]** Can I still use older images after an image is no longer supported?
 
-**[A]** Yes, older images remain available in ECR after they reach end of support. However, we highly recommend upgrading to a supported image version that are continuously receiving security updates and bug fixes. It is the customer's responsibility to manage any vulnerabilities that arise due to choosing an image version that is no longer supported by AWS.
+**[A]** Yes, older images remain available in ECR after they reach end of support. However, we highly recommend upgrading to a supported image version that are continuously receiving security updates and bug fixes. It is the customer's responsibility to manage any vulnerabilities that arise due to choosing an image version that is no longer supported by AWS. Do also refer to AWS's [Shared Responsibility Model documentation](https://aws.amazon.com/compliance/shared-responsibility-model/).
