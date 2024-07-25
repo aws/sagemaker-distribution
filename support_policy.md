@@ -11,7 +11,7 @@ The table below outlines the release schedule for SageMaker Distribution Image v
 | Patch   | Amazon SageMaker Distribution's patch version releases include updating all of its core dependencies to the latest compatible patch versions within the same minor version. SageMaker Distribution does not add or remove any packages during a patch version release. Patch versions are denoted by the third number in the version string, for example, 1.1.1, 1.2.1, or 2.1.3. | As neccessary for fixing security vulnerabilities |
 
 ## Vulnerability scanning
-Amazon SageMaker leverages [Amazon Elastic Container Registry (ECR) enhanced scanning](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html) to automatically detect vulnerabilities in SageMaker Distribution Images. AWS continuously runs ECR enhanced scanning on all supported image versions. When vulnerabilities are detected and a fix is available that satisfies the Semantic Versioning (SEMVER) constraints, AWS will release an update to remediate the issue.
+AWS leverages [Amazon Elastic Container Registry (ECR) enhanced scanning](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html) to automatically detect vulnerabilities in SageMaker Distribution Images. AWS continuously runs ECR enhanced scanning on all supported image versions. When vulnerabilities are detected and a fix is available that satisfies the Semantic Versioning (SEMVER) constraints, AWS will release an update to remediate the issue.
 
 ## Supported Image Versions
 The tables below lists the supported SageMaker Distribution image versions and their planned end of support dates. When you are building images or pulling images from the ECR repository, we recommend you choose supported image versions from the tables below.
@@ -20,10 +20,7 @@ The tables below lists the supported SageMaker Distribution image versions and t
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
-<<<<<<< HEAD
 | 1.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.9-cpu  | Jan 15th, 2025 |
-=======
->>>>>>> 7104883 (Add framework support policy)
 | 1.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.8-cpu  | Dec 31st, 2024 |
 | 1.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.7-cpu  | Dec 15th, 2024 |
 | 1.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.6-cpu  | Dec 15th, 2024 |
@@ -35,10 +32,7 @@ The tables below lists the supported SageMaker Distribution image versions and t
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
-<<<<<<< HEAD
 | 1.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.9-gpu  | Jan 15th, 2025 |
-=======
->>>>>>> 7104883 (Add framework support policy)
 | 1.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.8-gpu  | Dec 31st, 2024 |
 | 1.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.7-gpu  | Dec 15th, 2024 |
 | 1.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:1.6-gpu  | Dec 15th, 2024 |
@@ -80,8 +74,4 @@ The tables below list SageMaker Distribution Image versions that are no longer s
 
 **[Q]** Can I still use older images after an image is no longer supported?
 
-<<<<<<< HEAD
 **[A]** Yes, older images remain available in ECR after they reach end of support. However, we highly recommend upgrading to a supported image version that are continuously receiving security updates and bug fixes. It is the customer's responsibility to manage any vulnerabilities that arise due to choosing an image version that is no longer supported by AWS. Do also refer to AWS's [Shared Responsibility Model documentation](https://aws.amazon.com/compliance/shared-responsibility-model/).
-=======
-**[A]** Yes, older images remain available in ECR after they reach end of support. However, we highly recommend upgrading to a supported image version that are continuously receiving security updates and bug fixes. It is the customer's responsibility to manage any vulnerabilities that arise due to choosing an image version that is no longer supported by AWS.
->>>>>>> 7104883 (Add framework support policy)
