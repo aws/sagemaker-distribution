@@ -8,7 +8,7 @@
     "-f",
     "{connection_file}"
   ],
-  "display_name": "Glue PySpark and Ray",
+  "display_name": "Glue PySpark",
   "env": {"request_origin": "SageMakerStudioPySparkNotebook", "glue_version": "3.0"},
   "language": "python"
 }
