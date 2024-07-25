@@ -6,6 +6,7 @@ The tables below list the supported SageMaker Distribution image versions. SageM
 
 | Image Major Version | Image Minor Version |     ECR Image URI     |
 |---------------------|---------------------|-----------------------|
+|1                    |1.9                  |public.ecr.aws/sagemaker/sagemaker-distribution:1.9-cpu    |
 |1                    |1.8                  |public.ecr.aws/sagemaker/sagemaker-distribution:1.8-cpu    |
 |1                    |1.7                  |public.ecr.aws/sagemaker/sagemaker-distribution:1.7-cpu    |
 |1                    |1.6                  |public.ecr.aws/sagemaker/sagemaker-distribution:1.6-cpu    |
@@ -17,6 +18,7 @@ The tables below list the supported SageMaker Distribution image versions. SageM
 
 | Image Major Version | Image Minor Version |     ECR Image URI     |
 |---------------------|---------------------|-----------------------|
+|1                    |1.9                  |public.ecr.aws/sagemaker/sagemaker-distribution:1.9-gpu    |
 |1                    |1.8                  |public.ecr.aws/sagemaker/sagemaker-distribution:1.8-gpu    |
 |1                    |1.7                  |public.ecr.aws/sagemaker/sagemaker-distribution:1.7-gpu    |
 |1                    |1.6                  |public.ecr.aws/sagemaker/sagemaker-distribution:1.6-gpu    |
