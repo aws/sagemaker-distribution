@@ -10,7 +10,7 @@ jinja2|3.1.3|3.1.4
 ipywidgets|7.8.0|7.8.2
 numpy|1.24.4|1.26.4
 pandas|2.0.3|2.2.2
-boto3|1.34.36|1.34.144
+boto3|1.34.36|1.34.146
 aws-glue-sessions|1.0.4|1.0.6
 keras|2.13.1|2.14.0
 matplotlib|3.7.3|3.9.1

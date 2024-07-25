@@ -9,7 +9,7 @@ jinja2|3.1.4|3.1.4
 ipywidgets|7.8.2|7.8.2
 numpy|1.26.4|1.26.4
 pandas|2.2.2|2.2.2
-boto3|1.34.144|1.34.144
+boto3|1.34.146|1.34.146
 aws-glue-sessions|1.0.6|1.0.6
 conda|23.11.0|23.11.0
 jupyterlab|3.6.7|3.6.7
