@@ -1,4 +1,5 @@
 # Release notes: 0.13.0
+Upgrade Python from 3.8 to 3.11
 
 Package | gpu| cpu
 ---|---|---
