@@ -65,27 +65,26 @@ RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
 
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
+ARG MAMBA_DOCKERFILE_ACTIVATE=1
+ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
 
 # Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
 # will happen.
 RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     then echo 'No ARG_BASED_ENV_IN_FILENAME passed' ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
-    fi
-
-ARG MAMBA_DOCKERFILE_ACTIVATE=1
-ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
-# Enforce dependencies are all installed from conda-forge
-RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
+    fi && \
+    # Enforce dependencies are all installed from conda-forge
+    micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
-# Update npm version
+    # Update npm version
     npm i -g npm && \
-# Enforce to use `conda-forge` as only channel, by removing `defaults`
+    # Enforce to use `conda-forge` as only channel, by removing `defaults`
     conda config --remove channels defaults && \
     micromamba config append channels conda-forge --env && \
-# Configure CodeEditor - Install extensions and set preferences
+    # Configure CodeEditor - Install extensions and set preferences
     extensionloc=/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions && mkdir -p "${extensionloc}" \
     # Loop through all vsix files in /etc/code-editor/extensions and install them
     && for ext in /etc/code-editor/extensions/*.vsix; do \
@@ -94,8 +93,8 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
        done \
     # Copy the settings
     && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json && \
-# Install glue kernels, and move to shared directory
-# Also patching base kernel so Studio background code doesn't start session silently
+    # Install glue kernels, and move to shared directory
+    # Also patching base kernel so Studio background code doesn't start session silently
     install-glue-kernels && \
     SITE_PACKAGES=$(pip show aws-glue-sessions | grep Location | awk '{print $2}') && \
     jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_pyspark --user && \
@@ -103,43 +102,12 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
     mv /home/sagemaker-user/.local/share/jupyter/kernels/glue_pyspark /opt/conda/share/jupyter/kernels && \
     mv /home/sagemaker-user/.local/share/jupyter/kernels/glue_spark /opt/conda/share/jupyter/kernels && \
     sed -i '/if not store_history and (/i\        if "sm_analytics_runtime_check" in code:\n            return await self._complete_cell()\n' \
-    "$SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_kernel_base/BaseKernel.py"
-
-
-# Patch glue kernels to use kernel wrapper
-COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
-COPY patch_glue_spark.json /opt/conda/share/jupyter/kernels/glue_spark/kernel.json
-
-# Configure RTC - disable jupyter_collaboration by default
-RUN jupyter labextension disable @jupyter/collaboration-extension
-
-USER root
-
-# Create logging directories for supervisor
-RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
-    chmod a+rw $SAGEMAKER_LOGGING_DIR && \
-    mkdir -p ${STUDIO_LOGGING_DIR} && \
-    chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} && \
-
-# Clean up CodeEditor artifacts
-    rm -rf /etc/code-editor && \
-# Create supervisord runtime directory
-    mkdir -p /var/run/supervisord && \
-    chmod a+rw /var/run/supervisord && \
-# Create root directory for DB
-# Create logging directories for supervisor
-    mkdir -p $DB_ROOT_DIR && \
-    chmod a+rw $DB_ROOT_DIR
-
-USER $MAMBA_USER
-ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
-WORKDIR "/home/${NB_USER}"
-
-# Install FIPS Provider for OpenSSL, on top of existing OpenSSL installation
-# v3.0.8 is latest FIPS validated provider, so this is the one we install
-# But we need to run tests against the installed version.
-# see https://github.com/openssl/openssl/blob/master/README-FIPS.md https://www.openssl.org/source/
-RUN INSTALLED_SSL=$(micromamba list | grep openssl | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
+    "$SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_kernel_base/BaseKernel.py" && \
+    # Install FIPS Provider for OpenSSL, on top of existing OpenSSL installation
+    # v3.0.8 is latest FIPS validated provider, so this is the one we install
+    # But we need to run tests against the installed version.
+    # see https://github.com/openssl/openssl/blob/master/README-FIPS.md https://www.openssl.org/source/
+    INSTALLED_SSL=$(micromamba list | grep openssl | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
     # download source code for installed, and FIPS validated openssl versions
     curl -L https://www.openssl.org/source/openssl-$FIPS_VALIDATED_SSL.tar.gz > openssl-$FIPS_VALIDATED_SSL.tar.gz &&  \
     curl -L https://www.openssl.org/source/openssl-$INSTALLED_SSL.tar.gz > openssl-$INSTALLED_SSL.tar.gz &&  \
@@ -158,12 +126,10 @@ RUN INSTALLED_SSL=$(micromamba list | grep openssl | tr -s ' ' | cut -d ' ' -f 3
 # e.g. export OPENSSL_CONF=/opt/conda/ssl/openssl-fips.cnf
     cp /opt/conda/ssl/openssl.cnf /opt/conda/ssl/openssl-fips.cnf && \
     sed -i "s:# .include fipsmodule.cnf:.include /opt/conda/ssl/fipsmodule.cnf:" /opt/conda/ssl/openssl-fips.cnf && \
-    sed -i 's:# fips = fips_sect:fips = fips_sect:' /opt/conda/ssl/openssl-fips.cnf
-ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
-
+    sed -i 's:# fips = fips_sect:fips = fips_sect:' /opt/conda/ssl/openssl-fips.cnf && \
 # Install Kerberos.
 # Make sure no dependency is added/updated
-RUN pip install "krb5>=0.5.1,<0.6" && \
+    pip install "krb5>=0.5.1,<0.6" && \
     pip show krb5 | grep Require | xargs -i sh -c '[ $(echo {} | cut -d: -f2 | wc -w) -eq 0 ] ' && \
 # https://stackoverflow.com/questions/122327
     SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;import sysconfig; print(sysconfig.get_paths().get('purelib'))") && \
@@ -175,12 +141,32 @@ RUN pip install "krb5>=0.5.1,<0.6" && \
     cp -a ${SYSTEM_PYTHON_PATH}/sagemaker_studio_analytics_extension/patches/reliablehttpclient.py ${SYSTEM_PYTHON_PATH}/sparkmagic/livyclientlib/reliablehttpclient.py && \
     sed -i 's=  "python"=  "/opt/conda/bin/python"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
     sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
-    sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json
+    sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
+    # Configure RTC - disable jupyter_collaboration by default
+    jupyter labextension disable @jupyter/collaboration-extension
 
-ENV SHELL=/bin/bash
+# Patch glue kernels to use kernel wrapper
+COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
+COPY patch_glue_spark.json /opt/conda/share/jupyter/kernels/glue_spark/kernel.json
 
 USER root
-RUN HOME_DIR="/home/${NB_USER}/licenses" \
+
+# Create logging directories for supervisor
+RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
+    chmod a+rw $SAGEMAKER_LOGGING_DIR && \
+    mkdir -p ${STUDIO_LOGGING_DIR} && \
+    chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} && \
+
+    # Clean up CodeEditor artifacts
+    rm -rf /etc/code-editor && \
+    # Create supervisord runtime directory
+    mkdir -p /var/run/supervisord && \
+    chmod a+rw /var/run/supervisord && \
+    # Create root directory for DB
+    # Create logging directories for supervisor
+    mkdir -p $DB_ROOT_DIR && \
+    chmod a+rw $DB_ROOT_DIR && \
+    HOME_DIR="/home/${NB_USER}/licenses" \
     && mkdir -p ${HOME_DIR} \
     && curl -o ${HOME_DIR}/oss_compliance.zip https://aws-dlinfra-utilities.s3.amazonaws.com/oss_compliance.zip \
     && unzip ${HOME_DIR}/oss_compliance.zip -d ${HOME_DIR}/ \
@@ -189,5 +175,9 @@ RUN HOME_DIR="/home/${NB_USER}/licenses" \
     && chmod +x ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
-USER $MAMBA_USER
 
+ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
+WORKDIR "/home/${NB_USER}"
+ENV SHELL=/bin/bash
+ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
+USER $MAMBA_USER
