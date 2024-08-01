@@ -1,15 +1,14 @@
 # Release notes: 0.13.0
-Upgrade Python from 3.8 to 3.11
 
 Package | gpu| cpu
 ---|---|---
 python|3.11.9|3.11.9
 ipython|8.26.0|8.26.0
 jinja2|3.1.4|3.1.4
-ipywidgets|7.8.2|7.8.2
+ipywidgets|7.8.3|7.8.3
 numpy|1.26.4|1.26.4
 pandas|2.2.2|2.2.2
-boto3|1.34.146|1.34.146
+boto3|1.34.150|1.34.150
 aws-glue-sessions|1.0.6|1.0.6
 conda|23.11.0|23.11.0
 jupyterlab|3.6.7|3.6.7
@@ -25,7 +24,7 @@ python-gssapi|1.8.3|1.8.3
 pytorch-gpu|2.0.0| 
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-kernel-wrapper|0.0.2|0.0.2
-sagemaker-python-sdk|2.226.1|2.226.1
+sagemaker-python-sdk|2.227.0|2.227.0
 sagemaker-studio-analytics-extension|0.0.22|0.0.22
 tensorflow|2.14.0|2.15.0
 torchvision|0.15.2|0.16.1
