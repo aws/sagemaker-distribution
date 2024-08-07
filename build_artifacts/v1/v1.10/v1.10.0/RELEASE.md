@@ -11,7 +11,7 @@ boto3|1.34.131|1.34.131
 ipython|8.26.0|8.26.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.1.6|4.1.6
-amazon-q-developer-jupyterlab-ext|3.1.0|3.1.0
+amazon-q-developer-jupyterlab-ext|3.2.0|3.2.0
 langchain|0.2.5|0.2.5
 jupyter-ai|2.20.0|2.20.0
 amazon-sagemaker-jupyter-ai-q-developer|1.0.7|1.0.7
@@ -35,7 +35,7 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.3.0|4.3.0
 jupyterlab-git|0.50.1|0.50.1
 keras|2.14.0|2.15.0
-langchain-aws|0.1.13|0.1.13
+langchain-aws|0.1.15|0.1.15
 matplotlib|3.9.1|3.9.1
 nodejs|18.20.3|18.20.3
 py-xgboost-gpu|1.7.6| 
@@ -46,7 +46,7 @@ python-lsp-server|1.11.0|1.11.0
 pytorch-gpu|2.0.0| 
 sagemaker-code-editor|1.1.0|1.1.0
 sagemaker-headless-execution-driver|0.0.13|0.0.13
-sagemaker-jupyterlab-emr-extension|0.3.1|0.3.1
+sagemaker-jupyterlab-emr-extension|0.3.2|0.3.2
 sagemaker-jupyterlab-extension|0.3.2|0.3.2
 sagemaker-kernel-wrapper|0.0.2|0.0.2
 sagemaker-python-sdk|2.227.0|2.227.0
