@@ -66,6 +66,7 @@ RUN sudo ln -s $(which python3) /usr/bin/python && \
     micromamba config append channels conda-forge --env && \
     micromamba config set channel_priority strict
 
+
 # Install glue kernels, and move to shared directory
 # Also patching base kernel so Studio background code doesn't start session silently
 RUN install-glue-kernels && \

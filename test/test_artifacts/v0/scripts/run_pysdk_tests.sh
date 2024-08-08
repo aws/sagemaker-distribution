@@ -2,6 +2,9 @@
 
 # We need to checkout the version of sagemaker-python-sdk that is installed in the mamba environment.
 
+# Sagemaker Python SDK's unit tests requires AWS_DEFAULT_REGION to be set. So, using an arbitrary value of us-west-2
+export AWS_DEFAULT_REGION=us-west-2
+
 pysdk_version=$(micromamba list | grep sagemaker-python-sdk | tr -s ' ' | cut -d ' ' -f 3)
 # Checkout the corresponding sagemaker-python-sdk version
 git checkout tags/v$pysdk_version
