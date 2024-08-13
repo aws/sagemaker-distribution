@@ -9,6 +9,7 @@ from config import _image_generator_configs
 from dependency_upgrader import _dependency_metadata
 from utils import (
     create_markdown_table,
+    derive_changeset,
     get_dir_for_version,
     get_match_specs,
     get_semver,
@@ -222,22 +223,15 @@ def _generate_python_package_size_report_per_image(
 
 
 def _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir):
-    env_in_file_name = image_config["build_args"]["ENV_IN_FILENAME"]
-
-    base_match_spec_out = get_match_specs(base_version_dir + "/" + env_in_file_name) if base_version_dir else dict()
-    target_match_spec_out = get_match_specs(target_version_dir + "/" + env_in_file_name)
-
-    base_packages_match_spec_out = {k: v for k, v in base_match_spec_out.items()}
-    target_packages_match_spec_out = {k: v for k, v in target_match_spec_out.items()}
+    # Get a list of newly introduced marquee packages in changeset and their versions.
+    _, new_packages = derive_changeset(target_version_dir, base_version_dir, image_config)
 
     results = dict()
-    for package, target_match_spec_out in target_packages_match_spec_out.items():
-        # We only care about the newly introduced marquee packages
-        if package not in base_packages_match_spec_out:
-            # Pull package metadata from conda-forge and dump into json file
-            search_result = conda.cli.python_api.run_command("search", str(target_match_spec_out), "--json")
-            package_metadata = json.loads(search_result[0])[package][0]
-            results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
+    for package, version in new_packages.items():
+        # Pull package metadata from conda-forge and dump into json file
+        search_result = conda.cli.python_api.run_command("search", f"{package}=={version}", "--json")
+        package_metadata = json.loads(search_result[0])[package][0]
+        results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
 
     print(
         create_markdown_table(

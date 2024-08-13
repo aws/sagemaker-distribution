@@ -9,7 +9,6 @@ pytestmark = pytest.mark.unit
 import os
 from unittest.mock import MagicMock, Mock, patch
 
-from changelog_generator import _derive_changeset
 from config import _image_generator_configs
 from main import (
     _get_config_for_image,
@@ -25,7 +24,7 @@ from release_notes_generator import (
     _get_image_type_package_metadata,
     _get_package_to_image_type_mapping,
 )
-from utils import get_semver
+from utils import derive_changeset, get_semver
 
 
 class CreateVersionArgs:
@@ -629,7 +628,7 @@ def test_derive_changeset(tmp_path):
     _create_docker_cpu_env_out_file(target_version_dir + "/cpu.env.out", package_metadata=target_env_out_packages)
     expected_upgrades = {"ipykernel": ["6.21.3", "6.21.6"]}
     expected_new_packages = {"boto3": "1.2"}
-    actual_upgrades, actual_new_packages = _derive_changeset(
+    actual_upgrades, actual_new_packages = derive_changeset(
         target_version_dir, source_version_dir, _image_generator_configs[1]
     )
     assert expected_upgrades == actual_upgrades
