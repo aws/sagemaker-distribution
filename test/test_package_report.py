@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 from config import _image_generator_configs
 from package_report import (
+    _generate_python_package_dependency_report,
     _generate_python_package_size_report_per_image,
     _get_installed_package_versions_and_conda_versions,
-    _generate_python_package_dependency_report,
 )
 from utils import get_match_specs, get_semver
 
@@ -204,7 +204,9 @@ def test_generate_package_dependency_report(mock_conda_command, tmp_path, capsys
         0,
     )
 
-    _generate_python_package_dependency_report(_image_generator_configs[1], str(base_env_in_file_path), str(target_env_in_file_path))
+    _generate_python_package_dependency_report(
+        _image_generator_configs[1], str(base_env_in_file_path), str(target_env_in_file_path)
+    )
 
     captured = capsys.readouterr()
     print(captured.out)

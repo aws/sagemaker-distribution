@@ -21,9 +21,9 @@ from dependency_upgrader import (
     _get_dependency_upper_bound_for_runtime_upgrade,
 )
 from package_report import (
+    generate_package_dependency_report,
     generate_package_size_report,
     generate_package_staleness_report,
-    generate_package_dependency_report
 )
 from release_notes_generator import generate_release_notes
 from utils import (

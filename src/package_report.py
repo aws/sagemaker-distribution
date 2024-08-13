@@ -237,11 +237,8 @@ def _generate_python_package_dependency_report(image_config, base_version_dir, t
             # Pull package metadata from conda-forge and dump into json file
             search_result = conda.cli.python_api.run_command("search", str(target_match_spec_out), "--json")
             package_metadata = json.loads(search_result[0])[package][0]
-            results[package] = {
-                "version": package_metadata["version"],
-                "depends": package_metadata["depends"]
-            }
-    
+            results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
+
     print(
         create_markdown_table(
             ["Package", "Version in the Target Image", "Dependencies"],
