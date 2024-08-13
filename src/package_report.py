@@ -221,6 +221,38 @@ def _generate_python_package_size_report_per_image(
     return validate_result
 
 
+def _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir):
+    env_in_file_name = image_config["build_args"]["ENV_IN_FILENAME"]
+
+    base_match_spec_out = get_match_specs(base_version_dir + "/" + env_in_file_name) if base_version_dir else dict()
+    target_match_spec_out = get_match_specs(target_version_dir + "/" + env_in_file_name)
+
+    base_packages_match_spec_out = {k: v for k, v in base_match_spec_out.items()}
+    target_packages_match_spec_out = {k: v for k, v in target_match_spec_out.items()}
+
+    results = dict()
+    for package, target_match_spec_out in target_packages_match_spec_out.items():
+        # We only care about the newly introduced marquee packages
+        if package not in base_packages_match_spec_out:
+            # Pull package metadata from conda-forge and dump into json file
+            search_result = conda.cli.python_api.run_command("search", str(target_match_spec_out), "--json")
+            package_metadata = json.loads(search_result[0])[package][0]
+            results[package] = {
+                "version": package_metadata["version"],
+                "depends": package_metadata["depends"]
+            }
+    
+    print(
+        create_markdown_table(
+            ["Package", "Version in the Target Image", "Dependencies"],
+            [
+                {"pkg": k, "version": v["version"], "depends": v["depends"]}
+                for k, v in islice(results.items(), None, 20)
+            ],
+        )
+    )
+
+
 def generate_package_staleness_report(args):
     target_version = get_semver(args.target_patch_version)
     target_version_dir = get_dir_for_version(target_version)
@@ -260,3 +292,25 @@ def generate_package_size_report(args):
         if validate_results:
             raise Exception(f"Size Validation Failed! Issues found: {validate_results}")
         print("Pakcage Size Validation Passed!")
+
+
+def generate_package_dependency_report(args):
+    target_version = get_semver(args.target_patch_version)
+    target_version_dir = get_dir_for_version(target_version)
+
+    base_version = None
+    source_version_txt_file_path = f"{target_version_dir}/source-version.txt"
+    if os.path.exists(source_version_txt_file_path):
+        with open(source_version_txt_file_path, "r") as f:
+            source_patch_version = f.readline()
+        base_version = get_semver(source_patch_version)
+
+    base_version_dir = get_dir_for_version(base_version) if base_version else None
+
+    print("\n# Python Package Dependency Report\n")
+    print("\n### Target Image Version: " + str(target_version) + " | Base Image Version: " + str(base_version) + "\n")
+    if not base_version:
+        print("WARNING: No base version or base version directory found, will generate full report for target version.")
+    for image_config in _image_generator_configs:
+        print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
+        _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)

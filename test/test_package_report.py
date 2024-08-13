@@ -10,6 +10,7 @@ from config import _image_generator_configs
 from package_report import (
     _generate_python_package_size_report_per_image,
     _get_installed_package_versions_and_conda_versions,
+    _generate_python_package_dependency_report,
 )
 from utils import get_match_specs, get_semver
 
@@ -20,6 +21,17 @@ def _create_env_in_docker_file(file_path):
             f"""# This file is auto-generated.
 conda-forge::ipykernel
 conda-forge::numpy[version=\'>=1.0.17,<2.0.0\']"""
+        )
+
+
+def _create_target_env_in_docker_file(file_path):
+    with open(file_path, "w") as env_in_file:
+        env_in_file.write(
+            f"""# This file is auto-generated.
+conda-forge::ipykernel
+conda-forge::numpy[version=\'>=1.0.17,<2.0.0\']
+conda-forge::sagemaker-headless-execution-driver[version='>=0.0.12,<0.1.0']
+"""
         )
 
 
@@ -166,3 +178,39 @@ def test_generate_package_size_report_when_base_version_is_not_present(capsys):
     assert "python|3.12.2|30.82MB" in captured.out
     assert "libclang|18.1.2|18.38MB" in captured.out
     assert "tqdm|4.66.2|87.47KB" in captured.out
+
+
+@patch("conda.cli.python_api.run_command")
+# @patch("main.get_dir_for_version")
+def test_generate_package_dependency_report(mock_conda_command, tmp_path, capsys):
+    base_env_in_file_path = tmp_path / "base"
+    base_env_in_file_path.mkdir()
+    _create_env_in_docker_file(base_env_in_file_path / "cpu.env.in")
+    target_env_in_file_path = tmp_path / "target"
+    target_env_in_file_path.mkdir()
+    _create_target_env_in_docker_file(target_env_in_file_path / "cpu.env.in")
+
+    # mocker.patch("conda.cli.python_api.run_command", side_effect=(
+    #     '{"sagemaker-headless-execution-driver":[{"version":"0.0.13","depends":["nbconvert","papermill >=2.4","python >3.8"]}]}',
+    #     "",
+    #     0,
+    # ))
+
+    # mock_get_dir.return_value=base_env_in_file_path
+
+    mock_conda_command.return_value = (
+        '{"sagemaker-headless-execution-driver":[{"version":"0.0.13","depends":["nbconvert","papermill >=2.4","python >3.8"]}]}',
+        "",
+        0,
+    )
+
+    _generate_python_package_dependency_report(_image_generator_configs[1], str(base_env_in_file_path), str(target_env_in_file_path))
+
+    captured = capsys.readouterr()
+    print(captured.out)
+    # Assert dependency report for newly added packages
+    assert "sagemaker-headless-execution-driver|0.0.13|['nbconvert', 'papermill >=2.4', 'python >3.8']" in captured.out
+
+    # Assert existing packages not in report
+    assert "ipykernel" not in captured.out
+    assert "numpy" not in captured.out
