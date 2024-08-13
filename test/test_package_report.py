@@ -8,6 +8,7 @@ from unittest.mock import patch
 
 from config import _image_generator_configs
 from package_report import (
+    _generate_python_package_dependency_report,
     _generate_python_package_size_report_per_image,
     _get_installed_package_versions_and_conda_versions,
 )
@@ -23,14 +24,29 @@ conda-forge::numpy[version=\'>=1.0.17,<2.0.0\']"""
         )
 
 
-def _create_env_out_docker_file(file_path):
+def _create_target_env_in_docker_file(file_path):
+    with open(file_path, "w") as env_in_file:
+        env_in_file.write(
+            f"""# This file is auto-generated.
+conda-forge::ipykernel
+conda-forge::numpy[version=\'>=1.0.17,<2.0.0\']
+conda-forge::sagemaker-headless-execution-driver[version='>=0.0.12,<0.1.0']
+"""
+        )
+
+
+def _create_env_out_docker_file(
+    file_path,
+    package_metadata="""https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.3-pyh210e3f2_0.conda#8c1f6bf32a6ca81232c4853d4165ca67
+    https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.conda#05592c85b9f6931dc2df1e80c0d56294""",
+):
     with open(file_path, "w") as env_out_file:
         env_out_file.write(
             f"""# This file may be used to create an environment using:
 # $ conda create --name <env> --file <this file>
 # platform: linux-64
-https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.3-pyh210e3f2_0.conda#8c1f6bf32a6ca81232c4853d4165ca67
-https://conda.anaconda.org/conda-forge/linux-64/numpy-1.24.2-py38h10c12cc_0.conda#05592c85b9f6931dc2df1e80c0d56294\n"""
+@EXPLICIT
+{package_metadata}\n"""
         )
 
 
@@ -61,7 +77,7 @@ def test_get_match_specs(tmp_path):
     assert str(numpy_match_spec.get("version")).removeprefix("==") == "1.24.2"
     assert ipykernel_match_spec.get("subdir") == "noarch"
     assert numpy_match_spec.get("subdir") == "linux-64"
-    assert len(match_spec_out) == 2
+    assert len(match_spec_out) == 3
     # Test bad file path
     env_out_file_path = tmp_path / "bad.env.out"
     match_spec_out = get_match_specs(env_out_file_path)
@@ -166,3 +182,44 @@ def test_generate_package_size_report_when_base_version_is_not_present(capsys):
     assert "python|3.12.2|30.82MB" in captured.out
     assert "libclang|18.1.2|18.38MB" in captured.out
     assert "tqdm|4.66.2|87.47KB" in captured.out
+
+
+@patch("conda.cli.python_api.run_command")
+def test_generate_package_dependency_report(mock_conda_command, tmp_path, capsys):
+    base_version_dir = tmp_path / "base"
+    base_version_dir.mkdir()
+
+    target_version_dir = tmp_path / "target"
+    target_version_dir.mkdir()
+    _create_target_env_in_docker_file(target_version_dir / "cpu.env.in")
+
+    _create_env_out_docker_file(
+        str(base_version_dir) + "/cpu.env.out",
+        package_metadata="""https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.3-pyh210e3f_0.conda#8c1f6bf32a6ca81232c4853d4165ca67
+        https://conda.anaconda.org/conda-forge/linux-64/boto3-1.2-cuda112py38hd_0.conda#8c1f6bf32a6ca81232c4853d4165ca67""",
+    )
+
+    target_env_out_packages = (
+        "https://conda.anaconda.org/conda-forge/noarch/ipykernel-6.21.6-pyh210e3f2_0.conda#8c1f6bf32a6ca81232c4853d4165ca67\n"
+        "https://conda.anaconda.org/conda-forge/linux-64/boto3-1.2-cuda112py38hd_0.conda#8c1f6bf32a6ca81232c4853d4165ca67\n"
+        "https://conda.anaconda.org/conda-forge/noarch/sagemaker-headless-execution-driver-0.0.13-pyhd8ed1ab_0.conda#feaec93c21652caac71ed7ecf450cb17"
+    )
+    _create_env_out_docker_file(str(target_version_dir) + "/cpu.env.out", package_metadata=target_env_out_packages)
+
+    mock_conda_command.return_value = (
+        '{"sagemaker-headless-execution-driver":[{"version":"0.0.13","depends":["nbconvert","papermill >=2.4","python >3.8"]}]}',
+        "",
+        0,
+    )
+
+    _generate_python_package_dependency_report(
+        _image_generator_configs[1], str(base_version_dir), str(target_version_dir)
+    )
+
+    captured = capsys.readouterr()
+    # Assert dependency report for newly added packages
+    assert "sagemaker-headless-execution-driver|0.0.13|['nbconvert', 'papermill >=2.4', 'python >3.8']" in captured.out
+
+    # Assert existing packages not in report
+    assert "ipykernel" not in captured.out
+    assert "numpy" not in captured.out

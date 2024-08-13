@@ -21,6 +21,7 @@ from dependency_upgrader import (
     _get_dependency_upper_bound_for_runtime_upgrade,
 )
 from package_report import (
+    generate_package_dependency_report,
     generate_package_size_report,
     generate_package_staleness_report,
 )
@@ -425,6 +426,16 @@ def get_arg_parser():
         "--validate",
         action="store_true",
         help="Validate package size delta and raise error if the validation failed.",
+    )
+    package_dependency_parser = subparsers.add_parser(
+        "generate-dependency-report",
+        help="Generates package dependency report for each of newly introcuded packages in the target image version.",
+    )
+    package_dependency_parser.set_defaults(func=generate_package_dependency_report)
+    package_dependency_parser.add_argument(
+        "--target-patch-version",
+        required=True,
+        help="Specify the target patch version for which the package dependency report needs to be generated.",
     )
     return parser
 
