@@ -181,7 +181,6 @@ def test_generate_package_size_report_when_base_version_is_not_present(capsys):
 
 
 @patch("conda.cli.python_api.run_command")
-# @patch("main.get_dir_for_version")
 def test_generate_package_dependency_report(mock_conda_command, tmp_path, capsys):
     base_env_in_file_path = tmp_path / "base"
     base_env_in_file_path.mkdir()
@@ -189,14 +188,6 @@ def test_generate_package_dependency_report(mock_conda_command, tmp_path, capsys
     target_env_in_file_path = tmp_path / "target"
     target_env_in_file_path.mkdir()
     _create_target_env_in_docker_file(target_env_in_file_path / "cpu.env.in")
-
-    # mocker.patch("conda.cli.python_api.run_command", side_effect=(
-    #     '{"sagemaker-headless-execution-driver":[{"version":"0.0.13","depends":["nbconvert","papermill >=2.4","python >3.8"]}]}',
-    #     "",
-    #     0,
-    # ))
-
-    # mock_get_dir.return_value=base_env_in_file_path
 
     mock_conda_command.return_value = (
         '{"sagemaker-headless-execution-driver":[{"version":"0.0.13","depends":["nbconvert","papermill >=2.4","python >3.8"]}]}',
@@ -209,7 +200,6 @@ def test_generate_package_dependency_report(mock_conda_command, tmp_path, capsys
     )
 
     captured = capsys.readouterr()
-    print(captured.out)
     # Assert dependency report for newly added packages
     assert "sagemaker-headless-execution-driver|0.0.13|['nbconvert', 'papermill >=2.4', 'python >3.8']" in captured.out
 
