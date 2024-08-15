@@ -54,8 +54,8 @@ _image_generator_configs = {
     2: [
         {
             "build_args": {
-                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy-cuda-12.4.1",
-                "CUDA_MAJOR_MINOR_VERSION": "12.4",  # Should match the previous one.
+                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy-cuda-12.5.0",
+                "CUDA_MAJOR_MINOR_VERSION": "12.5",  # Should match the previous one.
                 "ENV_IN_FILENAME": "gpu.env.in",
                 "ARG_BASED_ENV_IN_FILENAME": "gpu.arg_based_env.in",
             },

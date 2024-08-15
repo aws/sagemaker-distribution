@@ -19,7 +19,7 @@ amazon_sagemaker_sql_editor|0.1.9|0.1.10
 scipy|1.11.4|1.12.0
 matplotlib-base|3.8.4|3.9.1
 pip|23.3.2|24.2
-torchvision|0.15.2|0.18.0
+torchvision|0.15.2|0.18.1
 autogluon|0.8.3|1.1.1
 conda|23.11.0|24.7.1
 jupyter-collaboration|1.1.0|2.1.2

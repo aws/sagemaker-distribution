@@ -33,6 +33,8 @@ def get_semver(version_str) -> Version:
     # so we keep the first 3 entries as version string.
     if version_str.count(".") > 2:
         version_str = ".".join(version_str.split(".")[:3])
+    elif version_str.count(".") == 1:
+        version_str = version_str + ".0"
     version = Version.parse(version_str)
     if version.build is not None:
         raise Exception()

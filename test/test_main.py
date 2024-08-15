@@ -101,16 +101,6 @@ def _create_prev_docker_file(file_path):
         )
 
 
-def _create_gpu_cuda_config_file(file_path):
-    gpu_cuda_config_context = {
-        "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy-cuda-test-version",
-        "CUDA_MAJOR_MINOR_VERSION": "test-major-minor-version",
-    }
-
-    with open(file_path, "w") as gpu_cuda_config:
-        json.dump(gpu_cuda_config_context, gpu_cuda_config, indent=4)
-
-
 def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_version):
     def mock_get_dir_for_version(base_version):
         pre_release_suffix = "/v" + str(base_version) if base_version.prerelease else ""
