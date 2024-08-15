@@ -1,7 +1,7 @@
 ## Amazon SageMaker Distribution
 
 Amazon SageMaker Distribution is a set of Docker images that include popular frameworks for machine learning, data
-science and visualization. For the list of supported SageMaker Distributions images, see [SageMaker Distributions Images](supported_images.md#supported-image-versions).
+science and visualization. For the list of supported SageMaker Distributions images, see [SageMaker Distributions Images](support_policy.md#supported-image-versions).
 
 These images come in two variants, CPU and GPU, and include deep learning frameworks like PyTorch, TensorFlow and
 Keras; popular Python packages like numpy, scikit-learn and pandas; and IDEs like Jupyter Lab. The distribution contains
