@@ -41,5 +41,5 @@ uvicorn|0.30.1|0.30.6
 Package | Version 
 ---|---
 jupyter-activity-monitor-extension|0.3.1
-mlflow|2.14.3
+mlflow|2.15.1
 sagemaker-mlflow|0.1.0

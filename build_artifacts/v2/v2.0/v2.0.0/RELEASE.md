@@ -39,7 +39,7 @@ jupyter-server-proxy|4.3.0|4.3.0
 jupyterlab-git|0.50.1|0.50.1
 keras|3.5.0|3.5.0
 langchain-aws|0.1.16|0.1.16
-mlflow|2.14.3|2.14.3
+mlflow|2.15.1|2.15.1
 py-xgboost-gpu|2.0.3| 
 pyhive|0.7.0|0.7.0
 python-gssapi|1.8.3|1.8.3
