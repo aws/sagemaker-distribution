@@ -16,13 +16,13 @@ langchain|0.2.5|0.2.5
 jupyter-ai|2.20.0|2.20.0
 amazon-sagemaker-jupyter-ai-q-developer|1.0.7|1.0.7
 jupyter-scheduler|2.7.1|2.7.1
-amazon-sagemaker-jupyter-scheduler|3.1.2|3.1.2
+amazon-sagemaker-jupyter-scheduler|3.1.3|3.1.3
 pandas|2.2.2|2.2.2
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.10|0.1.10
 scipy|1.12.0|1.12.0
-matplotlib-base|3.9.1|3.9.1
+matplotlib-base|3.9.2|3.9.2
 scikit-learn|1.4.2|1.4.2
 pip|24.2|24.2
 torchvision|0.18.1|0.18.1
@@ -54,5 +54,6 @@ sagemaker-python-sdk|2.227.0|2.227.0
 sagemaker-studio-analytics-extension|0.1.2|0.1.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.17.0|2.17.0
+tf-keras|2.17.0|2.17.0
 uvicorn|0.30.6|0.30.6
 py-xgboost-cpu| |2.0.3

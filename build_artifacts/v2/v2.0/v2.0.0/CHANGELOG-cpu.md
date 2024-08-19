@@ -13,11 +13,11 @@ amazon-q-developer-jupyterlab-ext|3.1.0|3.2.0
 langchain|0.1.9|0.2.5
 jupyter-ai|2.18.1|2.20.0
 amazon-sagemaker-jupyter-ai-q-developer|1.0.4|1.0.7
-amazon-sagemaker-jupyter-scheduler|3.1.0|3.1.2
+amazon-sagemaker-jupyter-scheduler|3.1.0|3.1.3
 pandas|2.1.4|2.2.2
 amazon_sagemaker_sql_editor|0.1.9|0.1.10
 scipy|1.11.4|1.12.0
-matplotlib-base|3.8.4|3.9.1
+matplotlib-base|3.8.4|3.9.2
 pip|23.3.2|24.2
 torchvision|0.15.2|0.18.1
 autogluon|0.8.3|1.1.1
@@ -43,3 +43,4 @@ Package | Version
 jupyter-activity-monitor-extension|0.3.1
 mlflow|2.15.1
 sagemaker-mlflow|0.1.0
+tf-keras|2.17.0
