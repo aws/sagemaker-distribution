@@ -5,7 +5,8 @@ ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
 RUN python -c "import mlflow"
 
-RUN git clone --recursive https://github.com/mlflow/mlflow.git && \
+RUN sudo apt-get update && sudo apt-get install -y git && \
+    git clone --recursive https://github.com/mlflow/mlflow.git && \
     :
 
 WORKDIR "mlflow/"
