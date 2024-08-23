@@ -14,7 +14,7 @@ jupyterlab|4.1.6|4.1.6
 amazon-q-developer-jupyterlab-ext|3.2.0|3.2.0
 langchain|0.2.5|0.2.5
 jupyter-ai|2.20.0|2.20.0
-amazon-sagemaker-jupyter-ai-q-developer|1.0.7|1.0.7
+amazon-sagemaker-jupyter-ai-q-developer|1.0.9|1.0.9
 jupyter-scheduler|2.7.1|2.7.1
 amazon-sagemaker-jupyter-scheduler|3.1.3|3.1.3
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
@@ -25,7 +25,7 @@ scikit-learn|1.4.2|1.4.2
 pip|23.3.2|23.3.2
 torchvision|0.15.2|0.15.2
 autogluon|0.8.3|0.8.3
-ipywidgets|8.1.3|8.1.3
+ipywidgets|8.1.5|8.1.5
 notebook|7.1.3|7.1.3
 aws-glue-sessions|1.0.6|1.0.6
 conda|23.11.0|23.11.0
@@ -35,7 +35,7 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.3.0|4.3.0
 jupyterlab-git|0.50.1|0.50.1
 keras|2.14.0|2.15.0
-langchain-aws|0.1.16|0.1.16
+langchain-aws|0.1.17|0.1.17
 matplotlib|3.9.2|3.9.2
 nodejs|18.20.3|18.20.3
 py-xgboost-gpu|1.7.6| 
@@ -48,7 +48,7 @@ sagemaker-code-editor|1.1.0|1.1.0
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.3.2|0.3.2
 sagemaker-jupyterlab-extension|0.3.2|0.3.2
-sagemaker-kernel-wrapper|0.0.2|0.0.2
+sagemaker-kernel-wrapper|0.0.4|0.0.4
 sagemaker-python-sdk|2.227.0|2.227.0
 sagemaker-studio-analytics-extension|0.1.2|0.1.2
 sasl|0.3.1|0.3.1
