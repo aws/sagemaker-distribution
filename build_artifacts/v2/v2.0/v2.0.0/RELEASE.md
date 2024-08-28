@@ -14,13 +14,13 @@ jupyterlab|4.1.8|4.1.8
 amazon-q-developer-jupyterlab-ext|3.2.0|3.2.0
 langchain|0.2.5|0.2.5
 jupyter-ai|2.20.0|2.20.0
-amazon-sagemaker-jupyter-ai-q-developer|1.0.7|1.0.7
+amazon-sagemaker-jupyter-ai-q-developer|1.0.9|1.0.9
 jupyter-scheduler|2.7.1|2.7.1
 amazon-sagemaker-jupyter-scheduler|3.1.3|3.1.3
 pandas|2.2.2|2.2.2
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
-amazon_sagemaker_sql_editor|0.1.10|0.1.10
+amazon_sagemaker_sql_editor|0.1.11|0.1.11
 scipy|1.12.0|1.12.0
 matplotlib-base|3.9.2|3.9.2
 scikit-learn|1.4.2|1.4.2
