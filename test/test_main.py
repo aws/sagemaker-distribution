@@ -110,6 +110,7 @@ def _create_new_version_artifacts_helper(mocker, tmp_path, version, target_versi
     input_version = get_semver(version)
     # Create directory for base version
     input_version_dir = create_and_get_semver_dir(input_version)
+    print("input_version_dir", input_version_dir)
     # Create env.in and env.out for base version
     _create_docker_cpu_env_in_file(input_version_dir + "/cpu.env.in")
     _create_docker_gpu_env_in_file(input_version_dir + "/gpu.env.in")
@@ -225,9 +226,14 @@ def _create_and_assert_patch_version_upgrade(
         new_version_dir = new_version_dir / ("v" + str(next_version) + "-" + pre_release_identifier)
     next_major_version_dir_name = "v" + str(next_version.major)
     if next_version.major == 0:
-        rel_path.side_effect = [str(base_version_dir / "Dockerfile")]
+        rel_path.side_effect = [
+            str(base_version_dir / "Dockerfile"),
+        ]
     else:
-        rel_path.side_effect = [str(base_version_dir, "Dockerfile"), str(base_version_dir / "dirs")]
+        rel_path.side_effect = [
+            str(base_version_dir / "Dockerfile"),
+            str(base_version_dir / "dirs"),
+        ]
     _create_new_version_artifacts_helper(mocker, tmp_path, input_version, str(next_version))
     _create_additional_packages_env_in_file_helper(
         mocker, tmp_path, str(next_version), include_additional_package, use_existing_package_as_additional_package
@@ -304,7 +310,9 @@ def _create_and_assert_minor_version_upgrade(
         new_version_dir = new_version_dir / ("v" + str(next_version) + "-" + pre_release_identifier)
     next_major_version_dir_name = "v" + str(next_version.major)
     if next_version.major == 0:
-        rel_path.side_effect = [str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile")]
+        rel_path.side_effect = [
+            str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile"),
+        ]
     else:
         rel_path.side_effect = [
             str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile"),
@@ -385,7 +393,9 @@ def _create_and_assert_major_version_upgrade(
         new_version_dir = new_version_dir / ("v" + str(next_version) + "-" + pre_release_identifier)
     next_major_version_dir_name = "v" + str(next_version.major)
     if next_version.major == 0:
-        rel_path.side_effect = [str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile")]
+        rel_path.side_effect = [
+            str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile"),
+        ]
     else:
         rel_path.side_effect = [
             str(tmp_path / "template" / next_major_version_dir_name / "Dockerfile"),
@@ -592,7 +602,7 @@ def test_push_images_upstream_for_public_ecr_repository(mocker):
 @patch("os.path.exists")
 def test_get_build_config_for_image(mock_path_exists, tmp_path):
     input_version_dir = str(tmp_path) + "/v2.0.0"
-    image_generator_config = _image_generator_configs[0]
+    image_generator_config = _image_generator_configs[2][0]
     # Case 1: Mock os.path.exists to return False
     mock_path_exists.return_value = False
     assert image_generator_config == _get_config_for_image(input_version_dir, image_generator_config, False)
@@ -629,7 +639,7 @@ def test_derive_changeset(tmp_path):
     expected_upgrades = {"ipykernel": ["6.21.3", "6.21.6"]}
     expected_new_packages = {"boto3": "1.2"}
     actual_upgrades, actual_new_packages = derive_changeset(
-        target_version_dir, source_version_dir, _image_generator_configs[1]
+        target_version_dir, source_version_dir, _image_generator_configs[1][1]
     )
     assert expected_upgrades == actual_upgrades
     assert expected_new_packages == actual_new_packages
@@ -637,6 +647,7 @@ def test_derive_changeset(tmp_path):
 
 def test_generate_release_notes(tmp_path):
     target_version_dir = str(tmp_path / "v1.0.6")
+    target_version = get_semver("1.0.6")
     os.makedirs(target_version_dir)
     # Create env.in of the target version, which has additional dependency on boto3
     target_env_in_packages = "conda-forge::ipykernel\nconda-forge::boto3"
@@ -651,7 +662,7 @@ def test_generate_release_notes(tmp_path):
     _create_docker_gpu_env_in_file(target_version_dir + "/gpu.env.in")
     _create_docker_gpu_env_out_file(target_version_dir + "/gpu.env.out")
     # Verify _get_image_type_package_metadata
-    image_type_package_metadata = _get_image_type_package_metadata(target_version_dir)
+    image_type_package_metadata = _get_image_type_package_metadata(target_version_dir, target_version)
     assert len(image_type_package_metadata) == 2
     assert image_type_package_metadata["gpu"] == {"numpy": "1.24.2"}
     assert image_type_package_metadata["cpu"] == {"ipykernel": "6.21.6", "boto3": "1.23.4"}

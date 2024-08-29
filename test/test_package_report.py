@@ -97,9 +97,9 @@ def test_get_installed_package_versions_and_conda_versions(mock_run_command, tmp
     env_out_file_path = tmp_path / "cpu.env.out"
     _create_env_out_docker_file(env_out_file_path)
     # Validate results for patch version release
-    # _image_generator_configs[1] is for CPU
+    # _image_generator_configs[0][1] is for v0 CPU
     match_spec_out, latest_package_versions_in_conda_forge = _get_installed_package_versions_and_conda_versions(
-        _image_generator_configs[1], str(tmp_path), get_semver("0.4.2")
+        _image_generator_configs[0][1], str(tmp_path), get_semver("0.4.2")
     )
     ipykernel_match_spec = match_spec_out["ipykernel"]
     assert str(ipykernel_match_spec.get("version")).removeprefix("==") == "6.21.3"
@@ -109,7 +109,7 @@ def test_get_installed_package_versions_and_conda_versions(mock_run_command, tmp
     assert latest_package_versions_in_conda_forge["numpy"] == "1.24.3"
     # Validate results for minor version release
     match_spec_out, latest_package_versions_in_conda_forge = _get_installed_package_versions_and_conda_versions(
-        _image_generator_configs[1], str(tmp_path), get_semver("0.5.0")
+        _image_generator_configs[0][1], str(tmp_path), get_semver("0.5.0")
     )
     ipykernel_match_spec = match_spec_out["ipykernel"]
     assert str(ipykernel_match_spec.get("version")).removeprefix("==") == "6.21.3"
@@ -120,7 +120,7 @@ def test_get_installed_package_versions_and_conda_versions(mock_run_command, tmp
     assert latest_package_versions_in_conda_forge["numpy"] == "1.26.0"
     # Validate results for major version release
     match_spec_out, latest_package_versions_in_conda_forge = _get_installed_package_versions_and_conda_versions(
-        _image_generator_configs[1], str(tmp_path), get_semver("1.0.0")
+        _image_generator_configs[1][1], str(tmp_path), get_semver("1.0.0")
     )
     ipykernel_match_spec = match_spec_out["ipykernel"]
     assert str(ipykernel_match_spec.get("version")).removeprefix("==") == "6.21.3"
@@ -136,7 +136,7 @@ def test_generate_package_size_report(capsys):
     target_pkg_metadata = _create_target_image_package_metadata()
 
     _generate_python_package_size_report_per_image(
-        base_pkg_metadata, target_pkg_metadata, _image_generator_configs[1], "1.6.1", "1.6.2"
+        base_pkg_metadata, target_pkg_metadata, _image_generator_configs[1][1], "1.6.1", "1.6.2"
     )
 
     captured = capsys.readouterr()
@@ -166,7 +166,7 @@ def test_generate_package_size_report_when_base_version_is_not_present(capsys):
     target_pkg_metadata = _create_target_image_package_metadata()
 
     _generate_python_package_size_report_per_image(
-        None, target_pkg_metadata, _image_generator_configs[1], None, "1.6.2"
+        None, target_pkg_metadata, _image_generator_configs[1][1], None, "1.6.2"
     )
 
     captured = capsys.readouterr()

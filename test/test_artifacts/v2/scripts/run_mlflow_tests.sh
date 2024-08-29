@@ -4,7 +4,7 @@ set -e
 
 # Run examples for keras, pytorch, sklearn, tensorflow
 cd examples
-
+export TF_USE_LEGACY_KERAS=1
 # keras
 cd keras/
 python train.py

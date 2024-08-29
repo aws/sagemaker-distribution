@@ -20,6 +20,7 @@ _docker_client = docker.from_env()
         ("keras.test.Dockerfile", ["keras"]),
         ("autogluon.test.Dockerfile", ["autogluon"]),
         ("matplotlib.test.Dockerfile", ["matplotlib"]),
+        ("matplotlib.test.Dockerfile", ["matplotlib-base"]),
         ("sagemaker-headless-execution-driver.test.Dockerfile", ["sagemaker-headless-execution-driver"]),
         ("scipy.test.Dockerfile", ["scipy"]),
         ("numpy.test.Dockerfile", ["numpy"]),
@@ -32,7 +33,7 @@ _docker_client = docker.from_env()
         ("jupyter-collaboration.test.Dockerfile", ["jupyter-collaboration"]),
         ("jupyter-dash.test.Dockerfile", ["jupyter-dash"]),
         ("jupyterlab-lsp.test.Dockerfile", ["jupyterlab-lsp"]),
-        ("jupyter-lsp-server.test.Dockerfile", ["jupyter-lsp-server"]),
+        ("python-lsp-server.test.Dockerfile", ["jupyter-lsp-server"]),
         ("sagemaker-code-editor.test.Dockerfile", ["sagemaker-code-editor"]),
         ("notebook.test.Dockerfile", ["notebook"]),
         ("glue-sessions.test.Dockerfile", ["aws-glue-sessions"]),
@@ -42,7 +43,7 @@ _docker_client = docker.from_env()
         ("jupyterlab-git.test.Dockerfile", ["jupyterlab-git"]),
         ("amazon-sagemaker-sql-magic.test.Dockerfile", ["amazon-sagemaker-sql-magic"]),
         ("amazon_sagemaker_sql_editor.test.Dockerfile", ["amazon_sagemaker_sql_editor"]),
-        ("serve.test.Dockerfile", ["serve-langchain"]),
+        ("serve.test.Dockerfile", ["langchain"]),
         ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
         ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
@@ -61,6 +62,7 @@ def test_dockerfiles_for_cpu(
         ("keras.test.Dockerfile", ["keras"]),
         ("autogluon.test.Dockerfile", ["autogluon"]),
         ("matplotlib.test.Dockerfile", ["matplotlib"]),
+        ("matplotlib.test.Dockerfile", ["matplotlib-base"]),
         ("sagemaker-headless-execution-driver.test.Dockerfile", ["sagemaker-headless-execution-driver"]),
         ("scipy.test.Dockerfile", ["scipy"]),
         ("numpy.test.Dockerfile", ["numpy"]),
@@ -73,7 +75,7 @@ def test_dockerfiles_for_cpu(
         ("jupyter-ai.test.Dockerfile", ["jupyter-ai"]),
         ("jupyter-dash.test.Dockerfile", ["jupyter-dash"]),
         ("jupyterlab-lsp.test.Dockerfile", ["jupyterlab-lsp"]),
-        ("jupyter-lsp-server.test.Dockerfile", ["jupyter-lsp-server"]),
+        ("python-lsp-server.test.Dockerfile", ["jupyter-lsp-server"]),
         ("sagemaker-code-editor.test.Dockerfile", ["sagemaker-code-editor"]),
         ("notebook.test.Dockerfile", ["notebook"]),
         ("glue-sessions.test.Dockerfile", ["aws-glue-sessions"]),
@@ -83,7 +85,7 @@ def test_dockerfiles_for_cpu(
         ("jupyterlab-git.test.Dockerfile", ["jupyterlab-git"]),
         ("amazon-sagemaker-sql-magic.test.Dockerfile", ["amazon-sagemaker-sql-magic"]),
         ("amazon_sagemaker_sql_editor.test.Dockerfile", ["amazon_sagemaker_sql_editor"]),
-        ("serve.test.Dockerfile", ["serve-langchain"]),
+        ("serve.test.Dockerfile", ["langchain"]),
         ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
         ("sagemaker-mlflow.test.Dockerfile", ["sagemaker-mlflow"]),
@@ -120,7 +122,9 @@ def _check_required_package_constraints(target_version: Version, required_packag
         pytest.skip(f"Skipping test because {target_version_dir} does not exist.")
     # fetch the env.out file for this image_type
     env_out_file_name = next(
-        config["env_out_filename"] for config in _image_generator_configs if config["image_type"] == image_type
+        config["env_out_filename"]
+        for config in _image_generator_configs[target_version.major]
+        if config["image_type"] == image_type
     )
     env_out_path = f"{target_version_dir}/{env_out_file_name}"
     if not os.path.exists(env_out_path):
@@ -139,7 +143,9 @@ def _validate_docker_images(
     _check_docker_file_existence(dockerfile_path, test_artifacts_path)
     _check_required_package_constraints(target_version, required_packages, image_type)
     image_tag_generator_from_config = next(
-        config["image_tag_generator"] for config in _image_generator_configs if config["image_type"] == image_type
+        config["image_tag_generator"]
+        for config in _image_generator_configs[target_version.major]
+        if config["image_type"] == image_type
     )
     docker_image_tag = image_tag_generator_from_config.format(image_version=local_image_version)
     docker_image_identifier = f"localhost/sagemaker-distribution:{docker_image_tag}"

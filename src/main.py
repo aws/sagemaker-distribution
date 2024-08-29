@@ -45,15 +45,16 @@ def create_and_get_semver_dir(version: Version, exist_ok: bool = False):
         if not os.path.isdir(dir):
             raise Exception()
         # Delete all files except the additional_packages_env_in_file
-        _delete_all_files_except_additional_packages_input_files(dir)
+        _delete_all_files_except_additional_packages_input_files(dir, version)
     else:
         os.makedirs(dir)
     return dir
 
 
-def _delete_all_files_except_additional_packages_input_files(base_version_dir):
+def _delete_all_files_except_additional_packages_input_files(base_version_dir, version: Version):
     additional_package_env_in_files = [
-        image_generator_config["additional_packages_env_in_file"] for image_generator_config in _image_generator_configs
+        image_generator_config["additional_packages_env_in_file"]
+        for image_generator_config in _image_generator_configs[version.major]
     ]
     for filename in os.listdir(base_version_dir):
         if filename not in additional_package_env_in_files:
@@ -93,7 +94,7 @@ def _create_new_version_artifacts(args):
     base_version_dir = get_dir_for_version(base_patch_version)
     new_version_dir = create_and_get_semver_dir(next_version, args.force)
 
-    for image_generator_config in _image_generator_configs:
+    for image_generator_config in _image_generator_configs[next_version.major]:
         _create_new_version_conda_specs(
             base_version_dir, new_version_dir, runtime_version_upgrade_type, image_generator_config
         )
@@ -115,8 +116,10 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
         base_path = base_version_dir
     else:
         base_path = f"template/v{new_version_major}"
+
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
         shutil.copy2(f, new_version_dir)
+
     if int(new_version_major) >= 1:
         # dirs directory doesn't exist for v0. It was introduced only for v1
         dirs_relative_path = os.path.relpath(f"{base_path}/dirs")
@@ -209,10 +212,11 @@ def _push_images_upstream(image_versions_to_push: list[dict[str, str]], region: 
 
 
 def _test_local_images(image_ids_to_test: list[str], target_version: str):
-    assert len(image_ids_to_test) == len(_image_generator_configs)
+    major_version = get_semver(target_version).major
+    assert len(image_ids_to_test) == len(_image_generator_configs[major_version])
     exit_codes = []
     image_ids = []
-    for image_id, config in zip(image_ids_to_test, _image_generator_configs):
+    for image_id, config in zip(image_ids_to_test, _image_generator_configs[major_version]):
         exit_code = pytest.main(
             ["-n", "2", "-m", config["image_type"], "--local-image-version", target_version, *config["pytest_flags"]]
         )
@@ -245,7 +249,7 @@ def _build_local_images(
     generated_image_ids = []
     generated_image_versions = []
 
-    for image_generator_config in _image_generator_configs:
+    for image_generator_config in _image_generator_configs[target_version.major]:
         config = _get_config_for_image(target_version_dir, image_generator_config, force)
         try:
             image, log_gen = _docker_client.images.build(
