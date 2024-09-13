@@ -109,8 +109,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     # see https://github.com/openssl/openssl/blob/master/README-FIPS.md https://www.openssl.org/source/
     INSTALLED_SSL=$(micromamba list | grep openssl | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
     # download source code for installed, and FIPS validated openssl versions
-    curl -L https://www.openssl.org/source/openssl-$FIPS_VALIDATED_SSL.tar.gz > openssl-$FIPS_VALIDATED_SSL.tar.gz &&  \
-    curl -L https://www.openssl.org/source/openssl-$INSTALLED_SSL.tar.gz > openssl-$INSTALLED_SSL.tar.gz &&  \
+    curl -L https://github.com/openssl/openssl/releases/download/openssl-$FIPS_VALIDATED_SSL/openssl-$FIPS_VALIDATED_SSL.tar.gz > openssl-$FIPS_VALIDATED_SSL.tar.gz &&  \
+    curl -L https://github.com/openssl/openssl/releases/download/openssl-$INSTALLED_SSL/openssl-$INSTALLED_SSL.tar.gz > openssl-$INSTALLED_SSL.tar.gz &&  \
     tar -xf openssl-$FIPS_VALIDATED_SSL.tar.gz && tar -xf openssl-$INSTALLED_SSL.tar.gz && cd openssl-$FIPS_VALIDATED_SSL && \
     # Configure both versions to enable FIPS and build
     ./Configure enable-fips --prefix=/opt/conda --openssldir=/opt/conda/ssl && make && \
