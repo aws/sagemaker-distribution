@@ -8,7 +8,7 @@ python|3.11.9|3.11.10
 ipython|8.26.0|8.27.0
 ipywidgets|7.8.3|7.8.4
 jupyterlab|3.6.7|3.6.8
-boto3|1.34.151|1.35.16
+boto3|1.34.151|1.35.18
 aws-glue-sessions|1.0.6|1.0.7
 keras|2.14.0|2.15.0
 matplotlib|3.9.1|3.9.2
