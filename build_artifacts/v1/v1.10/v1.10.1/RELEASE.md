@@ -16,7 +16,7 @@ langchain|0.2.5|0.2.5
 jupyter-ai|2.20.0|2.20.0
 amazon-sagemaker-jupyter-ai-q-developer|1.0.9|1.0.9
 jupyter-scheduler|2.7.1|2.7.1
-amazon-sagemaker-jupyter-scheduler|3.1.4|3.1.4
+amazon-sagemaker-jupyter-scheduler|3.1.5|3.1.5
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.11|0.1.11
@@ -27,7 +27,7 @@ torchvision|0.15.2|0.15.2
 autogluon|0.8.3|0.8.3
 ipywidgets|8.1.5|8.1.5
 notebook|7.1.3|7.1.3
-aws-glue-sessions|1.0.6|1.0.6
+aws-glue-sessions|1.0.7|1.0.7
 conda|23.11.0|23.11.0
 fastapi|0.110.3|0.110.3
 jupyter-collaboration|1.1.0|1.1.0
@@ -35,7 +35,7 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.3.0|4.3.0
 jupyterlab-git|0.50.1|0.50.1
 keras|2.14.0|2.15.0
-langchain-aws|0.1.17|0.1.17
+langchain-aws|0.1.18|0.1.18
 matplotlib|3.9.2|3.9.2
 nodejs|18.20.3|18.20.3
 py-xgboost-gpu|1.7.6| 
