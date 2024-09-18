@@ -9,7 +9,7 @@ ipywidgets|7.8.4|7.8.4
 jupyterlab|3.6.8|3.6.8
 numpy|1.26.4|1.26.4
 pandas|2.2.2|2.2.2
-boto3|1.35.19|1.35.19
+boto3|1.35.21|1.35.21
 aws-glue-sessions|1.0.7|1.0.7
 conda|23.11.0|23.11.0
 keras|2.14.0|2.15.0
