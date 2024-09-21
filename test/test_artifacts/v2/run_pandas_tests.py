@@ -18,10 +18,11 @@ os.chdir(site_packages_dir)
 # particular test, however, only works with the former requirement. (We verified that the test succeeds if we manually
 # drop the version to v3.6.x) So, we skip it.
 # Also skipping specific TestFrameFlexArithmetic test; failing due to known issue https://github.com/pandas-dev/pandas/issues/54546
+# Also skipping clipboard tests.The tests require pyqt dependency which is missing from SMD images.
 tests_succeeded = pandas.test(
     [
         "-m",
-        "(not slow and not network and not db)",
+        "(not slow and not network and not db and not clipboard)",
         "-k",
         "(not test_network and not s3 and not test_plain_axes)",
         "--no-strict-data-files",
