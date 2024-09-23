@@ -505,6 +505,16 @@ def test_build_images(mocker, tmp_path):
         actual_output.add(f.read())
     expected_output = {"container_logs1", "container_logs2"}
     assert actual_output == expected_output
+    assert mock_docker_from_env.images.build.call_count == 2
+    call_args_list = mock_docker_from_env.images.build.call_args_list
+
+    # Assert the value for the first invocation
+    first_call_args = call_args_list[0].kwargs
+    assert first_call_args["buildargs"]["IMAGE_VERSION"] == "1.124.5-gpu"
+
+    # Assert the value for the second invocation
+    second_call_args = call_args_list[1].kwargs
+    assert second_call_args["buildargs"]["IMAGE_VERSION"] == "1.124.5-cpu"
 
 
 @patch("os.path.exists")

@@ -4,6 +4,7 @@ FROM mambaorg/micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE
 ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
+ARG IMAGE_VERSION
 
 
 ARG NB_USER="sagemaker-user"
@@ -16,6 +17,7 @@ ARG FIPS_VALIDATED_SSL=3.0.8
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
+ENV IMAGE_VERSION=$IMAGE_VERSION
 
 USER root
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \

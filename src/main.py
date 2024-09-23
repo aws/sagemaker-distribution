@@ -251,6 +251,7 @@ def _build_local_images(
 
     for image_generator_config in _image_generator_configs[target_version.major]:
         config = _get_config_for_image(target_version_dir, image_generator_config, force)
+        config["build_args"]["IMAGE_VERSION"] = config["image_tag_generator"].format(image_version=str(target_version))
         try:
             image, log_gen = _docker_client.images.build(
                 path=target_version_dir, rm=True, pull=True, buildargs=config["build_args"]
