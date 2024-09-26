@@ -49,7 +49,7 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
                 x["version"] for x in package_metadata if x["version"].startswith(package_major_version_prefix)
             ][-1]
         else:
-            package_minor_version_prefix = ".".join([str(package_version.major), str(package_version.minor)]) + "."
+            package_minor_version_prefix = ".".join([str(package_version.major), str(package_version.minor)])
             latest_package_version_in_conda = [
                 x["version"] for x in package_metadata if x["version"].startswith(package_minor_version_prefix)
             ][-1]
