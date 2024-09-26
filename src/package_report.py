@@ -9,6 +9,7 @@ from config import _image_generator_configs
 from dependency_upgrader import _dependency_metadata
 from utils import (
     create_markdown_table,
+    derive_changeset,
     get_dir_for_version,
     get_match_specs,
     get_semver,
@@ -221,10 +222,32 @@ def _generate_python_package_size_report_per_image(
     return validate_result
 
 
+def _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir):
+    # Get a list of newly introduced marquee packages in changeset and their versions.
+    _, new_packages = derive_changeset(target_version_dir, base_version_dir, image_config)
+
+    results = dict()
+    for package, version in new_packages.items():
+        # Pull package metadata from conda-forge and dump into json file
+        search_result = conda.cli.python_api.run_command("search", f"{package}=={version}", "--json")
+        package_metadata = json.loads(search_result[0])[package][0]
+        results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
+
+    print(
+        create_markdown_table(
+            ["Package", "Version in the Target Image", "Dependencies"],
+            [
+                {"pkg": k, "version": v["version"], "depends": v["depends"]}
+                for k, v in islice(results.items(), None, 20)
+            ],
+        )
+    )
+
+
 def generate_package_staleness_report(args):
     target_version = get_semver(args.target_patch_version)
     target_version_dir = get_dir_for_version(target_version)
-    for image_config in _image_generator_configs:
+    for image_config in _image_generator_configs[target_version.major]:
         (
             target_packages_match_spec_out,
             latest_package_versions_in_upstream,
@@ -246,7 +269,7 @@ def generate_package_size_report(args):
         base_version = get_semver(source_patch_version)
     base_version_dir = get_dir_for_version(base_version) if base_version else None
     validate_results = []
-    for image_config in _image_generator_configs:
+    for image_config in _image_generator_configs[target_version.major]:
         base_pkg_metadata = pull_conda_package_metadata(image_config, base_version_dir) if base_version else None
         target_pkg_metadata = pull_conda_package_metadata(image_config, target_version_dir)
 
@@ -260,3 +283,25 @@ def generate_package_size_report(args):
         if validate_results:
             raise Exception(f"Size Validation Failed! Issues found: {validate_results}")
         print("Pakcage Size Validation Passed!")
+
+
+def generate_package_dependency_report(args):
+    target_version = get_semver(args.target_patch_version)
+    target_version_dir = get_dir_for_version(target_version)
+
+    base_version = None
+    source_version_txt_file_path = f"{target_version_dir}/source-version.txt"
+    if os.path.exists(source_version_txt_file_path):
+        with open(source_version_txt_file_path, "r") as f:
+            source_patch_version = f.readline()
+        base_version = get_semver(source_patch_version)
+
+    base_version_dir = get_dir_for_version(base_version) if base_version else None
+
+    print("\n# Python Package Dependency Report\n")
+    print("\n### Target Image Version: " + str(target_version) + " | Base Image Version: " + str(base_version) + "\n")
+    if not base_version:
+        print("WARNING: No base version or base version directory found, will generate full report for target version.")
+    for image_config in _image_generator_configs:
+        print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
+        _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)

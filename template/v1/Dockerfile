@@ -4,6 +4,7 @@ FROM mambaorg/micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE
 ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
+ARG IMAGE_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
 ARG DB_ROOT_DIR="/opt/db"
@@ -19,6 +20,7 @@ ARG FIPS_VALIDATED_SSL=3.0.8
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
+ENV IMAGE_VERSION=$IMAGE_VERSION
 
 USER root
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
@@ -159,8 +161,8 @@ WORKDIR "/home/${NB_USER}"
 # see https://github.com/openssl/openssl/blob/master/README-FIPS.md https://www.openssl.org/source/
 RUN INSTALLED_SSL=$(micromamba list | grep openssl | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
     # download source code for installed, and FIPS validated openssl versions
-    curl -L https://www.openssl.org/source/openssl-$FIPS_VALIDATED_SSL.tar.gz > openssl-$FIPS_VALIDATED_SSL.tar.gz &&  \
-    curl -L https://www.openssl.org/source/openssl-$INSTALLED_SSL.tar.gz > openssl-$INSTALLED_SSL.tar.gz &&  \
+    curl -L https://github.com/openssl/openssl/releases/download/openssl-$FIPS_VALIDATED_SSL/openssl-$FIPS_VALIDATED_SSL.tar.gz > openssl-$FIPS_VALIDATED_SSL.tar.gz &&  \
+    curl -L https://github.com/openssl/openssl/releases/download/openssl-$INSTALLED_SSL/openssl-$INSTALLED_SSL.tar.gz > openssl-$INSTALLED_SSL.tar.gz &&  \
     tar -xf openssl-$FIPS_VALIDATED_SSL.tar.gz && tar -xf openssl-$INSTALLED_SSL.tar.gz && cd openssl-$FIPS_VALIDATED_SSL && \
     # Configure both versions to enable FIPS and build
     ./Configure enable-fips --prefix=/opt/conda --openssldir=/opt/conda/ssl && make && \

@@ -36,9 +36,9 @@ def _get_package_to_image_type_mapping(image_type_package_metadata):
     return package_to_image_type_mapping
 
 
-def _get_image_type_package_metadata(target_version_dir):
+def _get_image_type_package_metadata(target_version_dir, target_version: Version):
     image_type_package_metadata = {}
-    for image_generator_config in _image_generator_configs:
+    for image_generator_config in _image_generator_configs[target_version.major]:
         image_type_package_metadata[image_generator_config["image_type"]] = _get_installed_packages(
             target_version_dir, image_generator_config
         )
@@ -49,7 +49,7 @@ def generate_release_notes(target_version: Version):
     target_version_dir = get_dir_for_version(target_version)
     if not os.path.exists(target_version_dir):
         return
-    image_type_package_metadata = _get_image_type_package_metadata(target_version_dir)
+    image_type_package_metadata = _get_image_type_package_metadata(target_version_dir, target_version)
     package_to_image_type_mapping = _get_package_to_image_type_mapping(image_type_package_metadata)
 
     with open(f"{target_version_dir}/RELEASE.md", "w") as f:
