@@ -25,9 +25,6 @@ from package_report import (
     generate_package_size_report,
     generate_package_staleness_report,
 )
-from version_release_generator import (
-    generate_new_version_release,
-)
 from release_notes_generator import generate_release_notes
 from utils import (
     get_dir_for_version,
@@ -35,6 +32,7 @@ from utils import (
     get_semver,
     is_exists_dir_for_version,
 )
+from version_release_generator import generate_new_version_release
 
 _docker_client = docker.from_env()
 

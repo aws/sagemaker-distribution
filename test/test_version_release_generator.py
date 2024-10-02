@@ -1,5 +1,6 @@
 import unittest
 from unittest.mock import patch
+
 from version_release_generator import generate_new_version_release
 
 

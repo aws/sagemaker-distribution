@@ -1,9 +1,6 @@
-from utils import (
-    get_semver,
-)
-from image_version import (
-    ImageVersion,
-)
+
+from image_version import ImageVersion
+from utils import get_semver
 
 
 def generate_new_version_release(args):
