@@ -5,6 +5,7 @@ from image_version import (
     ImageVersion,
 )
 
+
 def generate_new_version_release(args):
     target_version = str(get_semver(args.target_patch_version))
     image_type = args.image_type
@@ -18,5 +19,9 @@ def generate_new_version_release(args):
     print("```")
 
     print("## Change Logs")
-    print(f"Change log: https://github.com/aws/sagemaker-distribution/blob/main/build_artifacts/v{image_version.major_version}/v{image_version.major_minor()}/v{image_version.full_version()}/CHANGELOG-{image_type}.md")
-    print(f"Release note: https://github.com/aws/sagemaker-distribution/blob/main/build_artifacts/v{image_version.major_version}/v{image_version.major_minor()}/v{image_version.full_version()}/RELEASE.md")
+    print(
+        f"Change log: https://github.com/aws/sagemaker-distribution/blob/main/build_artifacts/v{image_version.major_version}/v{image_version.major_minor()}/v{image_version.full_version()}/CHANGELOG-{image_type}.md"
+    )
+    print(
+        f"Release note: https://github.com/aws/sagemaker-distribution/blob/main/build_artifacts/v{image_version.major_version}/v{image_version.major_minor()}/v{image_version.full_version()}/RELEASE.md"
+    )

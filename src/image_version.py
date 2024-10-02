@@ -21,7 +21,7 @@ class ImageVersion:
     # 1.11-cpu, 1.11-gpu
     def major_minor_with_type(self):
         return self.major_version + "." + self.minor_version + "-" + self.image_type
-    
+
     # 1-cpu, 1-gpu
     def major_with_type(self):
         return self.major_version + "-" + self.image_type
