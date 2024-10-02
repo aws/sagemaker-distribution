@@ -10,11 +10,6 @@ RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libcuda.so.1 /usr/lib/x86_64-linux-gnu/
 
 WORKDIR "examples"
 
-# There is a line in run_python_examples.sh which looks like: BASE_DIR=`pwd`"/"`dirname $0`
-# When we run the shell script through /usr/local/bin/_entrypoint.sh, that line above doesn't work correctly. In our
-# case, we properly set `pwd` to the directory that contains all the examples, so we just modify the script to change
-# the previous line to look like: BASE_DIR=`pwd`
-RUN sed -i 's/^BASE_DIR=.*pwd.*dirname.*/BASE_DIR=`pwd`/' run_python_examples.sh
 RUN ./run_python_examples.sh install_deps
 
 # We skip `imagenet` because it requires a lot of resources and so aren't a good fit for us.
