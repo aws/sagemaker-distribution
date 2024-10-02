@@ -25,6 +25,9 @@ from package_report import (
     generate_package_size_report,
     generate_package_staleness_report,
 )
+from version_release_generator import (
+    generate_new_version_release,
+)
 from release_notes_generator import generate_release_notes
 from utils import (
     get_dir_for_version,
@@ -441,6 +444,21 @@ def get_arg_parser():
         "--target-patch-version",
         required=True,
         help="Specify the target patch version for which the package dependency report needs to be generated.",
+    )
+    package_release_parser = subparsers.add_parser(
+        "generate-version-release",
+        help="Generates release for each new image version.",
+    )
+    package_release_parser.set_defaults(func=generate_new_version_release)
+    package_release_parser.add_argument(
+        "--target-patch-version",
+        required=True,
+        help="Specify the target patch version for which the release needs to be generated.",
+    )
+    package_release_parser.add_argument(
+        "--image-type",
+        required=True,
+        help="Specify the image type for which the release needs to be generated.",
     )
     return parser
 
