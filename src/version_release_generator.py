@@ -1,4 +1,3 @@
-
 from image_version import ImageVersion
 from utils import get_semver
 
