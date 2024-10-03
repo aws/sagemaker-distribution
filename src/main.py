@@ -32,7 +32,7 @@ from utils import (
     get_semver,
     is_exists_dir_for_version,
 )
-from version_release_generator import generate_new_version_release
+from version_release_note_generator import generate_new_version_release_note
 
 _docker_client = docker.from_env()
 
@@ -444,10 +444,10 @@ def get_arg_parser():
         help="Specify the target patch version for which the package dependency report needs to be generated.",
     )
     package_release_parser = subparsers.add_parser(
-        "generate-version-release",
+        "generate-version-release-note",
         help="Generates release for each new image version.",
     )
-    package_release_parser.set_defaults(func=generate_new_version_release)
+    package_release_parser.set_defaults(func=generate_new_version_release_note)
     package_release_parser.add_argument(
         "--target-patch-version",
         required=True,

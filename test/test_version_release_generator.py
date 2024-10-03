@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch
 
-from version_release_generator import generate_new_version_release
+from version_release_note_generator import generate_new_version_release_note
 
 
 class TestVersionReleaseGenerator(unittest.TestCase):
@@ -12,7 +12,7 @@ class TestVersionReleaseGenerator(unittest.TestCase):
 
         # Act
         with patch("builtins.print") as mock_print:
-            generate_new_version_release(args)
+            generate_new_version_release_note(args)
 
         # Assert
         expected_output = [
@@ -35,7 +35,7 @@ class TestVersionReleaseGenerator(unittest.TestCase):
 
         # Act
         with patch("builtins.print") as mock_print:
-            generate_new_version_release(args)
+            generate_new_version_release_note(args)
 
         # Assert
         expected_output = [
@@ -58,7 +58,7 @@ class TestVersionReleaseGenerator(unittest.TestCase):
 
         # Act
         with patch("builtins.print") as mock_print:
-            generate_new_version_release(args)
+            generate_new_version_release_note(args)
 
         # Assert
         expected_output = [
