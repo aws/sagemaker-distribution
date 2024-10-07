@@ -1,4 +1,5 @@
 name: Build New Image Version
+run-name: Base version - ${{ inputs.base-version }}
 on:
   # Manually call
   workflow_dispatch:
