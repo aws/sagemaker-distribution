@@ -1,5 +1,5 @@
 name: Build New Image Version
-run-name: Release type - ${{ inputs.release-type }} Base version - ${{ inputs.base-version }}
+run-name: Release type - ${{ inputs.release-type }}, Base version - ${{ inputs.base-version }}
 on:
   # Manually call
   workflow_dispatch:
