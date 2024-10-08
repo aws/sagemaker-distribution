@@ -302,6 +302,7 @@ def generate_package_dependency_report(args):
     print("\n### Target Image Version: " + str(target_version) + " | Base Image Version: " + str(base_version) + "\n")
     if not base_version:
         print("WARNING: No base version or base version directory found, will generate full report for target version.")
-    for image_config in _image_generator_configs:
-        print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
-        _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)
+    for _, configs in _image_generator_configs.items():
+        for image_config in configs:
+            print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
+            _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)
