@@ -213,7 +213,7 @@ def test_generate_package_dependency_report(mock_conda_command, tmp_path, capsys
     )
 
     _generate_python_package_dependency_report(
-        _image_generator_configs[1], str(base_version_dir), str(target_version_dir)
+        _image_generator_configs[1][1], str(base_version_dir), str(target_version_dir)
     )
 
     captured = capsys.readouterr()
