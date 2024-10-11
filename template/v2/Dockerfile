@@ -5,6 +5,7 @@ ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
+LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
 ARG DB_ROOT_DIR="/opt/db"
