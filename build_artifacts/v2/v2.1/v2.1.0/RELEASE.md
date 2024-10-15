@@ -32,10 +32,11 @@ ipywidgets|8.1.5|8.1.5
 notebook|7.1.3|7.1.3
 aws-glue-sessions|1.0.7|1.0.7
 conda|24.9.1|24.9.1
-uvicorn|0.31.0|0.31.0
-fastapi|0.115.0|0.115.0
+uvicorn|0.31.1|0.31.1
+fastapi|0.115.2|0.115.2
+git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.1|0.3.1
-jupyter-collaboration|2.1.2|2.1.2
+jupyter-collaboration|2.1.3|2.1.3
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.50.1|0.50.1

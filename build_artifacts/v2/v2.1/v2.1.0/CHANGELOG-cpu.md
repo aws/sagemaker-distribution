@@ -23,8 +23,9 @@ torchvision|0.18.1|0.19.1
 ipywidgets|8.1.3|8.1.5
 aws-glue-sessions|1.0.6|1.0.7
 conda|24.7.1|24.9.1
-uvicorn|0.30.6|0.31.0
-fastapi|0.110.3|0.115.0
+uvicorn|0.30.6|0.31.1
+fastapi|0.110.3|0.115.2
+jupyter-collaboration|2.1.2|2.1.3
 jupyter-server-proxy|4.3.0|4.4.0
 keras|3.5.0|3.6.0
 langchain-aws|0.1.16|0.1.18
@@ -35,3 +36,9 @@ python-lsp-server|1.11.0|1.12.0
 sagemaker-code-editor|1.3.1|1.3.2
 sagemaker-jupyterlab-emr-extension|0.3.2|0.3.3
 sagemaker-kernel-wrapper|0.0.2|0.0.4
+
+## What's new: 
+
+Package | Version 
+---|---
+git-remote-codecommit|1.16
