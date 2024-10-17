@@ -11,7 +11,7 @@ boto3|1.34.162|1.34.162
 ipython|8.28.0|8.28.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.1.8|4.1.8
-amazon-q-developer-jupyterlab-ext|3.2.0|3.2.0
+amazon-q-developer-jupyterlab-ext|3.4.0|3.4.0
 langchain|0.2.16|0.2.16
 jupyter-ai|2.25.0|2.25.0
 amazon-sagemaker-jupyter-ai-q-developer|1.0.10|1.0.10
@@ -32,7 +32,7 @@ ipywidgets|8.1.5|8.1.5
 notebook|7.1.3|7.1.3
 aws-glue-sessions|1.0.7|1.0.7
 conda|24.9.1|24.9.1
-uvicorn|0.31.1|0.31.1
+uvicorn|0.32.0|0.32.0
 fastapi|0.115.2|0.115.2
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.1|0.3.1
@@ -42,7 +42,7 @@ jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.50.1|0.50.1
 keras|3.6.0|3.6.0
 langchain-aws|0.1.18|0.1.18
-mlflow|2.16.2|2.16.2
+mlflow|2.17.0|2.17.0
 py-xgboost-gpu|2.1.1| 
 pyhive|0.7.0|0.7.0
 python-gssapi|1.9.0|1.9.0
