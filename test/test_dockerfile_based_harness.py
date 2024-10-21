@@ -47,6 +47,7 @@ _docker_client = docker.from_env()
         ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
         ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
+        ("docker-cli.test.Dockerfile", ["docker-cli"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -91,6 +92,7 @@ def test_dockerfiles_for_cpu(
         ("sagemaker-mlflow.test.Dockerfile", ["sagemaker-mlflow"]),
         ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
         ("gpu-dependencies.test.Dockerfile", ["pytorch", "tensorflow"]),
+        ("docker-cli.test.Dockerfile", ["docker-cli"]),
     ],
 )
 def test_dockerfiles_for_gpu(
