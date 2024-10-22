@@ -12,7 +12,7 @@ ipython|8.26.0|8.28.0
 amazon-q-developer-jupyterlab-ext|3.2.0|3.4.0
 langchain|0.2.5|0.2.16
 jupyter-ai|2.20.0|2.25.0
-amazon-sagemaker-jupyter-ai-q-developer|1.0.9|1.0.10
+amazon-sagemaker-jupyter-ai-q-developer|1.0.9|1.0.12
 jupyter-scheduler|2.7.1|2.9.0
 amazon-sagemaker-jupyter-scheduler|3.1.3|3.1.6
 pandas|2.2.2|2.2.3
