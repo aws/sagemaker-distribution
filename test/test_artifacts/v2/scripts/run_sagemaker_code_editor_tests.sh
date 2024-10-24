@@ -51,14 +51,23 @@ for extension in "${installed_extensions[@]}"; do
 done
 echo "Verified that all extension folders are present in $extensions_base_dir."
 
-# Check that settings file is copied
+# Check that machine settings file is copied
 MACHINE_SETTINGS_FILE_PATH="/opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json"
 if [ ! -f "$MACHINE_SETTINGS_FILE_PATH" ]; then
     echo "Error: Settings file does not exist at $MACHINE_SETTINGS_FILE_PATH."
     exit 1
 fi
 
-echo "Settings file exists at $FILE_PATH."
+echo "Machine Settings file exists at $MACHINE_SETTINGS_FILE_PATH."
+
+# Check that user settings file is copied
+USER_SETTINGS_FILE_PATH="/opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/User/settings.json"
+if [ ! -f "$USER_SETTINGS_FILE_PATH" ]; then
+    echo "Error: Settings file does not exist at $USER_SETTINGS_FILE_PATH."
+    exit 1
+fi
+
+echo "User Settings file exists at $USER_SETTINGS_FILE_PATH."
 
 # Check that code-editor artifacts folder is deleted
 ARTIFACTS_DIR="/etc/code-editor"
