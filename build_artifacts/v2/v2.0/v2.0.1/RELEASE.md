@@ -37,7 +37,7 @@ jupyter-activity-monitor-extension|0.3.1|0.3.1
 jupyter-collaboration|2.1.5|2.1.5
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.3.0|4.3.0
-jupyterlab-git|0.50.1|0.50.1
+jupyterlab-git|0.50.2|0.50.2
 keras|3.5.0|3.5.0
 langchain-aws|0.1.18|0.1.18
 mlflow|2.15.1|2.15.1
@@ -45,7 +45,7 @@ py-xgboost-gpu|2.0.3|
 pyhive|0.7.0|0.7.0
 python-gssapi|1.8.3|1.8.3
 python-lsp-server|1.11.0|1.11.0
-sagemaker-code-editor|1.3.4|1.3.4
+sagemaker-code-editor|1.3.5|1.3.5
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.3.3|0.3.3
 sagemaker-jupyterlab-extension|0.3.2|0.3.2
