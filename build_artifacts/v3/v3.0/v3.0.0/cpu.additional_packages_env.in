@@ -1,0 +1,2 @@
+#Add any additional packages here
+conda-forge::docker-cli[version='>=27.1.1']
