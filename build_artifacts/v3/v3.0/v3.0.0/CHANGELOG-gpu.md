@@ -11,7 +11,6 @@ amazon-q-developer-jupyterlab-ext|3.4.0|3.4.3
 jupyter-ai|2.25.0|2.28.0
 amazon-sagemaker-jupyter-ai-q-developer|1.0.12|1.0.14
 amazon_sagemaker_sql_editor|0.1.12|0.1.13
-sentencepiece|0.1.99|0.2.0
 pip|24.2|24.3.1
 notebook|7.1.3|7.2.2
 fastapi|0.115.2|0.115.4
