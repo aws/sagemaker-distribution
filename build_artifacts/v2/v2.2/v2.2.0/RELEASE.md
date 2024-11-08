@@ -24,7 +24,7 @@ amazon_sagemaker_sql_editor|0.1.13|0.1.13
 scipy|1.14.1|1.14.1
 matplotlib-base|3.9.2|3.9.2
 scikit-learn|1.5.2|1.5.2
-sentencepiece|0.2.0|0.2.0
+sentencepiece|0.1.99|0.1.99
 pip|24.3.1|24.3.1
 torchvision|0.18.1|0.19.1
 autogluon|1.1.1|1.1.1
