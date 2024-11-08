@@ -20,7 +20,7 @@ amazon-sagemaker-jupyter-scheduler|3.1.6|3.1.6
 pandas|2.2.3|2.2.3
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
-amazon_sagemaker_sql_editor|0.1.12|0.1.12
+amazon_sagemaker_sql_editor|0.1.13|0.1.13
 scipy|1.14.1|1.14.1
 matplotlib-base|3.9.2|3.9.2
 scikit-learn|1.5.2|1.5.2
@@ -32,6 +32,7 @@ ipywidgets|8.1.5|8.1.5
 notebook|7.2.2|7.2.2
 aws-glue-sessions|1.0.7|1.0.7
 conda|24.9.2|24.9.2
+docker-cli|27.1.1|27.1.1
 uvicorn|0.32.0|0.32.0
 fastapi|0.115.4|0.115.4
 git-remote-codecommit|1.16|1.16
