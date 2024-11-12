@@ -13,10 +13,10 @@ jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.2.5|4.2.5
 amazon-q-developer-jupyterlab-ext|3.4.3|3.4.3
 langchain|0.2.16|0.2.16
-jupyter-ai|2.28.0|2.28.0
+jupyter-ai|2.28.1|2.28.1
 amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.14
 jupyter-scheduler|2.9.0|2.9.0
-amazon-sagemaker-jupyter-scheduler|3.1.6|3.1.6
+amazon-sagemaker-jupyter-scheduler|3.1.7|3.1.7
 pandas|2.2.3|2.2.3
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
@@ -37,7 +37,7 @@ uvicorn|0.32.0|0.32.0
 fastapi|0.115.4|0.115.4
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.1|0.3.1
-jupyter-collaboration|3.0.0|3.0.0
+jupyter-collaboration|2.1.5|2.1.5
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.50.2|0.50.2
