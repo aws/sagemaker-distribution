@@ -37,7 +37,7 @@ uvicorn|0.32.0|0.32.0
 fastapi|0.115.4|0.115.4
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.1|0.3.1
-jupyter-collaboration|2.1.5|2.1.5
+jupyter-collaboration|3.0.0|3.0.0
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.50.2|0.50.2
