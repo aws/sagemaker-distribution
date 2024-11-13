@@ -8,7 +8,7 @@ git checkout tags/v$pysdk_version
 
 # Install test dependencies of sagemaker-python-sdk
 # Using pip as some of the packages are not available on conda-forge
-pip install --use-deprecated=legacy-resolve -r requirements/extras/test_requirements.txt
+pip install --use-deprecated=legacy-resolver -r requirements/extras/test_requirements.txt
 
 # Run the unit tests, ignoring tests which require AWS Configuration
 # TODO: Re-evaluate the ignored tests since we are setting the AWS_DEFAULT_REGION as part of the Dockerfile.
