@@ -12,7 +12,7 @@ ipython|8.29.0|8.29.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.2.5|4.2.5
 amazon-q-developer-jupyterlab-ext|3.4.3|3.4.3
-langchain|0.2.16|0.2.16
+langchain|0.2.17|0.2.17
 jupyter-ai|2.28.1|2.28.1
 amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.14
 jupyter-scheduler|2.9.0|2.9.0
@@ -34,7 +34,7 @@ aws-glue-sessions|1.0.7|1.0.7
 conda|24.9.2|24.9.2
 docker-cli|27.1.1|27.1.1
 uvicorn|0.32.0|0.32.0
-fastapi|0.115.4|0.115.4
+fastapi|0.115.5|0.115.5
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.1|0.3.1
 jupyter-collaboration|3.0.0|3.0.0
@@ -50,7 +50,7 @@ python-gssapi|1.9.0|1.9.0
 python-lsp-server|1.12.0|1.12.0
 sagemaker-code-editor|1.4.1|1.4.1
 sagemaker-headless-execution-driver|0.0.13|0.0.13
-sagemaker-jupyterlab-emr-extension|0.3.3|0.3.3
+sagemaker-jupyterlab-emr-extension|0.3.4|0.3.4
 sagemaker-jupyterlab-extension|0.3.2|0.3.2
 sagemaker-kernel-wrapper|0.0.4|0.0.4
 sagemaker-mlflow|0.1.0|0.1.0
