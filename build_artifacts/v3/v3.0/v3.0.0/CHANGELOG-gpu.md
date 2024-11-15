@@ -5,15 +5,18 @@
 Package | Previous Version | Current Version
 ---|---|---
 python|3.11.10|3.12.7
+pytorch|2.3.1|2.4.1
 ipython|8.28.0|8.29.0
 jupyterlab|4.1.8|4.2.5
-amazon-q-developer-jupyterlab-ext|3.4.0|3.4.3
+amazon-q-developer-jupyterlab-ext|3.4.0|3.4.4
 langchain|0.2.16|0.2.17
 jupyter-ai|2.25.0|2.28.1
 amazon-sagemaker-jupyter-ai-q-developer|1.0.12|1.0.14
+jupyter-scheduler|2.9.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.6|3.1.7
 amazon_sagemaker_sql_editor|0.1.12|0.1.13
 pip|24.2|24.3.1
+torchvision|0.18.1|0.19.1
 notebook|7.1.3|7.2.2
 fastapi|0.115.2|0.115.5
 jupyter-collaboration|2.1.4|3.0.0
