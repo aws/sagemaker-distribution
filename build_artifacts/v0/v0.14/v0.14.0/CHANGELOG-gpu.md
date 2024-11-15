@@ -9,7 +9,7 @@ ipython|8.26.0|8.29.0
 ipywidgets|7.8.3|7.8.5
 jupyterlab|3.6.7|3.6.8
 pandas|2.2.2|2.2.3
-boto3|1.34.151|1.35.49
+boto3|1.34.151|1.35.60
 aws-glue-sessions|1.0.6|1.0.7
 matplotlib|3.9.1|3.9.2
 scipy|1.14.0|1.14.1
