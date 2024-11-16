@@ -1,3 +1,3 @@
-https://open-vsx.org/api/ms-toolsai/jupyter/2024.9.1/file/ms-toolsai.jupyter-2024.9.1.vsix
-https://open-vsx.org/api/ms-python/python/2024.16.1/file/ms-python.python-2024.16.1.vsix
+https://open-vsx.org/api/ms-toolsai/jupyter/2023.9.100/file/ms-toolsai.jupyter-2023.9.100.vsix
+https://open-vsx.org/api/ms-python/python/2023.20.0/file/ms-python.python-2023.20.0.vsix
 https://open-vsx.org/api/amazonwebservices/aws-toolkit-vscode/1.99.0/file/amazonwebservices.aws-toolkit-vscode-1.99.0.vsix
