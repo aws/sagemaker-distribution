@@ -10,10 +10,10 @@ altair|5.4.1|5.4.1
 boto3|1.34.162|1.34.162
 ipython|8.29.0|8.29.0
 jupyter-lsp|2.2.5|2.2.5
-jupyterlab|4.2.5|4.2.5
+jupyterlab|4.2.6|4.2.6
 amazon-q-developer-jupyterlab-ext|3.4.4|3.4.4
 langchain|0.2.17|0.2.17
-jupyter-ai|2.28.1|2.28.1
+jupyter-ai|2.28.2|2.28.2
 amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.14
 jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.7|3.1.7
@@ -32,7 +32,7 @@ ipywidgets|8.1.5|8.1.5
 notebook|7.2.2|7.2.2
 aws-glue-sessions|1.0.7|1.0.7
 conda|24.9.2|24.9.2
-docker-cli|27.1.1|27.1.1
+docker-cli|27.3.1|27.3.1
 uvicorn|0.32.0|0.32.0
 fastapi|0.115.5|0.115.5
 git-remote-codecommit|1.16|1.16
@@ -43,7 +43,7 @@ jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.50.2|0.50.2
 keras|3.6.0|3.6.0
 langchain-aws|0.1.18|0.1.18
-mlflow|2.17.2|2.17.2
+mlflow|2.18.0|2.18.0
 py-xgboost-gpu|2.1.2| 
 pyhive|0.7.0|0.7.0
 python-gssapi|1.9.0|1.9.0
