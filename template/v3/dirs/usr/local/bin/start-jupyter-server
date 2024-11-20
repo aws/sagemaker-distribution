@@ -19,7 +19,8 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
     --ServerApp.allow_origin='*' \
     --collaborative \
     --ServerApp.identity_provider_class=sagemaker_jupyterlab_extension_common.identity.SagemakerIdentityProvider \
-    --YDocExtension.ystore_class=sagemaker_jupyterlab_extension_common.ydoc_override.ydoc.MySQLiteYStore
+    --YDocExtension.ystore_class=sagemaker_jupyterlab_extension_common.ydoc_override.ydoc.MySQLiteYStore \
+    --YDocExtension.disable_rtc=True
 
 # Start Jupyter server
 elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
@@ -28,9 +29,11 @@ elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
   jupyter lab --ip 0.0.0.0 --port 8888 \
     --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
     --ServerApp.token='' \
-    --ServerApp.allow_origin='*'
+    --ServerApp.allow_origin='*' \
+    --YDocExtension.disable_rtc=True
 else
   jupyter lab --ip 0.0.0.0 --port 8888 \
     --ServerApp.token='' \
-    --ServerApp.allow_origin='*'
+    --ServerApp.allow_origin='*' \
+    --YDocExtension.disable_rtc=True
 fi
