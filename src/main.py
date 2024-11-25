@@ -420,7 +420,7 @@ def get_arg_parser():
     )
     package_size_parser = subparsers.add_parser(
         "generate-size-report",
-        help="Generates package size report for each of the packages in the given " "image version.",
+        help="Generates toatl image size and package size report for each of the packages in the given " "image version.",
     )
     package_size_parser.set_defaults(func=generate_package_size_report)
     package_size_parser.add_argument(

@@ -1,5 +1,6 @@
 import json
 import os
+import boto3
 from itertools import islice
 
 import conda.cli.python_api
@@ -268,6 +269,10 @@ def generate_package_size_report(args):
             source_patch_version = f.readline()
         base_version = get_semver(source_patch_version)
     base_version_dir = get_dir_for_version(base_version) if base_version else None
+    
+    #Generate the report for Total Image Size changed from Base Version
+    _generate_image_size_report(target_version, base_version)
+    
     validate_results = []
     for image_config in _image_generator_configs[target_version.major]:
         base_pkg_metadata = pull_conda_package_metadata(image_config, base_version_dir) if base_version else None
@@ -306,3 +311,85 @@ def generate_package_dependency_report(args):
         for image_config in configs:
             print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
             _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)
+
+def get_image_size(image_tag):
+    try: 
+        ecr_client = boto3.client('ecr', region_name="us-east-1")
+
+        response = ecr_client.describe_images(
+            registryId=STAGING_ACCOUNT,
+            repositoryName=STAGING_REPO_NAME,
+            imageIds=[{'imageTag': image_tag}]
+        )
+        image_details = response.get('imageDetails', [])
+        if image_details:
+            image_size_bytes = image_details[0].get('imageSizeInBytes')
+            if image_size_bytes:
+                image_size_gb = image_size_bytes / (1024 ** 3)
+                return image_size_gb
+            else:
+                print(f"Image size not found for {STAGING_REPO_NAME}:{image_tag}")
+        else:
+            print(f"No image details found for {STAGING_REPO_NAME}:{image_tag}")
+    
+    except Exception as e:
+        print(f"Error retrieving image size: {str(e)}")
+    
+    return None
+
+def _generate_image_size_report(target_version, base_version):
+    target_tag_gpu = f"{target_version.major}.{target_version.minor}.{target_version.patch}-gpu"
+    base_tag_gpu = f"{base_version.major}.{base_version.minor}.{base_version.patch}-gpu" if base_version else None
+
+    target_tag_cpu = f"{target_version.major}.{target_version.minor}.{target_version.patch}-cpu"
+    base_tag_cpu = f"{base_version.major}.{base_version.minor}.{base_version.patch}-cpu" if base_version else None
+ 
+    target_size_gpu = get_image_size(target_tag_gpu)
+    base_size_gpu = get_image_size(base_tag_gpu) if base_tag_gpu else None
+
+    target_size_cpu = get_image_size(target_tag_cpu)
+    base_size_cpu = get_image_size(base_tag_cpu) if base_tag_cpu else None
+   
+    headers = ["Target Image Size", "Base Image Size", "Size Difference", "Size Change (%)"]
+
+    print("\n# GPU Total Image Size Report\n")
+    if target_size_gpu is not None and base_size_gpu is not None:
+        size_diff_gpu = target_size_gpu - base_size_gpu
+        size_diff_gpu_rel = size_diff_gpu / base_size_gpu if base_size_gpu != 0 else 0
+        
+        size_change_gpu = f"{size_diff_gpu:.2f} GB {'Larger' if size_diff_gpu > 0 else ('Smaller' if size_diff_gpu < 0 else 'No Change')}"
+        
+        size_change_percentage_gpu = f"{round(abs(size_diff_gpu_rel * 100), 2)}% {'Larger' if size_diff_gpu > 0 else ('Smaller' if size_diff_gpu < 0 else 'No Change')}" if size_diff_gpu_rel else "-"
+
+        rows = [
+            {
+                "Target Image Size": f"{target_tag_gpu}:{target_size_gpu:.2f} GB",
+                "Base Image Size": f"{base_tag_gpu}:{base_size_gpu:.2f} GB",
+                "Size Difference": size_change_gpu,
+                "Size Change (%)": size_change_percentage_gpu
+            }
+        ]
+        print(create_markdown_table(headers, rows))
+    else:
+        print(f"Failed to retrieve size for target image: {target_tag_gpu} or base image: {base_tag_gpu}")
+
+    print("\n# CPU Total Image Size Report\n")
+    if target_size_cpu is not None and base_size_cpu is not None:
+        size_diff_cpu = target_size_cpu - base_size_cpu
+        size_diff_cpu_rel = size_diff_cpu / base_size_cpu if base_size_cpu != 0 else 0
+        
+        size_change_cpu = f"{size_diff_cpu:.2f} GB {'Larger' if size_diff_cpu > 0 else ('Smaller' if size_diff_cpu < 0 else 'No Change')}"
+    
+        size_change_percentage_cpu = f"{round(abs(size_diff_cpu_rel * 100), 2)}% {'Larger' if size_diff_cpu > 0 else ('Smaller' if size_diff_cpu < 0 else 'No Change')}" if size_diff_cpu_rel else "-"
+
+        rows = [
+            {
+                "Target Image Size": f"{target_tag_cpu}:{target_size_cpu:.2f} GB",
+                "Base Image Size": f"{base_tag_cpu}:{base_size_cpu:.2f} GB",
+                "Size Difference": size_change_cpu,
+                "Size Change (%)": size_change_percentage_cpu
+            }
+        ]
+        print(create_markdown_table(headers, rows))
+    else:
+        print(f"Failed to retrieve size for target image: {target_tag_cpu} or base image: {base_tag_cpu}")
