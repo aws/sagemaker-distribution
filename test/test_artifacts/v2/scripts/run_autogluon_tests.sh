@@ -13,5 +13,6 @@ ret=$?
 
 if [ $ret -eq 0 ]
 then
+    # Note: This notebook only supports a single GPU setup. Running on multi-GPU systems may lead to errors.
     jupyter nbconvert --execute --to python docs/tutorials/multimodal/multimodal_prediction/multimodal-quick-start.ipynb
 fi
