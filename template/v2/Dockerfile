@@ -96,7 +96,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
        done \
     # Copy the settings
     && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json && \
-    && cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/User/settings.json && \
+    cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/User/settings.json && \
     # Install glue kernels, and move to shared directory
     # Also patching base kernel so Studio background code doesn't start session silently
     install-glue-kernels && \
@@ -180,6 +180,8 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
 
+# Explicitly disable BuildKit for SM Studio Docker functionality
+ENV DOCKER_BUILDKIT=0
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash

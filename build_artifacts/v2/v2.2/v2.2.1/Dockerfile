@@ -160,7 +160,6 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     chmod a+rw $SAGEMAKER_LOGGING_DIR && \
     mkdir -p ${STUDIO_LOGGING_DIR} && \
     chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} && \
-
     # Clean up CodeEditor artifacts
     rm -rf /etc/code-editor && \
     # Create supervisord runtime directory
@@ -180,6 +179,8 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
 
+# Explicitly disable BuildKit for SM Studio Docker functionality
+ENV DOCKER_BUILDKIT=0
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
