@@ -33,6 +33,7 @@ notebook|7.2.2|7.2.2
 aws-glue-sessions|1.0.7|1.0.7
 libmamba|1.5.11|1.5.11
 conda|24.9.2|24.9.2
+dash|2.18.1|2.18.1
 docker-cli|27.1.1|27.1.1
 uvicorn|0.32.1|0.32.1
 fastapi|0.115.6|0.115.6
