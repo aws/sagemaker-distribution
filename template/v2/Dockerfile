@@ -83,7 +83,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
     # Update npm version
-    npm i -g npm && \
+    npm update -g npm && \
     # Enforce to use `conda-forge` as only channel, by removing `defaults`
     conda config --remove channels defaults && \
     micromamba config append channels conda-forge --env && \

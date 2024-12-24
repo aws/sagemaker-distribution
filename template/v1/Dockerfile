@@ -90,7 +90,7 @@ ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python
 
 # Update npm version
-RUN npm i -g npm
+RUN RUN npm update -g npm
 
 # Configure CodeEditor - Install extensions and set preferences
 RUN \
