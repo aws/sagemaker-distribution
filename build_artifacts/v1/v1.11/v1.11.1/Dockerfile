@@ -48,9 +48,10 @@ RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/pr
 
 # CodeEditor - create server, user data dirs
 RUN mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
-    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
+    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data
+
     # create dir to store user data files
-    mkdir -p /opt/amazon/sagemaker/user-data \
+RUN mkdir -p /opt/amazon/sagemaker/user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/user-data
 
 
@@ -58,10 +59,9 @@ RUN mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon
 RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
 COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
 RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
-    rm -rf ${DIRECTORY_TREE_STAGE_DIR}
-
-# CodeEditor - download the extensions
-RUN mkdir -p /etc/code-editor/extensions && \
+    rm -rf ${DIRECTORY_TREE_STAGE_DIR} && \
+    # CodeEditor - download the extensions
+    mkdir -p /etc/code-editor/extensions && \
     while IFS= read -r url || [ -n "$url" ]; do \
         echo "Downloading extension from ${url}..." && \
         wget --no-check-certificate -P /etc/code-editor/extensions "${url}"; \
@@ -86,9 +86,9 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 RUN sudo ln -s $(which python3) /usr/bin/python \
     # Update npm version
-    npm update -g npm \
+    && npm update -g npm \
     # Configure CodeEditor - Install extensions and set preferences
-    extensionloc=/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions && mkdir -p "${extensionloc}" \
+    && extensionloc=/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions && mkdir -p "${extensionloc}" \
     # Loop through all vsix files in /etc/code-editor/extensions and install them
     && for ext in /etc/code-editor/extensions/*.vsix; do \
         echo "Installing extension ${ext}..."; \
@@ -98,7 +98,7 @@ RUN sudo ln -s $(which python3) /usr/bin/python \
     && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json \
     # Install glue kernels, and move to shared directory
     # Also patching base kernel so Studio background code doesn't start session silently
-    install-glue-kernels && \
+    && install-glue-kernels && \
     SITE_PACKAGES=$(pip show aws-glue-sessions | grep Location | awk '{print $2}') && \
     jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_pyspark --user && \
     jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_spark --user && \
@@ -124,17 +124,17 @@ RUN HOME_DIR="/home/${NB_USER}/licenses" \
     && chmod +x /usr/local/bin/testOSSCompliance \
     && chmod +x ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
-    && rm -rf ${HOME_DIR}/oss_compliance* \
+    && rm -rf ${HOME_DIR}/oss_compliance* && \
     # Create logging directories for supervisor
     mkdir -p $SAGEMAKER_LOGGING_DIR && \
     chmod a+rw $SAGEMAKER_LOGGING_DIR && \
     mkdir -p ${STUDIO_LOGGING_DIR} && \
-    chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} \
+    chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} && \
     # Clean up CodeEditor artifacts
-    rm -rf /etc/code-editor \
+    rm -rf /etc/code-editor && \
     # Create supervisord runtime directory
     mkdir -p /var/run/supervisord && \
-    chmod a+rw /var/run/supervisord \
+    chmod a+rw /var/run/supervisord && \
     # Create root directory for DB
     # Create logging directories for supervisor
     mkdir -p $DB_ROOT_DIR && \
@@ -162,7 +162,7 @@ RUN INSTALLED_SSL=$(micromamba list | grep openssl | tr -s ' ' | cut -d ' ' -f 3
     cp ../openssl-$FIPS_VALIDATED_SSL/providers/fipsmodule.cnf providers/. && \
     make tests && cd ../openssl-$FIPS_VALIDATED_SSL && \
     # After tests pass, install FIPS provider and remove source code
-    make install_fips && cd .. && rm -rf ./openssl-* \
+    make install_fips && cd .. && rm -rf ./openssl-* && \
     # Create new config file with fips-enabled. Then user can override OPENSSL_CONF to enable FIPS
     # e.g. export OPENSSL_CONF=/opt/conda/ssl/openssl-fips.cnf
     cp /opt/conda/ssl/openssl.cnf /opt/conda/ssl/openssl-fips.cnf && \
@@ -173,7 +173,7 @@ ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
 # Install Kerberos.
 # Make sure no dependency is added/updated
 RUN pip install "krb5>=0.5.1,<0.6" && \
-    pip show krb5 | grep Require | xargs -i sh -c '[ $(echo {} | cut -d: -f2 | wc -w) -eq 0 ] ' \
+    pip show krb5 | grep Require | xargs -i sh -c '[ $(echo {} | cut -d: -f2 | wc -w) -eq 0 ] ' && \
     # https://stackoverflow.com/questions/122327
     SYSTEM_PYTHON_PATH=$(python3 -c "from __future__ import print_function;import sysconfig; print(sysconfig.get_paths().get('purelib'))") && \
     # Remove SparkRKernel as it's not supported \
