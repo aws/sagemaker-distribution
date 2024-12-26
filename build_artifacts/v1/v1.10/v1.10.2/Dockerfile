@@ -95,7 +95,7 @@ RUN sudo ln -s $(which python3) /usr/bin/python && \
     && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json \
     # Install glue kernels, and move to shared directory
     # Also patching base kernel so Studio background code doesn't start session silently
-    install-glue-kernels && \
+    && install-glue-kernels && \
     SITE_PACKAGES=$(pip show aws-glue-sessions | grep Location | awk '{print $2}') && \
     jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_pyspark --user && \
     jupyter-kernelspec install $SITE_PACKAGES/aws_glue_interactive_sessions_kernel/glue_spark --user && \
