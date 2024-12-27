@@ -36,7 +36,6 @@ from version_release_note_generator import generate_new_version_release_note
 
 _docker_client = docker.from_env()
 
-
 def create_and_get_semver_dir(version: Version, exist_ok: bool = False):
     dir = get_dir_for_version(version)
 
@@ -344,7 +343,9 @@ def _get_ecr_credentials(region, repository: str) -> (str, str):
     if _ecr_client_config_name == "ecr":
         # If we are using the ecr private client, then fetch the first index from authorizationData
         _authorization_data = _authorization_data[0]
-    return base64.b64decode(_authorization_data["authorizationToken"]).decode().split(":")
+
+    return base64.b64decode(_authorization_data["authorizationToken"]).decode().split(":") 
+
 
 
 def get_arg_parser():
@@ -420,13 +421,23 @@ def get_arg_parser():
     )
     package_size_parser = subparsers.add_parser(
         "generate-size-report",
-        help="Generates package size report for each of the packages in the given " "image version.",
+        help="Generates package size report and Total Image size report for each of the packages in the given " "image version.",
     )
     package_size_parser.set_defaults(func=generate_package_size_report)
     package_size_parser.add_argument(
         "--target-patch-version",
         required=True,
         help="Specify the target patch version for which the package size report needs to be " "generated.",
+    )
+    package_size_parser.add_argument(
+        "--staging-repo-name",
+        required=True,
+        help="Specify the staging repository",
+    )
+    package_size_parser.add_argument(
+        "--staging-account",
+        required=True,
+        help="Specify the staging account",
     )
     package_size_parser.add_argument(
         "--validate",
