@@ -17,13 +17,25 @@ ARG NB_GID=100
 
 # https://www.openssl.org/source/
 ARG FIPS_VALIDATED_SSL=3.0.8
+ARG MIN_REQUIRED_MICROMAMBA_VERSION=1.5.11
 
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
 ENV IMAGE_VERSION=$IMAGE_VERSION
+ENV PINNED_MICROMAMBA_MINOR_VERSION="1.5.*"
 
 USER root
+# Upgrade micromamba to the latest patch version in the pinned minor version range, if applicable
+RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
+    echo "Current micromamba version: $CURRENT_MICROMAMBA_VERSION" && \
+    if [[ "$CURRENT_MICROMAMBA_VERSION" == $PINNED_MICROMAMBA_MINOR_VERSION ]]; then \
+        echo "Upgrading micromamba to the latest $PINNED_MICROMAMBA_MINOR_VERSION version..." && \
+        micromamba self-update -c conda-forge --version "$PINNED_MICROMAMBA_MINOR_VERSION"; \
+    else \
+        echo "Micromamba is already at version $CURRENT_MICROMAMBA_VERSION (outside $PINNED_MICROMAMBA_MINOR_VERSION). No upgrade performed."; \
+    fi
+
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
     groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "${MAMBA_USER}" && \
     # Update the expected value of MAMBA_USER for the
