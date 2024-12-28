@@ -1,8 +1,8 @@
 import json
 import os
-import boto3
 from itertools import islice
 
+import boto3
 import conda.cli.python_api
 from conda.models.match_spec import MatchSpec
 
