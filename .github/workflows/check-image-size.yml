@@ -6,10 +6,22 @@ on:
       image-version:
         required: true
         description: Image version=
+      staging-repo-name:
+        required: true
+        description: Staging repository name
+      staging-account:
+        required: true
+        description: Staging account ID
   # Call from other workflow
   workflow_call:
     inputs:
       image-version:
+        type: string
+        required: true
+      staging-repo-name:
+        type: string
+        required: true
+      staging-account:
         type: string
         required: true
 
@@ -37,4 +49,4 @@ jobs:
       - name: Activate sagemaker-distribution
         run: micromamba activate sagemaker-distribution
       - name: Run size validation
-        run: python ./src/main.py generate-size-report --target-patch-version ${{ inputs.image-version }} --validate
+        run: python ./src/main.py generate-size-report --target-patch-version ${{ inputs.image-version }} --staging-repo-name ${{ inputs.staging-repo-name }} --staging-account ${{ inputs.staging-account }} --validate

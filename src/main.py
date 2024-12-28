@@ -420,13 +420,24 @@ def get_arg_parser():
     )
     package_size_parser = subparsers.add_parser(
         "generate-size-report",
-        help="Generates toatl image size and package size report for each of the packages in the given " "image version.",
+        help="Generates toatl image size and package size report for each of the packages in the given "
+        "image version.",
     )
     package_size_parser.set_defaults(func=generate_package_size_report)
     package_size_parser.add_argument(
         "--target-patch-version",
         required=True,
         help="Specify the target patch version for which the package size report needs to be " "generated.",
+    )
+    package_size_parser.add_argument(
+        "--staging-repo-name",
+        required=True,
+        help="Specify the staging repository",
+    )
+    package_size_parser.add_argument(
+        "--staging-account",
+        required=True,
+        help="Specify the staging account",
     )
     package_size_parser.add_argument(
         "--validate",
