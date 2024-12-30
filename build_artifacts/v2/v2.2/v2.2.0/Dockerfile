@@ -180,7 +180,8 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
 
-ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
+# Adding inference-server to path, so that docker can run serve as executable.
+ENV PATH="/etc/inference-server:/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
 ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
