@@ -1,6 +1,26 @@
 #!/bin/bash
 set -e
 
+override_settings() {
+  # create a new settings file with preset defaults or merge the defaults into the existing settings file
+  local persistent_settings_folder="/home/sagemaker-user/code_editor_machine_settings/"
+  local default_settings_folder="/home/sagemaker-user/sagemaker-code-editor-server-data/"
+  local settings_file_path_suffix="data/Machine/settings.json"
+  local persistent_machine_settings_file="${persistent_settings_folder}/${settings_file_path_suffix}"
+  local default_machine_settings_file="${default_settings_folder}/${settings_file_path_suffix}"
+
+  if [ ! -f "$persistent_machine_settings_file" ]; then
+    # copy settings file to EBS if it doesn't exist in EBS
+    mkdir -p "$persistent_settings_folder"
+    cp "$default_machine_settings_file" "$persistent_machine_settings_file"
+    echo "Created persistent settings file with default settings at $persistent_machine_settings_file"
+  else
+    # if it does exist then merge settings
+    echo "File already exists: ${persistent_machine_settings_file}. Merging default settings with existing settings."
+    python3 /usr/local/bin/merge-settings-util.py "$default_machine_settings_file" "$persistent_machine_settings_file"
+  fi
+}
+
 eval "$(micromamba shell hook --shell=bash)"
 
 # Activate conda environment 'base', which is the default environment for sagemaker-distribution
@@ -8,12 +28,14 @@ micromamba activate base
 
 # Start code-editor server
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
-  # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
-  # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
+  # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker app.
+  override_settings
+
+  # Configure the base url to be `/<app-type-in-lower-case>/default`.
   sagemaker-code-editor --host 0.0.0.0 --port 8888 \
     --without-connection-token \
     --base-path "/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
-    --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data \
+    --server-data-dir /home/sagemaker-user/sagemaker-code-editor-server-data \
     --extensions-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions \
     --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 else
