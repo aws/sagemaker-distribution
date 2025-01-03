@@ -19,7 +19,7 @@ jupyter-scheduler|2.7.1|2.7.1
 amazon-sagemaker-jupyter-scheduler|3.1.7|3.1.7
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
-amazon_sagemaker_sql_editor|0.1.13|0.1.13
+amazon_sagemaker_sql_editor|0.1.14|0.1.14
 scipy|1.11.4|1.11.4
 scikit-learn|1.4.2|1.4.2
 pip|23.3.2|23.3.2
