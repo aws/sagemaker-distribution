@@ -4,7 +4,6 @@ FROM mambaorg/micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE
 ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
-ARG IMAGE_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
 ARG DB_ROOT_DIR="/opt/db"
@@ -20,20 +19,8 @@ ARG FIPS_VALIDATED_SSL=3.0.8
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
-ENV IMAGE_VERSION=$IMAGE_VERSION
-ENV PINNED_MICROMAMBA_MINOR_VERSION="1.5.*"
 
 USER root
-# Upgrade micromamba to the latest patch version in the pinned minor version range, if applicable
-RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
-    echo "Current micromamba version: $CURRENT_MICROMAMBA_VERSION" && \
-    if [[ "$CURRENT_MICROMAMBA_VERSION" == $PINNED_MICROMAMBA_MINOR_VERSION ]]; then \
-        echo "Upgrading micromamba to the latest $PINNED_MICROMAMBA_MINOR_VERSION version..." && \
-        micromamba self-update -c conda-forge --version "$PINNED_MICROMAMBA_MINOR_VERSION"; \
-    else \
-        echo "Micromamba is already at version $CURRENT_MICROMAMBA_VERSION (outside $PINNED_MICROMAMBA_MINOR_VERSION). No upgrade performed."; \
-    fi
-    
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
     groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "${MAMBA_USER}" && \
     # Update the expected value of MAMBA_USER for the
@@ -57,17 +44,16 @@ RUN apt-get update && apt-get upgrade -y && \
     sudo ./aws/install && \
     rm -rf aws awscliv2.zip && \
     :
-RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
-    # CodeEditor - create server, user data dirs
-    mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
+RUN echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile
+
+# CodeEditor - create server, user data dirs
+RUN mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
     # create dir to store user data files
     mkdir -p /opt/amazon/sagemaker/user-data \
-    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/user-data
-
-
-# Merge in OS directory tree contents.
-RUN mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
+    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/user-data && \
+    # Merge in OS directory tree contents.
+    mkdir -p ${DIRECTORY_TREE_STAGE_DIR}
 COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
 RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     rm -rf ${DIRECTORY_TREE_STAGE_DIR} && \
@@ -99,7 +85,7 @@ RUN sudo ln -s $(which python3) /usr/bin/python && \
     # Update npm version
     npm update -g npm && \
     # Configure CodeEditor - Install extensions and set preferences
-    xtensionloc=/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions && mkdir -p "${extensionloc}" \
+    extensionloc=/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions && mkdir -p "${extensionloc}" \
     # Loop through all vsix files in /etc/code-editor/extensions and install them
     && for ext in /etc/code-editor/extensions/*.vsix; do \
         echo "Installing extension ${ext}..."; \
