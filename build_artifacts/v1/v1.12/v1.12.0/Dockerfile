@@ -87,10 +87,9 @@ RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
 
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
-RUN sudo ln -s $(which python3) /usr/bin/python
-
-# Update npm version
-RUN npm i -g npm
+RUN sudo ln -s $(which python3) /usr/bin/python \
+    # Update npm version
+    npm update -g npm
 
 # Configure CodeEditor - Install extensions and set preferences
 RUN \
