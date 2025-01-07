@@ -1,0 +1,5 @@
+conda-forge::s3fs
+conda-forge::aioboto3
+conda-forge::llamaindex-py-client
+conda-forge::seaborn
+
