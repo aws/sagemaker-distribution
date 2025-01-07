@@ -4,10 +4,10 @@ Package | gpu| cpu
 ---|---|---
 python|3.10.16|3.10.16
 numpy|1.26.4|1.26.4
-jinja2|3.1.4|3.1.4
+jinja2|3.1.5|3.1.5
 altair|5.5.0|5.5.0
 boto3|1.34.162|1.34.162
-ipython|8.30.0|8.30.0
+ipython|8.31.0|8.31.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.1.6|4.1.6
 amazon-q-developer-jupyterlab-ext|3.4.5|3.4.5
@@ -15,11 +15,11 @@ langchain|0.2.5|0.2.5
 jupyter-ai|2.28.1|2.28.1
 amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.14
 jupyter-scheduler|2.10.0|2.10.0
-amazon-sagemaker-jupyter-scheduler|3.1.7|3.1.7
+amazon-sagemaker-jupyter-scheduler|3.1.8|3.1.8
 pandas|2.1.4|2.1.4
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
-amazon_sagemaker_sql_editor|0.1.13|0.1.13
+amazon_sagemaker_sql_editor|0.1.14|0.1.14
 scipy|1.11.4|1.11.4
 scikit-learn|1.4.2|1.4.2
 pip|23.3.2|23.3.2
@@ -38,7 +38,7 @@ jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.50.2|0.50.2
 keras|2.14.0|2.15.0
 langchain-aws|0.1.18|0.1.18
-matplotlib|3.9.3|3.9.3
+matplotlib|3.10.0|3.10.0
 nodejs|18.20.3|18.20.3
 py-xgboost-gpu|1.7.6| 
 thrift_sasl|0.4.3|0.4.3
@@ -51,12 +51,12 @@ sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.3.4|0.3.4
 sagemaker-jupyterlab-extension|0.3.2|0.3.2
 sagemaker-kernel-wrapper|0.0.4|0.0.4
-sagemaker-python-sdk|2.227.0|2.227.0
+sagemaker-python-sdk|2.228.0|2.228.0
 sagemaker-studio-analytics-extension|0.1.2|0.1.2
 sasl|0.3.1|0.3.1
 supervisor|4.2.5|4.2.5
 tensorflow-gpu|2.14.0| 
-uvicorn|0.32.1|0.32.1
+uvicorn|0.34.0|0.34.0
 pytorch| |2.0.0
 py-xgboost-cpu| |1.7.6
 tensorflow| |2.15.0
