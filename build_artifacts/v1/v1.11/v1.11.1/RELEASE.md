@@ -15,7 +15,7 @@ langchain|0.2.5|0.2.5
 jupyter-ai|2.23.0|2.23.0
 amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.14
 jupyter-scheduler|2.7.1|2.7.1
-amazon-sagemaker-jupyter-scheduler|3.1.7|3.1.7
+amazon-sagemaker-jupyter-scheduler|3.1.8|3.1.8
 pandas|2.1.4|2.1.4
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
