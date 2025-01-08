@@ -14,3 +14,4 @@ jupyterlab-git|0.50.1|0.50.2
 matplotlib|3.9.2|3.9.4
 sagemaker-code-editor|1.1.0|1.1.5
 sagemaker-jupyterlab-emr-extension|0.3.3|0.3.4
+sagemaker-jupyterlab-extension|0.3.2|0.3.3
