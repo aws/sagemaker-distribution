@@ -1,4 +1,3 @@
 conda-forge::s3fs
-conda-forge::llamaindex-py-client
+conda-forge::llama-index
 conda-forge::seaborn
-
