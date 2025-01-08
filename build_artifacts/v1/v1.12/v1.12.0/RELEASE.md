@@ -5,6 +5,7 @@ Package | gpu| cpu
 python|3.10.16|3.10.16
 numpy|1.26.4|1.26.4
 jinja2|3.1.5|3.1.5
+pytorch|2.0.0|2.0.0
 altair|5.5.0|5.5.0
 boto3|1.34.162|1.34.162
 ipython|8.31.0|8.31.0
@@ -42,11 +43,11 @@ langchain-aws|0.1.18|0.1.18
 matplotlib|3.10.0|3.10.0
 nodejs|18.20.3|18.20.3
 py-xgboost-gpu|1.7.6| 
+pyarrow-hotfix|0.6| 
 thrift_sasl|0.4.3|0.4.3
 pyhive|0.7.0|0.7.0
 python-gssapi|1.9.0|1.9.0
 python-lsp-server|1.12.0|1.12.0
-pytorch-gpu|2.0.0| 
 sagemaker-code-editor|1.1.5|1.1.5
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.3.4|0.3.4
@@ -56,7 +57,5 @@ sagemaker-python-sdk|2.228.0|2.228.0
 sagemaker-studio-analytics-extension|0.1.2|0.1.2
 sasl|0.3.1|0.3.1
 supervisor|4.2.5|4.2.5
-tensorflow-gpu|2.14.0| 
-pytorch| |2.0.0
+tensorflow|2.14.0|2.15.0
 py-xgboost-cpu| |1.7.6
-tensorflow| |2.15.0
