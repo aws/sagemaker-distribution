@@ -48,7 +48,7 @@ pytorch-gpu|2.0.0|
 sagemaker-code-editor|1.1.5|1.1.5
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.3.4|0.3.4
-sagemaker-jupyterlab-extension|0.3.2|0.3.2
+sagemaker-jupyterlab-extension|0.3.3|0.3.3
 sagemaker-kernel-wrapper|0.0.4|0.0.4
 sagemaker-python-sdk|2.227.0|2.227.0
 sagemaker-studio-analytics-extension|0.1.2|0.1.2
