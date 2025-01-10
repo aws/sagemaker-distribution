@@ -92,6 +92,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     fi && \
     # Enforce dependencies are all installed from conda-forge
     micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
+    mkdir -p $RECOVERY_MODE_HOME && \
+    chown $MAMBA_USER:$MAMBA_USER $RECOVERY_MODE_HOME && \
     JUPYTERLAB_VERSION=$(grep "^conda-forge::jupyterlab\[" /tmp/$ENV_IN_FILENAME) && \
     SAGEMAKER_JUPYTERLAB_VERSION=$(grep "^conda-forge::sagemaker-jupyterlab-extension" /tmp/$ENV_IN_FILENAME) && \
     echo "Installing in recovery-mode micromamba environment: $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
