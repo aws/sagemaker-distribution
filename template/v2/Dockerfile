@@ -24,6 +24,7 @@ ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
 ENV IMAGE_VERSION=$IMAGE_VERSION
 ENV PINNED_MICROMAMBA_MINOR_VERSION="1.5.*"
+ENV RECOVERY_MODE_HOME=/tmp/recovery-mode-home
 
 USER root
 # Upgrade micromamba to the latest patch version in the pinned minor version range, if applicable
@@ -159,7 +160,12 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
-    jupyter labextension disable @jupyter/collaboration-extension
+    jupyter labextension disable @jupyter/collaboration-extension && \
+    # Setup the Recovery Mode home directory and micromamba environment
+    mkdir -p $RECOVERY_MODE_HOME && \
+    chown $MAMBA_USER:$MAMBA_USER $RECOVERY_MODE_HOME && \
+    micromamba create -n recovery-mode && \
+    micromamba install -n recovery-mode jupyterlab sagemaker-jupyterlab-extension  -y
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
@@ -192,12 +198,12 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
 
-# Setup the Recovery Mode home directory and micromamba environment
-ENV RECOVERY_MODE_HOME=/tmp/recovery-mode-home
-RUN mkdir -p $RECOVERY_MODE_HOME
-RUN chown $MAMBA_USER:$MAMBA_USER $RECOVERY_MODE_HOME
-RUN micromamba create -n recovery-mode
-RUN micromamba install -n recovery-mode jupyterlab sagemaker-jupyterlab-extension -y
+# # Setup the Recovery Mode home directory and micromamba environment
+# ENV RECOVERY_MODE_HOME=/tmp/recovery-mode-home
+# RUN mkdir -p $RECOVERY_MODE_HOME && \
+#     chown $MAMBA_USER:$MAMBA_USER $RECOVERY_MODE_HOME && \
+#     micromamba create -n recovery-mode && \
+#     micromamba install -n recovery-mode jupyterlab sagemaker-jupyterlab-extension  -y
 
 # Explicitly disable BuildKit for SM Studio Docker functionality
 ENV DOCKER_BUILDKIT=0
