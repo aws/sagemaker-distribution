@@ -48,6 +48,8 @@ _docker_client = docker.from_env()
         ("mlflow.test.Dockerfile", ["mlflow"]),
         ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
         ("docker-cli.test.Dockerfile", ["docker-cli"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -93,6 +95,8 @@ def test_dockerfiles_for_cpu(
         ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
         ("gpu-dependencies.test.Dockerfile", ["pytorch", "tensorflow"]),
         ("docker-cli.test.Dockerfile", ["docker-cli"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
     ],
 )
 def test_dockerfiles_for_gpu(

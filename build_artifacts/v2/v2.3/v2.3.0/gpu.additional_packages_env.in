@@ -1,3 +1,2 @@
 conda-forge::s3fs
-conda-forge::llama-index
 conda-forge::seaborn
