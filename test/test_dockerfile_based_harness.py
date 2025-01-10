@@ -22,7 +22,10 @@ _docker_client = docker.from_env()
         ("autogluon.test.Dockerfile", ["autogluon"]),
         ("matplotlib.test.Dockerfile", ["matplotlib"]),
         ("matplotlib.test.Dockerfile", ["matplotlib-base"]),
-        ("sagemaker-headless-execution-driver.test.Dockerfile", ["sagemaker-headless-execution-driver"]),
+        (
+            "sagemaker-headless-execution-driver.test.Dockerfile",
+            ["sagemaker-headless-execution-driver"],
+        ),
         ("scipy.test.Dockerfile", ["scipy"]),
         ("numpy.test.Dockerfile", ["numpy"]),
         ("boto3.test.Dockerfile", ["boto3"]),
@@ -39,23 +42,40 @@ _docker_client = docker.from_env()
         ("notebook.test.Dockerfile", ["notebook"]),
         ("glue-sessions.test.Dockerfile", ["aws-glue-sessions"]),
         ("altair.test.Dockerfile", ["altair"]),
-        ("sagemaker-studio-analytics-extension.test.Dockerfile", ["sagemaker-studio-analytics-extension"]),
-        ("amazon-codewhisperer-jupyterlab-ext.test.Dockerfile", ["amazon-codewhisperer-jupyterlab-ext"]),
+        (
+            "sagemaker-studio-analytics-extension.test.Dockerfile",
+            ["sagemaker-studio-analytics-extension"],
+        ),
+        (
+            "amazon-codewhisperer-jupyterlab-ext.test.Dockerfile",
+            ["amazon-codewhisperer-jupyterlab-ext"],
+        ),
         ("jupyterlab-git.test.Dockerfile", ["jupyterlab-git"]),
         ("amazon-sagemaker-sql-magic.test.Dockerfile", ["amazon-sagemaker-sql-magic"]),
-        ("amazon_sagemaker_sql_editor.test.Dockerfile", ["amazon_sagemaker_sql_editor"]),
+        (
+            "amazon_sagemaker_sql_editor.test.Dockerfile",
+            ["amazon_sagemaker_sql_editor"],
+        ),
         ("serve.test.Dockerfile", ["langchain"]),
         ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
-        ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
+        (
+            "jupyter-activity-monitor-extension.test.Dockerfile",
+            ["jupyter-activity-monitor-extension"],
+        ),
         ("docker-cli.test.Dockerfile", ["docker-cli"]),
         ("recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
     ],
 )
 def test_dockerfiles_for_cpu(
-    dockerfile_path: str, required_packages: List[str], local_image_version: str, use_gpu: bool
+    dockerfile_path: str,
+    required_packages: List[str],
+    local_image_version: str,
+    use_gpu: bool,
 ):
-    _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, "cpu")
+    _validate_docker_images(
+        dockerfile_path, required_packages, local_image_version, use_gpu, "cpu"
+    )
 
 
 @pytest.mark.gpu
@@ -66,7 +86,10 @@ def test_dockerfiles_for_cpu(
         ("autogluon.test.Dockerfile", ["autogluon"]),
         ("matplotlib.test.Dockerfile", ["matplotlib"]),
         ("matplotlib.test.Dockerfile", ["matplotlib-base"]),
-        ("sagemaker-headless-execution-driver.test.Dockerfile", ["sagemaker-headless-execution-driver"]),
+        (
+            "sagemaker-headless-execution-driver.test.Dockerfile",
+            ["sagemaker-headless-execution-driver"],
+        ),
         ("scipy.test.Dockerfile", ["scipy"]),
         ("numpy.test.Dockerfile", ["numpy"]),
         ("boto3.test.Dockerfile", ["boto3"]),
@@ -83,31 +106,50 @@ def test_dockerfiles_for_cpu(
         ("notebook.test.Dockerfile", ["notebook"]),
         ("glue-sessions.test.Dockerfile", ["aws-glue-sessions"]),
         ("altair.test.Dockerfile", ["altair"]),
-        ("sagemaker-studio-analytics-extension.test.Dockerfile", ["sagemaker-studio-analytics-extension"]),
-        ("amazon-codewhisperer-jupyterlab-ext.test.Dockerfile", ["amazon-codewhisperer-jupyterlab-ext"]),
+        (
+            "sagemaker-studio-analytics-extension.test.Dockerfile",
+            ["sagemaker-studio-analytics-extension"],
+        ),
+        (
+            "amazon-codewhisperer-jupyterlab-ext.test.Dockerfile",
+            ["amazon-codewhisperer-jupyterlab-ext"],
+        ),
         ("jupyterlab-git.test.Dockerfile", ["jupyterlab-git"]),
         ("amazon-sagemaker-sql-magic.test.Dockerfile", ["amazon-sagemaker-sql-magic"]),
-        ("amazon_sagemaker_sql_editor.test.Dockerfile", ["amazon_sagemaker_sql_editor"]),
+        (
+            "amazon_sagemaker_sql_editor.test.Dockerfile",
+            ["amazon_sagemaker_sql_editor"],
+        ),
         ("serve.test.Dockerfile", ["langchain"]),
         ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
         ("sagemaker-mlflow.test.Dockerfile", ["sagemaker-mlflow"]),
-        ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
+        (
+            "jupyter-activity-monitor-extension.test.Dockerfile",
+            ["jupyter-activity-monitor-extension"],
+        ),
         ("gpu-dependencies.test.Dockerfile", ["pytorch", "tensorflow"]),
         ("docker-cli.test.Dockerfile", ["docker-cli"]),
         ("recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
     ],
 )
 def test_dockerfiles_for_gpu(
-    dockerfile_path: str, required_packages: List[str], local_image_version: str, use_gpu: bool
+    dockerfile_path: str,
+    required_packages: List[str],
+    local_image_version: str,
+    use_gpu: bool,
 ):
-    _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, "gpu")
+    _validate_docker_images(
+        dockerfile_path, required_packages, local_image_version, use_gpu, "gpu"
+    )
 
 
 # The following is a simple function to check whether the local machine has at least 1 GPU and some Nvidia driver
 # version.
 def _is_nvidia_drivers_available() -> bool:
-    exitcode, output = subprocess.getstatusoutput("nvidia-smi --query-gpu=driver_version --format=csv,noheader --id=0")
+    exitcode, output = subprocess.getstatusoutput(
+        "nvidia-smi --query-gpu=driver_version --format=csv,noheader --id=0"
+    )
     if exitcode == 0:
         print(f"Found Nvidia driver version: {output}")
     else:
@@ -121,7 +163,9 @@ def _check_docker_file_existence(dockerfile_name: str, test_artifacts_path: str)
         pytest.skip(f"Skipping test because {dockerfile_name} does not exist.")
 
 
-def _check_required_package_constraints(target_version: Version, required_packages: List[str], image_type: str):
+def _check_required_package_constraints(
+    target_version: Version, required_packages: List[str], image_type: str
+):
     target_version_dir = get_dir_for_version(target_version)
     if not os.path.exists(target_version_dir):
         pytest.skip(f"Skipping test because {target_version_dir} does not exist.")
@@ -137,11 +181,17 @@ def _check_required_package_constraints(target_version: Version, required_packag
     target_match_spec_out = get_match_specs(env_out_path)
     for required_package in required_packages:
         if required_package not in target_match_spec_out:
-            pytest.skip(f"Skipping test because {required_package} is not present in {env_out_file_name}")
+            pytest.skip(
+                f"Skipping test because {required_package} is not present in {env_out_file_name}"
+            )
 
 
 def _validate_docker_images(
-    dockerfile_path: str, required_packages: List[str], local_image_version: str, use_gpu: bool, image_type: str
+    dockerfile_path: str,
+    required_packages: List[str],
+    local_image_version: str,
+    use_gpu: bool,
+    image_type: str,
 ):
     target_version = get_semver(local_image_version)
     test_artifacts_path = f"test/test_artifacts/v{str(target_version.major)}"
@@ -152,9 +202,13 @@ def _validate_docker_images(
         for config in _image_generator_configs[target_version.major]
         if config["image_type"] == image_type
     )
-    docker_image_tag = image_tag_generator_from_config.format(image_version=local_image_version)
+    docker_image_tag = image_tag_generator_from_config.format(
+        image_version=local_image_version
+    )
     docker_image_identifier = f"localhost/sagemaker-distribution:{docker_image_tag}"
-    print(f"Will start running test for: {dockerfile_path} against: {docker_image_identifier}")
+    print(
+        f"Will start running test for: {dockerfile_path} against: {docker_image_identifier}"
+    )
 
     try:
         image, _ = _docker_client.images.build(
@@ -178,7 +232,9 @@ def _validate_docker_images(
     device_requests = []
     if use_gpu and _is_nvidia_drivers_available():
         # Pass all available GPUs, if available.
-        device_requests.append(docker.types.DeviceRequest(count=-1, capabilities=[["gpu"]]))
+        device_requests.append(
+            docker.types.DeviceRequest(count=-1, capabilities=[["gpu"]])
+        )
 
     # We assume that the image above would have supplied the right entrypoint, so we just run it as is. If the container
     # didn't execute successfully, the Docker client below will throw an error and fail the test.
@@ -188,7 +244,9 @@ def _validate_docker_images(
     if dockerfile_path in ["recovery-mode.test.Dockerfile"]:
         _test_jupyterlab_entrypoint(image)
     else:
-        container = _docker_client.containers.run(image=image.id, detach=True, stderr=True, device_requests=device_requests)
+        container = _docker_client.containers.run(
+            image=image.id, detach=True, stderr=True, device_requests=device_requests
+        )
         # Wait till container completes execution
         result = container.wait()
         exit_code = result["StatusCode"]
