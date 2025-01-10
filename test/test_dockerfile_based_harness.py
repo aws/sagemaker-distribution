@@ -73,9 +73,7 @@ def test_dockerfiles_for_cpu(
     local_image_version: str,
     use_gpu: bool,
 ):
-    _validate_docker_images(
-        dockerfile_path, required_packages, local_image_version, use_gpu, "cpu"
-    )
+    _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, "cpu")
 
 
 @pytest.mark.gpu
@@ -139,17 +137,13 @@ def test_dockerfiles_for_gpu(
     local_image_version: str,
     use_gpu: bool,
 ):
-    _validate_docker_images(
-        dockerfile_path, required_packages, local_image_version, use_gpu, "gpu"
-    )
+    _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, "gpu")
 
 
 # The following is a simple function to check whether the local machine has at least 1 GPU and some Nvidia driver
 # version.
 def _is_nvidia_drivers_available() -> bool:
-    exitcode, output = subprocess.getstatusoutput(
-        "nvidia-smi --query-gpu=driver_version --format=csv,noheader --id=0"
-    )
+    exitcode, output = subprocess.getstatusoutput("nvidia-smi --query-gpu=driver_version --format=csv,noheader --id=0")
     if exitcode == 0:
         print(f"Found Nvidia driver version: {output}")
     else:
@@ -163,9 +157,7 @@ def _check_docker_file_existence(dockerfile_name: str, test_artifacts_path: str)
         pytest.skip(f"Skipping test because {dockerfile_name} does not exist.")
 
 
-def _check_required_package_constraints(
-    target_version: Version, required_packages: List[str], image_type: str
-):
+def _check_required_package_constraints(target_version: Version, required_packages: List[str], image_type: str):
     target_version_dir = get_dir_for_version(target_version)
     if not os.path.exists(target_version_dir):
         pytest.skip(f"Skipping test because {target_version_dir} does not exist.")
@@ -181,9 +173,7 @@ def _check_required_package_constraints(
     target_match_spec_out = get_match_specs(env_out_path)
     for required_package in required_packages:
         if required_package not in target_match_spec_out:
-            pytest.skip(
-                f"Skipping test because {required_package} is not present in {env_out_file_name}"
-            )
+            pytest.skip(f"Skipping test because {required_package} is not present in {env_out_file_name}")
 
 
 def _validate_docker_images(
@@ -202,13 +192,9 @@ def _validate_docker_images(
         for config in _image_generator_configs[target_version.major]
         if config["image_type"] == image_type
     )
-    docker_image_tag = image_tag_generator_from_config.format(
-        image_version=local_image_version
-    )
+    docker_image_tag = image_tag_generator_from_config.format(image_version=local_image_version)
     docker_image_identifier = f"localhost/sagemaker-distribution:{docker_image_tag}"
-    print(
-        f"Will start running test for: {dockerfile_path} against: {docker_image_identifier}"
-    )
+    print(f"Will start running test for: {dockerfile_path} against: {docker_image_identifier}")
 
     try:
         image, _ = _docker_client.images.build(
@@ -232,9 +218,7 @@ def _validate_docker_images(
     device_requests = []
     if use_gpu and _is_nvidia_drivers_available():
         # Pass all available GPUs, if available.
-        device_requests.append(
-            docker.types.DeviceRequest(count=-1, capabilities=[["gpu"]])
-        )
+        device_requests.append(docker.types.DeviceRequest(count=-1, capabilities=[["gpu"]]))
 
     # We assume that the image above would have supplied the right entrypoint, so we just run it as is. If the container
     # didn't execute successfully, the Docker client below will throw an error and fail the test.
@@ -310,6 +294,4 @@ def _wait_for_logs(container, search_string, timeout=5, poll_interval=1):
         if search_string in logs:
             return True
         time.sleep(poll_interval)
-    raise TimeoutError(
-        f"Container did not log '{search_string}' within {timeout} seconds."
-    )
+    raise TimeoutError(f"Container did not log '{search_string}' within {timeout} seconds.")
