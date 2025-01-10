@@ -198,13 +198,6 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
 
-# # Setup the Recovery Mode home directory and micromamba environment
-# ENV RECOVERY_MODE_HOME=/tmp/recovery-mode-home
-# RUN mkdir -p $RECOVERY_MODE_HOME && \
-#     chown $MAMBA_USER:$MAMBA_USER $RECOVERY_MODE_HOME && \
-#     micromamba create -n recovery-mode && \
-#     micromamba install -n recovery-mode jupyterlab sagemaker-jupyterlab-extension  -y
-
 # Explicitly disable BuildKit for SM Studio Docker functionality
 ENV DOCKER_BUILDKIT=0
 ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
