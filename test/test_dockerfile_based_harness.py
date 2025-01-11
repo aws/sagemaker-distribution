@@ -64,7 +64,7 @@ _docker_client = docker.from_env()
             ["jupyter-activity-monitor-extension"],
         ),
         ("docker-cli.test.Dockerfile", ["docker-cli"]),
-        ("recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
+        ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -128,7 +128,7 @@ def test_dockerfiles_for_cpu(
         ),
         ("gpu-dependencies.test.Dockerfile", ["pytorch", "tensorflow"]),
         ("docker-cli.test.Dockerfile", ["docker-cli"]),
-        ("recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
+        ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
     ],
 )
 def test_dockerfiles_for_gpu(
