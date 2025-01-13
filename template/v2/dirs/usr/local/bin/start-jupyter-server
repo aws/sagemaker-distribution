@@ -3,8 +3,14 @@ set -e
 
 eval "$(micromamba shell hook --shell=bash)"
 
-# Activate conda environment 'base', which is the default environment for Cosmos
-micromamba activate base
+if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
+    export HOME=$SAGEMAKER_RECOVERY_MODE
+    # Activate conda environment `sagemaker-recovery-mode`
+    micromamba activate sagemaker-recovery-mode
+else
+    # Activate conda environment 'base'
+    micromamba activate base
+fi
 
 # Start Jupyter server in rtc mode for shared spaces
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ]; then
