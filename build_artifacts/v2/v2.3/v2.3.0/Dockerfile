@@ -24,6 +24,7 @@ ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
 ENV IMAGE_VERSION=$IMAGE_VERSION
 ENV PINNED_MICROMAMBA_MINOR_VERSION="1.5.*"
+ENV SAGEMAKER_RECOVERY_MODE_HOME=/tmp/sagemaker-recovery-mode-home
 
 USER root
 # Upgrade micromamba to the latest patch version in the pinned minor version range, if applicable
@@ -91,6 +92,13 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     fi && \
     # Enforce dependencies are all installed from conda-forge
     micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
+    mkdir -p $SAGEMAKER_RECOVERY_MODE_HOME && \
+    chown $MAMBA_USER:$MAMBA_USER $SAGEMAKER_RECOVERY_MODE_HOME && \
+    JUPYTERLAB_VERSION=$(grep "^conda-forge::jupyterlab\[" /tmp/$ENV_IN_FILENAME) && \
+    SAGEMAKER_JUPYTERLAB_VERSION=$(grep "^conda-forge::sagemaker-jupyterlab-extension" /tmp/$ENV_IN_FILENAME) && \
+    echo "Installing in sagemaker-recovery-mode micromamba environment: $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
+    micromamba create -n sagemaker-recovery-mode && \
+    micromamba install -n sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
