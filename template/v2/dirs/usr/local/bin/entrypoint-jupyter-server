@@ -7,7 +7,7 @@ set -e
 eval "$(micromamba shell hook --shell=bash)"
 
 if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
-    export HOME=$SAGEMAKER_RECOVERY_MODE
+    export HOME=$SAGEMAKER_RECOVERY_MODE_HOME
     # Activate conda environment `sagemaker-recovery-mode`
     micromamba activate sagemaker-recovery-mode
 else
