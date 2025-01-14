@@ -225,7 +225,7 @@ def _validate_docker_images(
     # A consequence of this design decision is that any test assertions should go inside the container's entry-point.
 
     # Special handling for JupyterLab entrypoint testing
-    if dockerfile_path in ["recovery-mode.test.Dockerfile"]:
+    if dockerfile_path in ["sagemaker-recovery-mode.test.Dockerfile"]:
         _test_jupyterlab_entrypoint(image)
     else:
         container = _docker_client.containers.run(
