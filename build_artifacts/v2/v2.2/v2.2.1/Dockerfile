@@ -17,26 +17,13 @@ ARG NB_GID=100
 
 # https://www.openssl.org/source/
 ARG FIPS_VALIDATED_SSL=3.0.8
-ARG MIN_REQUIRED_MICROMAMBA_VERSION=1.5.11
 
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
 ENV IMAGE_VERSION=$IMAGE_VERSION
-ENV PINNED_MICROMAMBA_MINOR_VERSION="1.5.*"
-ENV SAGEMAKER_RECOVERY_MODE_HOME=/tmp/sagemaker-recovery-mode-home
 
 USER root
-# Upgrade micromamba to the latest patch version in the pinned minor version range, if applicable
-RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
-    echo "Current micromamba version: $CURRENT_MICROMAMBA_VERSION" && \
-    if [[ "$CURRENT_MICROMAMBA_VERSION" == $PINNED_MICROMAMBA_MINOR_VERSION ]]; then \
-        echo "Upgrading micromamba to the latest $PINNED_MICROMAMBA_MINOR_VERSION version..." && \
-        micromamba self-update -c conda-forge --version "$PINNED_MICROMAMBA_MINOR_VERSION"; \
-    else \
-        echo "Micromamba is already at version $CURRENT_MICROMAMBA_VERSION (outside $PINNED_MICROMAMBA_MINOR_VERSION). No upgrade performed."; \
-    fi
-
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
     groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "${MAMBA_USER}" && \
     # Update the expected value of MAMBA_USER for the
@@ -92,13 +79,6 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     fi && \
     # Enforce dependencies are all installed from conda-forge
     micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
-    mkdir -p $SAGEMAKER_RECOVERY_MODE_HOME && \
-    chown $MAMBA_USER:$MAMBA_USER $SAGEMAKER_RECOVERY_MODE_HOME && \
-    JUPYTERLAB_VERSION=$(grep "^conda-forge::jupyterlab\[" /tmp/$ENV_IN_FILENAME) && \
-    SAGEMAKER_JUPYTERLAB_VERSION=$(grep "^conda-forge::sagemaker-jupyterlab-extension" /tmp/$ENV_IN_FILENAME) && \
-    echo "Installing in sagemaker-recovery-mode micromamba environment: $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
-    micromamba create -n sagemaker-recovery-mode && \
-    micromamba install -n sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
@@ -115,8 +95,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
         sagemaker-code-editor --install-extension "${ext}" --extensions-dir "${extensionloc}" --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data; \
        done \
     # Copy the settings
-    && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json && \
-    cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/User/settings.json && \
+    && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json \
+    && cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/User/settings.json && \
     # Install glue kernels, and move to shared directory
     # Also patching base kernel so Studio background code doesn't start session silently
     install-glue-kernels && \
@@ -180,7 +160,6 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     chmod a+rw $SAGEMAKER_LOGGING_DIR && \
     mkdir -p ${STUDIO_LOGGING_DIR} && \
     chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} && \
-
     # Clean up CodeEditor artifacts
     rm -rf /etc/code-editor && \
     # Create supervisord runtime directory
