@@ -7,7 +7,7 @@ Package | Previous Version | Current Version
 jinja2|3.1.4|3.1.5
 pytorch|2.3.1|2.4.1
 altair|5.4.1|5.5.0
-boto3|1.34.162|1.35.88
+boto3|1.34.162|1.36.1
 ipython|8.29.0|8.31.0
 jupyterlab|4.2.6|4.3.4
 langchain|0.2.17|0.3.14

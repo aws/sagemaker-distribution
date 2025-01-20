@@ -8,7 +8,7 @@ jinja2|3.1.5|3.1.5
 pytorch|2.4.1|2.4.1
 pandas|2.2.3|2.2.3
 altair|5.5.0|5.5.0
-boto3|1.35.88|1.35.88
+boto3|1.36.1|1.36.1
 ipython|8.31.0|8.31.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.3.4|4.3.4
