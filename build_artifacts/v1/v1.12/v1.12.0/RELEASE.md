@@ -43,6 +43,7 @@ langchain-aws|0.1.18|0.1.18
 matplotlib|3.10.0|3.10.0
 nodejs|18.20.3|18.20.3
 py-xgboost-gpu|1.7.6| 
+pyarrow-hotfix|0.6| 
 thrift_sasl|0.4.3|0.4.3
 pyhive|0.7.0|0.7.0
 python-gssapi|1.9.0|1.9.0
