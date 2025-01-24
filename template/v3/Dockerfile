@@ -29,7 +29,7 @@ RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
     LOWEST_MICROMAMBA_VERSION=$(printf '%s\n%s' "$MIN_REQUIRED_MICROMAMBA_VERSION" "$CURRENT_MICROMAMBA_VERSION" | sort -V | head -n 1) && \
     if [ "$LOWEST_MICROMAMBA_VERSION" = "$CURRENT_MICROMAMBA_VERSION" ] && [ "$CURRENT_MICROMAMBA_VERSION" != "$MIN_REQUIRED_MICROMAMBA_VERSION" ]; then \
         echo "Upgrading micromamba from $CURRENT_MICROMAMBA_VERSION to $MIN_REQUIRED_MICROMAMBA_VERSION..." && \
-        micromamba self-update -c conda-forge --version "$MIN_REQUIRED_MICROMAMBA_VERSION"; && \
+        micromamba self-update -c conda-forge --version "$MIN_REQUIRED_MICROMAMBA_VERSION" && \
         micromamba clean --all --yes --force-pkgs-dirs; \
     else \
         echo "Micromamba is already $MIN_REQUIRED_MICROMAMBA_VERSION or higher (current: $CURRENT_MICROMAMBA_VERSION). No update needed."; \
