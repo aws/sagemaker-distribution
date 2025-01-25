@@ -11,6 +11,7 @@ ipython|8.29.0|8.31.0
 jupyterlab|4.2.6|4.3.4
 langchain|0.2.17|0.3.14
 jupyter-ai|2.28.3|2.29.0
+amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.15
 jupyter-scheduler|2.9.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.7|3.1.8
 amazon_sagemaker_sql_editor|0.1.13|0.1.14

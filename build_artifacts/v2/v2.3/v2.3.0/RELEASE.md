@@ -15,7 +15,7 @@ jupyterlab|4.3.4|4.3.4
 amazon-q-developer-jupyterlab-ext|3.4.5|3.4.5
 langchain|0.3.14|0.3.14
 jupyter-ai|2.29.0|2.29.0
-amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.14
+amazon-sagemaker-jupyter-ai-q-developer|1.0.15|1.0.15
 jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.8|3.1.8
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
