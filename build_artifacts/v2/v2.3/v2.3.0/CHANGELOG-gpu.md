@@ -9,9 +9,10 @@ pytorch|2.3.1|2.4.1
 altair|5.4.1|5.5.0
 boto3|1.34.162|1.36.3
 ipython|8.29.0|8.31.0
+jupyterlab|4.2.6|4.2.7
 langchain|0.2.17|0.3.15
 jupyter-ai|2.28.3|2.29.0
-amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.15
+amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.16
 jupyter-scheduler|2.9.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.7|3.1.8
 amazon_sagemaker_sql_editor|0.1.13|0.1.14

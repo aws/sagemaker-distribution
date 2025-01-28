@@ -15,7 +15,7 @@ jupyterlab|4.2.7|4.2.7
 amazon-q-developer-jupyterlab-ext|3.4.5|3.4.5
 langchain|0.3.15|0.3.15
 jupyter-ai|2.29.0|2.29.0
-amazon-sagemaker-jupyter-ai-q-developer|1.0.15|1.0.15
+amazon-sagemaker-jupyter-ai-q-developer|1.0.16|1.0.16
 jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.8|3.1.8
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
@@ -63,4 +63,3 @@ seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.17.0|2.17.0
 tf-keras|2.17.0|2.17.0
-py-xgboost-cpu| |2.1.3
