@@ -11,7 +11,7 @@ altair|5.5.0|5.5.0
 boto3|1.36.3|1.36.3
 ipython|8.31.0|8.31.0
 jupyter-lsp|2.2.5|2.2.5
-jupyterlab|4.2.7|4.2.7
+jupyterlab|4.2.6|4.2.6
 amazon-q-developer-jupyterlab-ext|3.4.5|3.4.5
 langchain|0.3.15|0.3.15
 jupyter-ai|2.29.0|2.29.0
@@ -24,8 +24,7 @@ amazon_sagemaker_sql_editor|0.1.14|0.1.14
 scipy|1.15.1|1.15.1
 matplotlib-base|3.10.0|3.10.0
 scikit-learn|1.5.2|1.5.2
-uvicorn|0.34.0|0.34.0
-fastapi|0.115.7|0.115.7
+evaluate|0.4.1|0.4.1
 sentencepiece|0.1.99|0.1.99
 pip|24.3.1|24.3.1
 torchvision|0.19.1|0.19.1
@@ -37,6 +36,8 @@ libmamba|1.5.12|1.5.12
 conda|24.11.3|24.11.3
 dash|2.18.1|2.18.1
 docker-cli|27.5.1|27.5.1
+uvicorn|0.34.0|0.34.0
+fastapi|0.115.7|0.115.7
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.1|0.3.1
 jupyter-collaboration|2.1.5|2.1.5
@@ -63,3 +64,4 @@ seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.17.0|2.17.0
 tf-keras|2.17.0|2.17.0
+py-xgboost-cpu| |2.1.3
