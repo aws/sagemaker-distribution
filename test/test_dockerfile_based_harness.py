@@ -67,6 +67,8 @@ _docker_client = docker.from_env()
         ("s3fs.test.Dockerfile", ["s3fs"]),
         ("seaborn.test.Dockerfile", ["seaborn"]),
         ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -133,6 +135,8 @@ def test_dockerfiles_for_cpu(
         ("s3fs.test.Dockerfile", ["s3fs"]),
         ("seaborn.test.Dockerfile", ["seaborn"]),
         ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
     ],
 )
 def test_dockerfiles_for_gpu(
