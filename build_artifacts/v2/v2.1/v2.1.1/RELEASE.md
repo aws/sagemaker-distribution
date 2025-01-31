@@ -60,4 +60,5 @@ sagemaker-studio-analytics-extension|0.1.4|0.1.4
 supervisor|4.2.5|4.2.5
 tensorflow|2.17.0|2.17.0
 tf-keras|2.17.0|2.17.0
+catboost| |1.2.7
 py-xgboost-cpu| |2.1.3
