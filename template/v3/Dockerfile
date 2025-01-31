@@ -15,12 +15,27 @@ ARG NB_GID=100
 
 # https://www.openssl.org/source/
 ARG FIPS_VALIDATED_SSL=3.0.8
+ARG MIN_REQUIRED_MICROMAMBA_VERSION=1.5.11
 
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
+ENV MIN_REQUIRED_MICROMAMBA_VERSION=${MIN_REQUIRED_MICROMAMBA_VERSION}
 
 USER root
+
+# Compare the current micromamba version with the minimum required version, and only upgrade if strictly lower to avoid downgrades.
+RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
+    LOWEST_MICROMAMBA_VERSION=$(printf '%s\n%s' "$MIN_REQUIRED_MICROMAMBA_VERSION" "$CURRENT_MICROMAMBA_VERSION" | sort -V | head -n 1) && \
+    if [ "$LOWEST_MICROMAMBA_VERSION" = "$CURRENT_MICROMAMBA_VERSION" ] && [ "$CURRENT_MICROMAMBA_VERSION" != "$MIN_REQUIRED_MICROMAMBA_VERSION" ]; then \
+        echo "Upgrading micromamba from $CURRENT_MICROMAMBA_VERSION to $MIN_REQUIRED_MICROMAMBA_VERSION..." && \
+        micromamba self-update -c conda-forge --version "$MIN_REQUIRED_MICROMAMBA_VERSION" && \
+        micromamba clean --all --yes --force-pkgs-dirs; \
+    else \
+        echo "Micromamba is already $MIN_REQUIRED_MICROMAMBA_VERSION or higher (current: $CURRENT_MICROMAMBA_VERSION). No update needed."; \
+    fi
+
+
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
     groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "${MAMBA_USER}" && \
     # Update the expected value of MAMBA_USER for the

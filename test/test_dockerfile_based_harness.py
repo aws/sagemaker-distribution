@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 from typing import List
 
 import docker
@@ -21,7 +22,10 @@ _docker_client = docker.from_env()
         ("autogluon.test.Dockerfile", ["autogluon"]),
         ("matplotlib.test.Dockerfile", ["matplotlib"]),
         ("matplotlib.test.Dockerfile", ["matplotlib-base"]),
-        ("sagemaker-headless-execution-driver.test.Dockerfile", ["sagemaker-headless-execution-driver"]),
+        (
+            "sagemaker-headless-execution-driver.test.Dockerfile",
+            ["sagemaker-headless-execution-driver"],
+        ),
         ("scipy.test.Dockerfile", ["scipy"]),
         ("numpy.test.Dockerfile", ["numpy"]),
         ("boto3.test.Dockerfile", ["boto3"]),
@@ -38,20 +42,40 @@ _docker_client = docker.from_env()
         ("notebook.test.Dockerfile", ["notebook"]),
         ("glue-sessions.test.Dockerfile", ["aws-glue-sessions"]),
         ("altair.test.Dockerfile", ["altair"]),
-        ("sagemaker-studio-analytics-extension.test.Dockerfile", ["sagemaker-studio-analytics-extension"]),
-        ("amazon-codewhisperer-jupyterlab-ext.test.Dockerfile", ["amazon-codewhisperer-jupyterlab-ext"]),
+        (
+            "sagemaker-studio-analytics-extension.test.Dockerfile",
+            ["sagemaker-studio-analytics-extension"],
+        ),
+        (
+            "amazon-codewhisperer-jupyterlab-ext.test.Dockerfile",
+            ["amazon-codewhisperer-jupyterlab-ext"],
+        ),
         ("jupyterlab-git.test.Dockerfile", ["jupyterlab-git"]),
         ("amazon-sagemaker-sql-magic.test.Dockerfile", ["amazon-sagemaker-sql-magic"]),
-        ("amazon_sagemaker_sql_editor.test.Dockerfile", ["amazon_sagemaker_sql_editor"]),
+        (
+            "amazon_sagemaker_sql_editor.test.Dockerfile",
+            ["amazon_sagemaker_sql_editor"],
+        ),
         ("serve.test.Dockerfile", ["langchain"]),
         ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
-        ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
+        (
+            "jupyter-activity-monitor-extension.test.Dockerfile",
+            ["jupyter-activity-monitor-extension"],
+        ),
         ("docker-cli.test.Dockerfile", ["docker-cli"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
+        ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
     ],
 )
 def test_dockerfiles_for_cpu(
-    dockerfile_path: str, required_packages: List[str], local_image_version: str, use_gpu: bool
+    dockerfile_path: str,
+    required_packages: List[str],
+    local_image_version: str,
+    use_gpu: bool,
 ):
     _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, "cpu")
 
@@ -64,7 +88,10 @@ def test_dockerfiles_for_cpu(
         ("autogluon.test.Dockerfile", ["autogluon"]),
         ("matplotlib.test.Dockerfile", ["matplotlib"]),
         ("matplotlib.test.Dockerfile", ["matplotlib-base"]),
-        ("sagemaker-headless-execution-driver.test.Dockerfile", ["sagemaker-headless-execution-driver"]),
+        (
+            "sagemaker-headless-execution-driver.test.Dockerfile",
+            ["sagemaker-headless-execution-driver"],
+        ),
         ("scipy.test.Dockerfile", ["scipy"]),
         ("numpy.test.Dockerfile", ["numpy"]),
         ("boto3.test.Dockerfile", ["boto3"]),
@@ -81,22 +108,42 @@ def test_dockerfiles_for_cpu(
         ("notebook.test.Dockerfile", ["notebook"]),
         ("glue-sessions.test.Dockerfile", ["aws-glue-sessions"]),
         ("altair.test.Dockerfile", ["altair"]),
-        ("sagemaker-studio-analytics-extension.test.Dockerfile", ["sagemaker-studio-analytics-extension"]),
-        ("amazon-codewhisperer-jupyterlab-ext.test.Dockerfile", ["amazon-codewhisperer-jupyterlab-ext"]),
+        (
+            "sagemaker-studio-analytics-extension.test.Dockerfile",
+            ["sagemaker-studio-analytics-extension"],
+        ),
+        (
+            "amazon-codewhisperer-jupyterlab-ext.test.Dockerfile",
+            ["amazon-codewhisperer-jupyterlab-ext"],
+        ),
         ("jupyterlab-git.test.Dockerfile", ["jupyterlab-git"]),
         ("amazon-sagemaker-sql-magic.test.Dockerfile", ["amazon-sagemaker-sql-magic"]),
-        ("amazon_sagemaker_sql_editor.test.Dockerfile", ["amazon_sagemaker_sql_editor"]),
+        (
+            "amazon_sagemaker_sql_editor.test.Dockerfile",
+            ["amazon_sagemaker_sql_editor"],
+        ),
         ("serve.test.Dockerfile", ["langchain"]),
         ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
         ("sagemaker-mlflow.test.Dockerfile", ["sagemaker-mlflow"]),
-        ("jupyter-activity-monitor-extension.test.Dockerfile", ["jupyter-activity-monitor-extension"]),
+        (
+            "jupyter-activity-monitor-extension.test.Dockerfile",
+            ["jupyter-activity-monitor-extension"],
+        ),
         ("gpu-dependencies.test.Dockerfile", ["pytorch", "tensorflow"]),
         ("docker-cli.test.Dockerfile", ["docker-cli"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
+        ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
     ],
 )
 def test_dockerfiles_for_gpu(
-    dockerfile_path: str, required_packages: List[str], local_image_version: str, use_gpu: bool
+    dockerfile_path: str,
+    required_packages: List[str],
+    local_image_version: str,
+    use_gpu: bool,
 ):
     _validate_docker_images(dockerfile_path, required_packages, local_image_version, use_gpu, "gpu")
 
@@ -138,7 +185,11 @@ def _check_required_package_constraints(target_version: Version, required_packag
 
 
 def _validate_docker_images(
-    dockerfile_path: str, required_packages: List[str], local_image_version: str, use_gpu: bool, image_type: str
+    dockerfile_path: str,
+    required_packages: List[str],
+    local_image_version: str,
+    use_gpu: bool,
+    image_type: str,
 ):
     target_version = get_semver(local_image_version)
     test_artifacts_path = f"test/test_artifacts/v{str(target_version.major)}"
@@ -181,15 +232,74 @@ def _validate_docker_images(
     # didn't execute successfully, the Docker client below will throw an error and fail the test.
     # A consequence of this design decision is that any test assertions should go inside the container's entry-point.
 
-    container = _docker_client.containers.run(image=image.id, detach=True, stderr=True, device_requests=device_requests)
-    # Wait till container completes execution
-    result = container.wait()
-    exit_code = result["StatusCode"]
-    if exit_code != 0:
-        # Print STD out only during test failure
-        print(container.logs().decode("utf-8"))
-    # Remove the container.
-    container.remove(force=True)
-    _docker_client.images.remove(image=image.id, force=True)
-    # Fail the test if docker exit code is not zero
-    assert exit_code == 0
+    # Special handling for JupyterLab entrypoint testing
+    if dockerfile_path in ["sagemaker-recovery-mode.test.Dockerfile"]:
+        _test_jupyterlab_entrypoint(image)
+    else:
+        container = _docker_client.containers.run(
+            image=image.id, detach=True, stderr=True, device_requests=device_requests
+        )
+        # Wait till container completes execution
+        result = container.wait()
+        exit_code = result["StatusCode"]
+        if exit_code != 0:
+            # Print STD out only during test failure
+            print(container.logs().decode("utf-8"))
+        # Remove the container.
+        container.remove(force=True)
+        _docker_client.images.remove(image=image.id, force=True)
+        # Fail the test if docker exit code is not zero
+        assert exit_code == 0
+
+
+def _test_jupyterlab_entrypoint(image):
+    """
+    Test if the Docker image's entrypoint successfully starts the JupyterLab process.
+    This test assumes that the container will remain in a long-running state if JupyterLab starts successfully.
+    """
+    print("Starting test to verify JupyterLab can be started...")
+    # Start the container in detached mode
+    container = _docker_client.containers.run(
+        image=image.id,
+        detach=True,
+        stderr=True,
+    )
+    try:
+        # Wait for the container logs to indicate JupyterLab has started
+        _wait_for_logs(container, "jupyterlabserver entered RUNNING state", timeout=5)
+        print("Container logs indicate JupyterLab started successfully.")
+
+    except Exception as e:
+        # Print logs and re-raise exception if the test fails
+        print(f"Test failed: {e}")
+        logs = container.logs().decode("utf-8")
+        print("Container logs:")
+        print(logs)
+        raise
+    finally:
+        # Stop and clean up the container
+        container.stop()
+        container.remove()
+        print("Stopped and removed the container.")
+
+
+def _wait_for_logs(container, search_string, timeout=5, poll_interval=1):
+    """
+    Wait for a specific string to appear in the container logs within a given timeout.
+
+    Args:
+        container: The container to monitor.
+        search_string: The string to search for in the logs.
+        timeout: Maximum time to wait for the string to appear (in seconds).
+        poll_interval: Time to wait between log checks (in seconds).
+
+    Raises:
+        TimeoutError: If the string does not appear in the logs within the timeout.
+    """
+    start_time = time.time()
+    while time.time() - start_time < timeout:
+        logs = container.logs().decode("utf-8")
+        if search_string in logs:
+            return True
+        time.sleep(poll_interval)
+    raise TimeoutError(f"Container did not log '{search_string}' within {timeout} seconds.")

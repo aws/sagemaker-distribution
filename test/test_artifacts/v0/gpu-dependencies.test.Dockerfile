@@ -8,4 +8,4 @@ ARG MAMBA_DOCKERFILE_ACTIVATE=1
 # 2. Check if Pytorch is installed with CUDA support for GPU image
 COPY --chown=$MAMBA_USER:$MAMBA_USER scripts/cuda_validation.py .
 RUN chmod +x cuda_validation.py
-RUN python3 cuda_validation.py
+CMD python3 cuda_validation.py

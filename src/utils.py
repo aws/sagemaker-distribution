@@ -18,6 +18,12 @@ def get_dir_for_version(version: Version) -> str:
     )
 
 
+# Clean versioning strings
+def post_handle_container_log(container_log_content):
+    # Work with bytes directly
+    return container_log_content.replace(b'%21', b'!')
+
+
 def is_exists_dir_for_version(version: Version, file_name_to_verify_existence="Dockerfile") -> bool:
     dir_path = get_dir_for_version(version)
     # Also validate whether this directory is not generated due to any pre-release builds/

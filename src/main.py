@@ -31,6 +31,7 @@ from utils import (
     get_match_specs,
     get_semver,
     is_exists_dir_for_version,
+    post_handle_container_log,
 )
 from version_release_note_generator import generate_new_version_release_note
 
@@ -269,6 +270,7 @@ def _build_local_images(
             container_logs = _docker_client.containers.run(
                 image=image.id, detach=False, auto_remove=True, command="micromamba env export --explicit"
             )
+            container_logs = post_handle_container_log(container_logs)
         except ContainerError as e:
             print(e.container.logs().decode("utf-8"))
             # After printing the logs, raise the exception (which is the old behavior)
@@ -420,13 +422,24 @@ def get_arg_parser():
     )
     package_size_parser = subparsers.add_parser(
         "generate-size-report",
-        help="Generates toatl image size and package size report for each of the packages in the given " "image version.",
+        help="Generates toatl image size and package size report for each of the packages in the given "
+        "image version.",
     )
     package_size_parser.set_defaults(func=generate_package_size_report)
     package_size_parser.add_argument(
         "--target-patch-version",
         required=True,
         help="Specify the target patch version for which the package size report needs to be " "generated.",
+    )
+    package_size_parser.add_argument(
+        "--staging-repo-name",
+        required=True,
+        help="Specify the staging repository",
+    )
+    package_size_parser.add_argument(
+        "--staging-account",
+        required=True,
+        help="Specify the staging account",
     )
     package_size_parser.add_argument(
         "--validate",
