@@ -31,6 +31,7 @@ from utils import (
     get_match_specs,
     get_semver,
     is_exists_dir_for_version,
+    post_handle_container_log,
 )
 from version_release_note_generator import generate_new_version_release_note
 
@@ -269,6 +270,7 @@ def _build_local_images(
             container_logs = _docker_client.containers.run(
                 image=image.id, detach=False, auto_remove=True, command="micromamba env export --explicit"
             )
+            container_logs = post_handle_container_log(container_logs)
         except ContainerError as e:
             print(e.container.logs().decode("utf-8"))
             # After printing the logs, raise the exception (which is the old behavior)

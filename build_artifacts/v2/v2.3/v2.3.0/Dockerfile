@@ -32,7 +32,7 @@ RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
     echo "Current micromamba version: $CURRENT_MICROMAMBA_VERSION" && \
     if [[ "$CURRENT_MICROMAMBA_VERSION" == $PINNED_MICROMAMBA_MINOR_VERSION ]]; then \
         echo "Upgrading micromamba to the latest $PINNED_MICROMAMBA_MINOR_VERSION version..." && \
-        micromamba self-update -c conda-forge --version "$MIN_REQUIRED_MICROMAMBA_VERSION" && \
+        micromamba self-update -c conda-forge --version "$PINNED_MICROMAMBA_MINOR_VERSION" && \
         micromamba clean --all --yes --force-pkgs-dirs; \
     else \
         echo "Micromamba is already at version $CURRENT_MICROMAMBA_VERSION (outside $PINNED_MICROMAMBA_MINOR_VERSION). No upgrade performed."; \
@@ -95,12 +95,15 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
     mkdir -p $SAGEMAKER_RECOVERY_MODE_HOME && \
     chown $MAMBA_USER:$MAMBA_USER $SAGEMAKER_RECOVERY_MODE_HOME && \
-    SUPERVISOR_VERSION=$(grep "^conda-forge::supervisor\[" /tmp/$ENV_IN_FILENAME) && \
-    JUPYTERLAB_VERSION=$(grep "^conda-forge::jupyterlab\[" /tmp/$ENV_IN_FILENAME) && \
-    SAGEMAKER_JUPYTERLAB_VERSION=$(grep "^conda-forge::sagemaker-jupyterlab-extension" /tmp/$ENV_IN_FILENAME) && \
-    echo "Installing in sagemaker-recovery-mode micromamba environment: $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
+    SUPERVISOR_VERSION=$(micromamba list | grep 'supervisor ' | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
+    JUPYTERLAB_VERSION=$(micromamba list | grep 'jupyterlab ' | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
+    SAGEMAKER_JUPYTERLAB_VERSION=$(micromamba list | grep 'sagemaker-jupyterlab-extension ' | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
+    echo "Installing in sagemaker-recovery-mode micromamba environment: jupyterlab $JUPYTERLAB_VERSION sagemaker-jupyterlab-extension $SAGEMAKER_JUPYTERLAB_VERSION" && \
     micromamba create -n sagemaker-recovery-mode && \
-    micromamba install -n sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
+    micromamba install -n sagemaker-recovery-mode -y -c conda-forge \
+        jupyterlab==$JUPYTERLAB_VERSION \
+        sagemaker-jupyterlab-extension==$SAGEMAKER_JUPYTERLAB_VERSION \
+        supervisor==$SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
@@ -182,7 +185,6 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     chmod a+rw $SAGEMAKER_LOGGING_DIR && \
     mkdir -p ${STUDIO_LOGGING_DIR} && \
     chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} && \
-
     # Clean up CodeEditor artifacts
     rm -rf /etc/code-editor && \
     # Create supervisord runtime directory
