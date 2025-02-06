@@ -5,6 +5,7 @@
 Package | Previous Version | Current Version
 ---|---|---
 jupyterlab|4.3.4|4.3.5
+amazon-q-developer-jupyterlab-ext|3.4.5|3.4.6
 amazon-sagemaker-jupyter-ai-q-developer|1.0.14|1.0.16
 amazon-sagemaker-jupyter-scheduler|3.1.8|3.1.9
 fastapi|0.115.6|0.115.8

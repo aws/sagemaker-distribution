@@ -11,7 +11,7 @@ boto3|1.34.162|1.34.162
 ipython|8.31.0|8.31.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.3.5|4.3.5
-amazon-q-developer-jupyterlab-ext|3.4.5|3.4.5
+amazon-q-developer-jupyterlab-ext|3.4.6|3.4.6
 langchain|0.2.17|0.2.17
 jupyter-ai|2.28.5|2.28.5
 amazon-sagemaker-jupyter-ai-q-developer|1.0.16|1.0.16
@@ -58,4 +58,5 @@ sagemaker-studio-analytics-extension|0.1.4|0.1.4
 sasl|0.3.1|0.3.1
 supervisor|4.2.5|4.2.5
 tensorflow|2.14.0|2.15.0
+catboost| |1.2.7
 py-xgboost-cpu| |1.7.6
