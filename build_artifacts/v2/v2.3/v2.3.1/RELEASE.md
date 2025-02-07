@@ -12,9 +12,9 @@ boto3|1.36.3|1.36.3
 ipython|8.31.0|8.31.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.2.7|4.2.7
-amazon-q-developer-jupyterlab-ext|3.4.5|3.4.5
+amazon-q-developer-jupyterlab-ext|3.4.6|3.4.6
 langchain|0.3.17|0.3.17
-jupyter-ai|2.29.0|2.29.0
+jupyter-ai|2.29.1|2.29.1
 amazon-sagemaker-jupyter-ai-q-developer|1.0.16|1.0.16
 jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.9|3.1.9
@@ -47,10 +47,10 @@ jupyterlab-git|0.50.2|0.50.2
 keras|3.8.0|3.8.0
 langchain-aws|0.2.10|0.2.10
 mlflow|2.20.1|2.20.1
-py-xgboost-gpu|2.1.3| 
+py-xgboost-gpu|2.1.4| 
 pyhive|0.7.0|0.7.0
 python-gssapi|1.9.0|1.9.0
-python-lsp-server|1.12.0|1.12.0
+python-lsp-server|1.12.1|1.12.1
 s3fs|2024.10.0|2024.10.0
 sagemaker-code-editor|1.4.2|1.4.2
 sagemaker-headless-execution-driver|0.0.13|0.0.13
@@ -65,4 +65,4 @@ supervisor|4.2.5|4.2.5
 tensorflow|2.17.0|2.17.0
 tf-keras|2.17.0|2.17.0
 catboost| |1.2.7
-py-xgboost-cpu| |2.1.3
+py-xgboost-cpu| |2.1.4
