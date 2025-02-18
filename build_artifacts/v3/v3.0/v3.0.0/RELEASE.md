@@ -5,7 +5,7 @@ Package | gpu| cpu
 python|3.12.9|3.12.9
 numpy|1.26.4|1.26.4
 jinja2|3.1.5|3.1.5
-pytorch|2.4.1|2.4.1
+pytorch|2.5.1|2.5.1
 pandas|2.2.3|2.2.3
 altair|5.5.0|5.5.0
 boto3|1.36.3|1.36.3
@@ -13,7 +13,7 @@ ipython|8.32.0|8.32.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.3.5|4.3.5
 amazon-q-developer-jupyterlab-ext|3.4.6|3.4.6
-langchain|0.3.18|0.3.18
+langchain|0.3.19|0.3.19
 jupyter-ai|2.29.1|2.29.1
 amazon-sagemaker-jupyter-ai-q-developer|1.0.16|1.0.16
 jupyter-scheduler|2.10.0|2.10.0
@@ -25,9 +25,8 @@ scipy|1.15.2|1.15.2
 matplotlib-base|3.10.0|3.10.0
 scikit-learn|1.5.2|1.5.2
 evaluate|0.4.1|0.4.1
-sentencepiece|0.1.99|0.1.99
 pip|25.0.1|25.0.1
-torchvision|0.19.1|0.19.1
+torchvision|0.20.1|0.20.1
 autogluon|1.2.0|1.2.0
 ipywidgets|8.1.5|8.1.5
 notebook|7.3.2|7.3.2
@@ -62,7 +61,7 @@ sagemaker-python-sdk|2.239.1|2.239.1
 sagemaker-studio-analytics-extension|0.1.4|0.1.4
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
-tensorflow|2.17.0|2.17.0
-tf-keras|2.17.0|2.17.0
+tensorflow|2.18.0|2.18.0
+tf-keras|2.18.0|2.18.0
 catboost| |1.2.7
 py-xgboost-cpu| |2.1.4
