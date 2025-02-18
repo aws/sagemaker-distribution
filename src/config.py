@@ -80,7 +80,7 @@ _image_generator_configs = {
     3: [
         {
             "build_args": {
-                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy-cuda-12.6.3",
+                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "cuda12.6.3-ubuntu22.04",
                 "CUDA_MAJOR_MINOR_VERSION": "12.6",  # Should match the previous one.
                 "ENV_IN_FILENAME": "gpu.env.in",
                 "ARG_BASED_ENV_IN_FILENAME": "gpu.arg_based_env.in",
@@ -93,7 +93,7 @@ _image_generator_configs = {
         },
         {
             "build_args": {
-                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "jammy",
+                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "ubuntu22.04",
                 "ENV_IN_FILENAME": "cpu.env.in",
             },
             "additional_packages_env_in_file": "cpu.additional_packages_env.in",
