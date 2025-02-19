@@ -56,7 +56,6 @@ def main():
             merged_exts.append(ext_data)
 
         # Write the merged data back to file1
-        print("Merged extensions: ", json.dumps(merged_exts, indent=2))
         with open(file1, "w") as f:
             json.dump(merged_exts, f, indent=2)
 
