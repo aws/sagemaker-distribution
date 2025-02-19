@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
 
-SERVICE_DIRECTORY="/opt/amazon/sagemaker"
+EFS_MOUNT_POINT="/opt/amazon/sagemaker"
 EBS_MOUNT_POINT="/home/sagemaker-user"
 
 persistent_settings_folder="${EBS_MOUNT_POINT}/sagemaker-code-editor-server-data"
-default_settings_folder="${SERVICE_DIRECTORY}/sagemaker-code-editor-server-data"
+default_settings_folder="${EFS_MOUNT_POINT}/sagemaker-code-editor-server-data"
 
 override_machine_settings() {
   # create a new settings file with preset defaults or merge the defaults into the existing settings file
@@ -39,27 +39,6 @@ copy_user_settings() {
   fi
 }
 
-merge_prepackaged_extensions() {
-  local extensions_metadata_relative_path="/extensions"
-  local default_extensions_metadata_file="${default_settings_folder}/${extensions_metadata_relative_path}/extensions.json"
-  local persistent_extensions_metadata_file="${persistent_settings_folder}/${extensions_metadata_relative_path}/extensions.json"
-  local obsolete_file="${persistent_settings_folder}/${extensions_metadata_relative_path}/.obsolete"
-  if [ ! -f "$persistent_extensions_metadata_file" ]; then
-      # copy settings file to EBS if it doesn't exist in EBS
-      mkdir -p "${persistent_settings_folder}/${extensions_metadata_relative_path}"
-      echo "[]" > $persistent_extensions_metadata_file
-      echo "Created persistent extensions metadata file with default settings at $persistent_extensions_metadata_file"
-    else
-      # if it does exist then merge settings
-      echo "File already exists: ${persistent_extensions_metadata_file}. Overwriting extensions with pre-packaged extensions."
-    fi
-
-  if [ -f "$obsolete_file" ]; then
-    rm $obsolete_file
-  fi
-  python3 /usr/local/bin/merge-extensions-util.py "$persistent_extensions_metadata_file" "$default_extensions_metadata_file"
-}
-
 eval "$(micromamba shell hook --shell=bash)"
 
 # Activate conda environment 'base', which is the default environment for sagemaker-distribution
@@ -70,13 +49,12 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker app.
   override_machine_settings
   copy_user_settings
-  merge_prepackaged_extensions
   # Configure the base url to be `/<app-type-in-lower-case>/default`.
   sagemaker-code-editor --host 0.0.0.0 --port 8888 \
     --without-connection-token \
     --base-path "/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
     --server-data-dir $persistent_settings_folder \
-    --extensions-dir $persistent_settings_folder/extensions \
+    --extensions-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions \
     --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 else
   sagemaker-code-editor --host 0.0.0.0 --port 8888 \
