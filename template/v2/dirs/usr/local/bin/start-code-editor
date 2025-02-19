@@ -41,23 +41,23 @@ copy_user_settings() {
 
 merge_prepackaged_extensions() {
   local extensions_metadata_relative_path="/extensions"
-  local default_extensions_metadata_file="${default_settings_folder}/${extensions_metadata_relative_path}/extensions.json"
-  local persistent_extensions_metadata_file="${persistent_settings_folder}/${extensions_metadata_relative_path}/extensions.json"
+  local default_extensions_file="${default_settings_folder}/${extensions_metadata_relative_path}/extensions.json"
+  local persistent_extensions_file="${persistent_settings_folder}/${extensions_metadata_relative_path}/extensions.json"
   local obsolete_file="${persistent_settings_folder}/${extensions_metadata_relative_path}/.obsolete"
-  if [ ! -f "$persistent_extensions_metadata_file" ]; then
+  if [ ! -f "$persistent_extensions_file" ]; then
       # copy settings file to EBS if it doesn't exist in EBS
       mkdir -p "${persistent_settings_folder}/${extensions_metadata_relative_path}"
-      echo "[]" > $persistent_extensions_metadata_file
-      echo "Created persistent extensions metadata file with default settings at $persistent_extensions_metadata_file"
+      echo "[]" > $persistent_extensions_file
+      echo "Created persistent extensions metadata file with default settings at $persistent_extensions_file"
     else
       # if it does exist then merge settings
-      echo "File already exists: ${persistent_extensions_metadata_file}. Overwriting extensions with pre-packaged extensions."
+      echo "File already exists: ${persistent_extensions_file}. Overwriting extensions with pre-packaged extensions."
     fi
 
   if [ -f "$obsolete_file" ]; then
     rm $obsolete_file
   fi
-  python3 /usr/local/bin/merge-extensions-util.py "$persistent_extensions_metadata_file" "$default_extensions_metadata_file"
+  python3 /usr/local/bin/merge-extensions-util.py "$persistent_extensions_file" "$default_extensions_file"
 }
 
 eval "$(micromamba shell hook --shell=bash)"
