@@ -55,7 +55,7 @@ sagemaker-code-editor|1.4.2|1.4.2
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.3.7|0.3.7
 sagemaker-jupyterlab-extension|0.3.3|0.3.3
-sagemaker-kernel-wrapper|0.0.4|0.0.4
+sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
 sagemaker-python-sdk|2.227.0|2.227.0
 sagemaker-studio-analytics-extension|0.1.4|0.1.4
