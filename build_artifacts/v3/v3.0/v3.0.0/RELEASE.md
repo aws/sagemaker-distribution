@@ -20,7 +20,7 @@ jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.9|3.1.9
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
 jupyterlab-lsp|5.0.3|5.0.3
-amazon_sagemaker_sql_editor|0.1.14|0.1.14
+amazon_sagemaker_sql_editor|0.1.15|0.1.15
 scipy|1.15.2|1.15.2
 matplotlib-base|3.10.0|3.10.0
 scikit-learn|1.5.2|1.5.2
@@ -57,8 +57,8 @@ sagemaker-jupyterlab-emr-extension|0.3.7|0.3.7
 sagemaker-jupyterlab-extension|0.3.3|0.3.3
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
-sagemaker-python-sdk|2.239.1|2.239.1
-sagemaker-studio-analytics-extension|0.1.4|0.1.4
+sagemaker-python-sdk|2.239.3|2.239.3
+sagemaker-studio-analytics-extension|0.1.5|0.1.5
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
