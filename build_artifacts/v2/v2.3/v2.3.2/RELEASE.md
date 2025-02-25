@@ -24,9 +24,7 @@ amazon_sagemaker_sql_editor|0.1.15|0.1.15
 scipy|1.15.2|1.15.2
 matplotlib-base|3.10.0|3.10.0
 scikit-learn|1.5.2|1.5.2
-uvicorn|0.34.0|0.34.0
-fastapi|0.115.8|0.115.8
-evaluate|0.4.3|0.4.3
+evaluate|0.4.1|0.4.1
 sentencepiece|0.1.99|0.1.99
 pip|24.3.1|24.3.1
 torchvision|0.19.1|0.19.1
@@ -36,8 +34,10 @@ notebook|7.2.2|7.2.2
 aws-glue-sessions|1.0.8|1.0.8
 libmamba|1.5.12|1.5.12
 conda|24.11.3|24.11.3
-dash|2.18.2|2.18.2
+dash|2.18.1|2.18.1
 docker-cli|27.5.1|27.5.1
+uvicorn|0.34.0|0.34.0
+fastapi|0.115.8|0.115.8
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.1|0.3.1
 jupyter-collaboration|2.1.5|2.1.5

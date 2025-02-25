@@ -7,8 +7,6 @@ Package | Previous Version | Current Version
 langchain|0.3.17|0.3.19
 amazon_sagemaker_sql_editor|0.1.14|0.1.15
 scipy|1.15.1|1.15.2
-evaluate|0.4.1|0.4.3
-dash|2.18.1|2.18.2
 mlflow|2.20.1|2.20.2
 python-lsp-server|1.12.1|1.12.2
 sagemaker-kernel-wrapper|0.0.4|0.0.5
