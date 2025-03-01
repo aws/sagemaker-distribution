@@ -98,7 +98,7 @@ def _create_new_version_artifacts(args):
 
     for image_generator_config in _image_generator_configs[next_version.major]:
         _create_new_version_conda_specs(
-            base_version_dir, new_version_dir, runtime_version_upgrade_type, image_generator_config
+            base_version_dir, new_version_dir, runtime_version_upgrade_type, str(next_version.major), image_generator_config
         )
 
     _copy_static_files(base_version_dir, new_version_dir, str(next_version.major), runtime_version_upgrade_type)
@@ -108,6 +108,10 @@ def _create_new_version_artifacts(args):
 
 def _copy_static_files(base_version_dir, new_version_dir, new_version_major, runtime_version_upgrade_type):
     for f in glob.glob(f"{base_version_dir}/gpu.arg_based_env.in"):
+        shutil.copy2(f, new_version_dir)
+    for f in glob.glob(f"{base_version_dir}/cpu.pinned_env.in"):
+        shutil.copy2(f, new_version_dir)
+    for f in glob.glob(f"{base_version_dir}/gpu.pinned_env.in"):
         shutil.copy2(f, new_version_dir)
     for f in glob.glob(f"{base_version_dir}/patch_*"):
         shutil.copy2(f, new_version_dir)
@@ -130,7 +134,7 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
 
 
 def _create_new_version_conda_specs(
-    base_version_dir, new_version_dir, runtime_version_upgrade_type, image_generator_config
+    base_version_dir, new_version_dir, runtime_version_upgrade_type, new_version_major, image_generator_config
 ):
     env_in_filename = image_generator_config["build_args"]["ENV_IN_FILENAME"]
     additional_packages_env_in_filename = image_generator_config["additional_packages_env_in_file"]
@@ -140,6 +144,7 @@ def _create_new_version_conda_specs(
 
     base_match_specs_out = get_match_specs(f"{base_version_dir}/{env_out_filename}")
     additional_packages_match_specs_in = get_match_specs(f"{new_version_dir}/{additional_packages_env_in_filename}")
+    # common_specs_in = get_match_specs(f"template/v{new_version_major}/pinned_dependency/{env_in_filename}")
 
     # Add all the match specs from the previous version.
     # If a package is present in both additional packages as well as the previous version, then
@@ -165,6 +170,17 @@ def _create_new_version_conda_specs(
             )
 
             out.append(f"{channel}::{package_name}[version='>={min_version_inclusive}{max_version_str}']")
+    
+    # # Add all the match specs from the common dependency env.in
+    # # If a package is present in both existing dependency env.in and the common dependency env.in, then
+    # # use the values in the common dependency env.in
+    # for entry in out:
+    #     if entry.startswith("conda-forge::"):
+    #         print(entry)
+    # for package_name in common_specs_in:
+    #     match_out: MatchSpec = common_specs_in.get(package_name)
+    #     out = [entry for entry in out if not entry.startswith(f"{channel}::{package_name}")]
+    #     out.append(str(match_out))
 
     with open(f"{new_version_dir}/{env_in_filename}", "w") as f:
         f.write("# This file is auto-generated.\n")
