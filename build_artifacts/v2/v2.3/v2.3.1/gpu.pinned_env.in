@@ -1,3 +1,4 @@
 conda-forge::libmamba[version='>=1.5.11,<1.6.0']
 conda-forge::dash[version='<=2.18.1']
 conda-forge::evaluate[version='<0.4.2']
+conda-forge::sentencepiece[version='>=0.1.99,<0.2.0']
