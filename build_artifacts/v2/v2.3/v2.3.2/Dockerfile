@@ -3,6 +3,7 @@ FROM mambaorg/micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE
 
 ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
+ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
 LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
@@ -82,17 +83,18 @@ RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
 
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
+COPY --chown=$MAMBA_USER:$MAMBA_USER $PINNED_ENV_IN_FILENAME *.in /tmp/
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
 
-# Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
-# will happen.
+# Make sure that $ENV_IN_FILENAME and $PINNED_ENV_IN_FILENAME has a newline at the end before the `tee` command runs.
+# Otherwise, nasty things will happen.
 RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     then echo 'No ARG_BASED_ENV_IN_FILENAME passed' ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi && \
     # Enforce dependencies are all installed from conda-forge
-    micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
+    micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
     mkdir -p $SAGEMAKER_RECOVERY_MODE_HOME && \
     chown $MAMBA_USER:$MAMBA_USER $SAGEMAKER_RECOVERY_MODE_HOME && \
     SUPERVISOR_VERSION=$(micromamba list | grep 'supervisor ' | tr -s ' ' | cut -d ' ' -f 3 | head -n 1) && \
