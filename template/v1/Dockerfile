@@ -3,6 +3,7 @@ FROM mambaorg/micromamba:$TAG_FOR_BASE_MICROMAMBA_IMAGE
 
 ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
+ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
 
@@ -29,7 +30,7 @@ RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
     echo "Current micromamba version: $CURRENT_MICROMAMBA_VERSION" && \
     if [[ "$CURRENT_MICROMAMBA_VERSION" == $PINNED_MICROMAMBA_MINOR_VERSION ]]; then \
         echo "Upgrading micromamba to the latest $PINNED_MICROMAMBA_MINOR_VERSION version..." && \
-        micromamba self-update -c conda-forge --version "$MIN_REQUIRED_MICROMAMBA_VERSION"; && \
+        micromamba self-update -c conda-forge --version "$MIN_REQUIRED_MICROMAMBA_VERSION" && \
         micromamba clean --all --yes --force-pkgs-dirs; \
     else \
         echo "Micromamba is already at version $CURRENT_MICROMAMBA_VERSION (outside $PINNED_MICROMAMBA_MINOR_VERSION). No upgrade performed."; \
@@ -84,16 +85,17 @@ RUN mkdir -p /etc/code-editor/extensions && \
 
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
+COPY --chown=$MAMBA_USER:$MAMBA_USER $PINNED_ENV_IN_FILENAME *.in /tmp/
 
-# Make sure that $ENV_IN_FILENAME has a newline at the end before the `tee` command runs. Otherwise, nasty things
-# will happen.
+# Make sure that $ENV_IN_FILENAME and $PINNED_ENV_IN_FILENAME has a newline at the end before the `tee` command runs.
+# Otherwise, nasty things will happen.
 RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     then echo 'No ARG_BASED_ENV_IN_FILENAME passed' ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi
 
 ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
-RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME && \
+RUN micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in
 
