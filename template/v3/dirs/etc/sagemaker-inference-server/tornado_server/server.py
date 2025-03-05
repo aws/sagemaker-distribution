@@ -85,7 +85,9 @@ class TornadoServer:
             try:
                 subprocess.check_call(["micromamba", "install", "--yes", "--file", str(requirements_txt)])
             except Exception as e:
-                logger.error("Failed to install requirements using `micromamba install`. Falling back to `pip install`...")
+                logger.error(
+                    "Failed to install requirements using `micromamba install`. Falling back to `pip install`..."
+                )
                 try:
                     subprocess.check_call(["pip", "install", "-r", str(requirements_txt)])
                 except Exception as e:
