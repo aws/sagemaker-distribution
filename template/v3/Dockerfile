@@ -207,7 +207,7 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
 
 # Explicitly disable BuildKit for SM Studio Docker functionality
 ENV DOCKER_BUILDKIT=0
-ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
+ENV PATH="/etc/sagemaker-inference-server:/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
 ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
