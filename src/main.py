@@ -109,6 +109,10 @@ def _create_new_version_artifacts(args):
 def _copy_static_files(base_version_dir, new_version_dir, new_version_major, runtime_version_upgrade_type):
     for f in glob.glob(f"{base_version_dir}/gpu.arg_based_env.in"):
         shutil.copy2(f, new_version_dir)
+    for f in glob.glob(f"{base_version_dir}/cpu.pinned_env.in"):
+        shutil.copy2(f, new_version_dir)
+    for f in glob.glob(f"{base_version_dir}/gpu.pinned_env.in"):
+        shutil.copy2(f, new_version_dir)
     for f in glob.glob(f"{base_version_dir}/patch_*"):
         shutil.copy2(f, new_version_dir)
 
