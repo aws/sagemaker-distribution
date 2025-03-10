@@ -23,6 +23,8 @@ jobs:
     outputs:
       pr_id: ${{ steps.get_pr_id.outputs.pr_id }}
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Get PR number
         id: get_pr_id
         env:
