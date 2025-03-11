@@ -6,6 +6,8 @@ ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 
+ARG IMAGE_VERSION
+LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
 ARG AMZN_BASE="/opt/amazon/sagemaker"
 ARG DB_ROOT_DIR="/opt/db"
 ARG DIRECTORY_TREE_STAGE_DIR="${AMZN_BASE}/dir-staging"
@@ -88,7 +90,8 @@ ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
 
 # Make sure that $ENV_IN_FILENAME and $PINNED_ENV_IN_FILENAME has a newline at the end before the `tee` command runs.
 # Otherwise, nasty things will happen.
-RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
+RUN --mount=type=bind,source=./patched-packages,target=/tmp/patched-packages \
+    if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     then echo 'No ARG_BASED_ENV_IN_FILENAME passed' ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi && \
@@ -161,7 +164,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
-    jupyter labextension disable @jupyter/collaboration-extension
+    jupyter labextension disable @jupyter/collaboration-extension && \
+    jupyter labextension disable @jupyter/docprovider-extension
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
