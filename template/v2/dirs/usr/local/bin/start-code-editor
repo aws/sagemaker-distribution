@@ -78,7 +78,7 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
     --without-connection-token \
     --base-path "/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
     --server-data-dir $persistent_settings_folder \
-    --extensions-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions \
+    --extensions-dir ${persistent_settings_folder}/extensions \
     --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 else
   sagemaker-code-editor --host 0.0.0.0 --port 8888 \
