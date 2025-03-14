@@ -110,7 +110,9 @@ def pull_conda_package_metadata(image_config, image_artifact_dir):
                 package_metadata = json.loads(search_result[0])[package][0]
                 results[package] = {"version": package_metadata["version"], "size": package_metadata["size"]}
             except PackagesNotFoundError:
-                print(f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Potentially this package is broken.")
+                print(
+                    f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Potentially this package is broken."
+                )
     # Sort the pakcage sizes in decreasing order
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1]["size"], reverse=True)}
 
