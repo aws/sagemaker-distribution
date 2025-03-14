@@ -3,6 +3,7 @@ import os
 
 import conda.cli.python_api
 from conda.env.specs import RequirementsSpec
+from conda.exceptions import PackagesNotFoundError
 from conda.models.match_spec import MatchSpec
 from semver import Version
 
@@ -104,9 +105,14 @@ def pull_conda_package_metadata(image_config, image_artifact_dir):
     for package, match_spec_out in target_packages_match_spec_out.items():
         if str(match_spec_out).startswith("conda-forge"):
             # Pull package metadata from conda-forge and dump into json file
-            search_result = conda.cli.python_api.run_command("search", str(match_spec_out), "--json")
-            package_metadata = json.loads(search_result[0])[package][0]
-            results[package] = {"version": package_metadata["version"], "size": package_metadata["size"]}
+            try:
+                search_result = conda.cli.python_api.run_command("search", str(match_spec_out), "--json")
+                package_metadata = json.loads(search_result[0])[package][0]
+                results[package] = {"version": package_metadata["version"], "size": package_metadata["size"]}
+            except PackagesNotFoundError:
+                print(
+                    f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Potentially this package is broken."
+                )
     # Sort the pakcage sizes in decreasing order
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1]["size"], reverse=True)}
 
