@@ -2,8 +2,8 @@ import json
 import os
 
 import conda.cli.python_api
-from conda.exceptions import PackagesNotFoundError
 from conda.env.specs import RequirementsSpec
+from conda.exceptions import PackagesNotFoundError
 from conda.models.match_spec import MatchSpec
 from semver import Version
 
