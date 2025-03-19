@@ -11,11 +11,11 @@ altair|5.5.0|5.5.0
 boto3|1.37.1|1.37.1
 ipython|8.34.0|8.34.0
 jupyter-lsp|2.2.5|2.2.5
-jupyterlab|4.3.5|4.3.5
+jupyterlab|4.3.6|4.3.6
 amazon-q-developer-jupyterlab-ext|3.4.7|3.4.7
-langchain|0.3.20|0.3.20
-jupyter-ai|2.29.1|2.29.1
-amazon-sagemaker-jupyter-ai-q-developer|1.0.16|1.0.16
+langchain|0.3.21|0.3.21
+jupyter-ai|2.30.0|2.30.0
+amazon-sagemaker-jupyter-ai-q-developer|1.1.0|1.1.0
 jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.10|3.1.10
 amazon-sagemaker-sql-magic|0.1.3|0.1.3
@@ -28,7 +28,7 @@ pip|24.3.1|24.3.1
 torchvision|0.19.1|0.19.1
 autogluon|1.2.0|1.2.0
 ipywidgets|8.1.5|8.1.5
-notebook|7.3.2|7.3.2
+notebook|7.3.3|7.3.3
 aws-glue-sessions|1.0.8|1.0.8
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
@@ -42,7 +42,7 @@ jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.51.0|0.51.0
 keras|3.9.0|3.9.0
 langchain-aws|0.2.10|0.2.10
-mlflow|2.20.3|2.20.3
+mlflow|2.21.0|2.21.0
 py-xgboost-gpu|2.1.4| 
 pyhive|0.7.0|0.7.0
 python-gssapi|1.9.0|1.9.0
@@ -54,8 +54,12 @@ sagemaker-jupyterlab-emr-extension|0.3.7|0.3.7
 sagemaker-jupyterlab-extension|0.4.0|0.4.0
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
-sagemaker-python-sdk|2.241.0|2.241.0
+sagemaker-python-sdk|2.242.0|2.242.0
+sagemaker-studio|1.0.9|1.0.9
 sagemaker-studio-analytics-extension|0.1.5|0.1.5
+sagemaker-studio-cli|1.0.6|1.0.6
+sagemaker-studio-dataengineering-extensions|1.0.8|1.0.8
+sagemaker-studio-dataengineering-sessions|1.0.6|1.0.6
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.17.0|2.17.0

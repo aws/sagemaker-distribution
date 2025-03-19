@@ -42,12 +42,12 @@ DZ_DOMAIN_REGION=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $RESOURCE_
 DZ_PROJECT_S3PATH=$(jq -r '.AdditionalMetadata.ProjectS3Path' < $RESOURCE_METADATA_FILE)
 WORKFLOW_DAG_PATH="/home/sagemaker-user/${HOME_FOLDER_NAME}/workflows/dags"
 WORKFLOW_DB_DATA_PATH="/home/sagemaker-user/.workflows_setup/db-data"
-WORKFLOW_REQUIREMENTS_PATH="/home/sagemaker-user/.workflows_setup/requirements"
+WORKFLOW_REQUIREMENTS_PATH="/home/sagemaker-user/.workflows_setup/requirements/"
 WORKFLOW_PLUGINS_PATH="/home/sagemaker-user/.workflows_setup/plugins"
 WORKFLOW_STARTUP_PATH="/home/sagemaker-user/.workflows_setup/startup/"
-WORKFLOW_CONDA_FORGE_SOURCE_DIR="/opt/conda/share/sagemaker_workflows"
-WORKFLOW_PLUGINS_SOURCE_PATH="${WORKFLOW_CONDA_FORGE_SOURCE_DIR}/plugins/*.whl"
-WORKFLOW_CONDA_REQUIREMENTS_SOURCE_PATH="${WORKFLOW_CONDA_FORGE_SOURCE_DIR}/requirements/requirements.txt"
+WORKFLOW_ARTIFACTS_SOURCE_DIR="/etc/sagemaker-ui/workflows"
+WORKFLOW_PLUGINS_SOURCE_PATH="${WORKFLOW_ARTIFACTS_SOURCE_DIR}/plugins/*.whl"
+WORKFLOW_REQUIREMENTS_SOURCE_PATH="${WORKFLOW_ARTIFACTS_SOURCE_DIR}/requirements/requirements.txt"
 WORKFLOW_AIRFLOW_REQUIREMENTS_SOURCE_PATH="/etc/sagemaker-ui/workflows/requirements/requirements.txt"
 WORKFLOW_OUTPUT_PATH="/home/sagemaker-user/jobs"
 
@@ -108,18 +108,10 @@ cat >>"$WORKFLOW_DAG_PATH/.airflowignore" <<'END'
 .ipynb_checkpoints
 END
 
-# Check if Airflow providers contains SMUS operators
-if curl -s "https://airflow.apache.org/docs/apache-airflow-providers-amazon/stable/changelog.html" | grep -q "#45726"; then
-    echo "SMUS Operators exist in Airflow providers package."
-    #copy requirements from this folder
-    cp $WORKFLOW_AIRFLOW_REQUIREMENTS_SOURCE_PATH $WORKFLOW_REQUIREMENTS_PATH
-else
-    echo "No SMUS Operators found in Airflow providers package. Using operators in conda forge instead..."
-    #copy plugins from conda
-    cp $WORKFLOW_PLUGINS_SOURCE_PATH $WORKFLOW_PLUGINS_PATH
-    #copy requirements from conda
-    cp $WORKFLOW_CONDA_REQUIREMENTS_SOURCE_PATH $WORKFLOW_REQUIREMENTS_PATH
-fi
+#copy plugins from conda
+cp $WORKFLOW_PLUGINS_SOURCE_PATH $WORKFLOW_PLUGINS_PATH
+#copy requirements from conda
+cp $WORKFLOW_REQUIREMENTS_SOURCE_PATH $WORKFLOW_REQUIREMENTS_PATH
 
 #copy startup
 cp /etc/sagemaker-ui/workflows/startup/startup.sh $WORKFLOW_STARTUP_PATH
