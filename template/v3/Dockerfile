@@ -5,6 +5,8 @@ ARG CUDA_MAJOR_MINOR_VERSION=''
 ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
+ARG IMAGE_VERSION
+LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
 ARG DB_ROOT_DIR="/opt/db"
@@ -21,21 +23,21 @@ ARG MIN_REQUIRED_MICROMAMBA_VERSION=1.5.11
 ENV SAGEMAKER_LOGGING_DIR="/var/log/sagemaker/"
 ENV STUDIO_LOGGING_DIR="/var/log/studio/"
 ENV EDITOR="nano"
-ENV MIN_REQUIRED_MICROMAMBA_VERSION=${MIN_REQUIRED_MICROMAMBA_VERSION}
+ENV IMAGE_VERSION=$IMAGE_VERSION
+ENV PINNED_MICROMAMBA_MINOR_VERSION="1.5.*"
+ENV SAGEMAKER_RECOVERY_MODE_HOME=/tmp/sagemaker-recovery-mode-home
 
 USER root
-
-# Compare the current micromamba version with the minimum required version, and only upgrade if strictly lower to avoid downgrades.
+# Upgrade micromamba to the latest patch version in the pinned minor version range, if applicable
 RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
-    LOWEST_MICROMAMBA_VERSION=$(printf '%s\n%s' "$MIN_REQUIRED_MICROMAMBA_VERSION" "$CURRENT_MICROMAMBA_VERSION" | sort -V | head -n 1) && \
-    if [ "$LOWEST_MICROMAMBA_VERSION" = "$CURRENT_MICROMAMBA_VERSION" ] && [ "$CURRENT_MICROMAMBA_VERSION" != "$MIN_REQUIRED_MICROMAMBA_VERSION" ]; then \
-        echo "Upgrading micromamba from $CURRENT_MICROMAMBA_VERSION to $MIN_REQUIRED_MICROMAMBA_VERSION..." && \
+    echo "Current micromamba version: $CURRENT_MICROMAMBA_VERSION" && \
+    if [[ "$CURRENT_MICROMAMBA_VERSION" == $PINNED_MICROMAMBA_MINOR_VERSION ]]; then \
+        echo "Upgrading micromamba to the latest $PINNED_MICROMAMBA_MINOR_VERSION version..." && \
         micromamba self-update -c conda-forge --version "$MIN_REQUIRED_MICROMAMBA_VERSION" && \
         micromamba clean --all --yes --force-pkgs-dirs; \
     else \
-        echo "Micromamba is already $MIN_REQUIRED_MICROMAMBA_VERSION or higher (current: $CURRENT_MICROMAMBA_VERSION). No update needed."; \
+        echo "Micromamba is already at version $CURRENT_MICROMAMBA_VERSION (outside $PINNED_MICROMAMBA_MINOR_VERSION). No upgrade performed."; \
     fi
-
 
 RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
     groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "${MAMBA_USER}" && \
@@ -94,6 +96,14 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     fi && \
     # Enforce dependencies are all installed from conda-forge
     micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
+    mkdir -p $SAGEMAKER_RECOVERY_MODE_HOME && \
+    chown $MAMBA_USER:$MAMBA_USER $SAGEMAKER_RECOVERY_MODE_HOME && \
+    SUPERVISOR_VERSION=$(grep "^conda-forge::supervisor\[" /tmp/$ENV_IN_FILENAME) && \
+    JUPYTERLAB_VERSION=$(grep "^conda-forge::jupyterlab\[" /tmp/$ENV_IN_FILENAME) && \
+    SAGEMAKER_JUPYTERLAB_VERSION=$(grep "^conda-forge::sagemaker-jupyterlab-extension" /tmp/$ENV_IN_FILENAME) && \
+    echo "Installing in sagemaker-recovery-mode micromamba environment: $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
+    micromamba create -n sagemaker-recovery-mode && \
+    micromamba install -n sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
@@ -111,6 +121,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
        done \
     # Copy the settings
     && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json && \
+    cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/User/settings.json && \
     # Install glue kernels, and move to shared directory
     # Also patching base kernel so Studio background code doesn't start session silently
     install-glue-kernels && \
@@ -161,7 +172,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
-    jupyter labextension disable @jupyter/collaboration-extension
+    jupyter labextension disable @jupyter/collaboration-extension && \
+    jupyter labextension disable @jupyter/docprovider-extension
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
@@ -193,6 +205,8 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
     && rm -rf ${HOME_DIR}/oss_compliance*
 
+# Explicitly disable BuildKit for SM Studio Docker functionality
+ENV DOCKER_BUILDKIT=0
 ENV PATH="/etc/sagemaker-inference-server:/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
