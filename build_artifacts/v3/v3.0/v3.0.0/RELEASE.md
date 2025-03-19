@@ -13,7 +13,7 @@ ipython|8.34.0|8.34.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.3.6|4.3.6
 amazon-q-developer-jupyterlab-ext|3.4.7|3.4.7
-langchain|0.3.20|0.3.20
+langchain|0.3.21|0.3.21
 jupyter-ai|2.30.0|2.30.0
 amazon-sagemaker-jupyter-ai-q-developer|1.1.0|1.1.0
 jupyter-scheduler|2.10.0|2.10.0
@@ -39,7 +39,7 @@ jupyter-activity-monitor-extension|0.3.1|0.3.1
 jupyter-collaboration|3.1.0|3.1.0
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
-jupyterlab-git|0.50.2|0.50.2
+jupyterlab-git|0.51.0|0.51.0
 keras|3.9.0|3.9.0
 langchain-aws|0.2.10|0.2.10
 mlflow|2.21.0|2.21.0
