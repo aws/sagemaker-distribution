@@ -4,9 +4,9 @@ FROM $SAGEMAKER_DISTRIBUTION_IMAGE
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
 # Inorder to test numpy, we need pytest and hypothesis to be installed.
-RUN micromamba install -y -c conda-forge pytest hypothesis meson setuptools==65.5.1
+RUN micromamba install -y pytest hypothesis meson --freeze-installed
 # Some unit tests in numpy requires gcc to be installed.
-RUN sudo apt-get update && sudo apt-get install -y gcc
+RUN sudo apt-get update && sudo apt-get install -y gcc gfortran
 # Check https://numpy.org/doc/stable/reference/testing.html
 # numpy.test() returns True if tests succeed else False.
 # We need to flip the result so that we exit with status code as 0 if all the tests succeeded.
