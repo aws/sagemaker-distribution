@@ -39,7 +39,7 @@ jupyter-activity-monitor-extension|0.3.1|0.3.1
 jupyter-collaboration|3.1.0|3.1.0
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
-jupyterlab-git|0.51.0|0.51.0
+jupyterlab-git|0.50.2|0.50.2
 keras|3.9.0|3.9.0
 langchain-aws|0.2.10|0.2.10
 mlflow|2.21.0|2.21.0
