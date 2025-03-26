@@ -7,8 +7,9 @@ numpy|1.26.4|1.26.4
 jinja2|3.1.6|3.1.6
 pytorch|2.5.1|2.5.1
 pandas|2.2.3|2.2.3
-altair|5.5.0|5.5.0
 boto3|1.37.1|1.37.1
+aioboto3|14.1.0|14.1.0
+altair|5.5.0|5.5.0
 ipython|8.34.0|8.34.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.3.6|4.3.6

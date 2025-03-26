@@ -23,3 +23,9 @@ mlflow|2.20.3|2.21.0
 sagemaker-python-sdk|2.240.0|2.242.0
 tensorflow|2.17.0|2.18.0
 tf-keras|2.17.0|2.18.0
+
+## What's new: 
+
+Package | Version 
+---|---
+aioboto3|14.1.0
