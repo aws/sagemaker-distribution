@@ -67,8 +67,6 @@ _docker_client = docker.from_env()
         ("s3fs.test.Dockerfile", ["s3fs"]),
         ("seaborn.test.Dockerfile", ["seaborn"]),
         ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
-        ("s3fs.test.Dockerfile", ["s3fs"]),
-        ("seaborn.test.Dockerfile", ["seaborn"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -135,8 +133,6 @@ def test_dockerfiles_for_cpu(
         ("s3fs.test.Dockerfile", ["s3fs"]),
         ("seaborn.test.Dockerfile", ["seaborn"]),
         ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
-        ("s3fs.test.Dockerfile", ["s3fs"]),
-        ("seaborn.test.Dockerfile", ["seaborn"]),
     ],
 )
 def test_dockerfiles_for_gpu(
@@ -208,7 +204,7 @@ def _validate_docker_images(
         image, _ = _docker_client.images.build(
             path=test_artifacts_path,
             dockerfile=dockerfile_path,
-            shmsize="512000000",
+            shmsize="2048000000",
             tag=dockerfile_path.lower().replace(".", "-"),
             rm=True,
             buildargs={"SAGEMAKER_DISTRIBUTION_IMAGE": docker_image_identifier},
