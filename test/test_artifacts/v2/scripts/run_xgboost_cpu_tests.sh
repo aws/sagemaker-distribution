@@ -1,8 +1,8 @@
 #!/bin/bash
 
-pysdk_version=$(micromamba list | grep py-xgboost | tr -s ' ' | cut -d ' ' -f 3)
+xgboost_cpu_version=$(micromamba list | grep py-xgboost | tr -s ' ' | cut -d ' ' -f 3)
 
-git checkout tags/v$pysdk_version
+git checkout tags/v$xgboost_cpu_version
 
 python -m pytest tests/python/test_config.py -v -k "not test_nthread"
 python -m pytest tests/python/test_demos.py -v

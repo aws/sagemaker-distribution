@@ -1,8 +1,8 @@
 #!/bin/bash
 
-pysdk_version=$(micromamba list | grep uvicorn | tr -s ' ' | cut -d ' ' -f 3)
+uvicorn_version=$(micromamba list | grep uvicorn | tr -s ' ' | cut -d ' ' -f 3)
 
-git checkout tags/v$pysdk_version
+git checkout tags/v$uvicorn_version
 
 pip install -r requirements.txt
 

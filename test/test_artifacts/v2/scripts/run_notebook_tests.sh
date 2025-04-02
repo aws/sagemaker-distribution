@@ -1,8 +1,8 @@
 #!/bin/bash
 
-pysdk_version=$(micromamba list | grep notebook | tr -s ' ' | cut -d ' ' -f 3)
+notebook_version=$(micromamba list | grep notebook | tr -s ' ' | cut -d ' ' -f 3)
 
-git checkout tags/v$pysdk_version
+git checkout tags/v$notebook_version
 
 pip install ".[test]"
 

@@ -1,8 +1,8 @@
 #!/bin/bash
 
-pysdk_version=$(micromamba list | grep pyhive | tr -s ' ' | cut -d ' ' -f 3)
+pyhive_version=$(micromamba list | grep pyhive | tr -s ' ' | cut -d ' ' -f 3)
 
-git checkout tags/v$pysdk_version
+git checkout tags/v$pyhive_version
 
 ./scripts/make_test_tables.sh
 

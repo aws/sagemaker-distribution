@@ -1,7 +1,7 @@
 #!/bin/bash
-pysdk_version=$(micromamba list | grep jupyter-scheduler | tr -s ' ' | cut -d ' ' -f 3)
+jupyter_scheduler_version=$(micromamba list | grep jupyter-scheduler | tr -s ' ' | cut -d ' ' -f 3)
 
-git checkout tags/v$pysdk_version
+git checkout tags/v$jupyter_scheduler_version
 
 
 pip install ".[test]"

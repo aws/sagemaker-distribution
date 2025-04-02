@@ -1,8 +1,8 @@
 #!/bin/bash
 
-pysdk_version=$(micromamba list | grep jupyter-server-proxy | tr -s ' ' | cut -d ' ' -f 3)
+jupyter_server_proxy_version=$(micromamba list | grep jupyter-server-proxy | tr -s ' ' | cut -d ' ' -f 3)
 
-git checkout tags/v$pysdk_version
+git checkout tags/v$jupyter_server_proxy_version
 
 pip install ".[test]" 
 

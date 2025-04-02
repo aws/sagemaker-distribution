@@ -2,9 +2,9 @@
 
 set -e 
 
-pysdk_version=$(micromamba list | grep torchvision | tr -s ' ' | cut -d ' ' -f 3)
+torchvision_version=$(micromamba list | grep torchvision | tr -s ' ' | cut -d ' ' -f 3)
 
-git checkout tags/v$pysdk_version
+git checkout tags/v$torchvision_version
 
 test_files=(
     "test/test_utils.py"
