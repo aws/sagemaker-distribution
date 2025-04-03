@@ -39,6 +39,24 @@ copy_user_settings() {
   fi
 }
 
+install_prepackaged_extensions() {
+  local prepackaged_extensions_dir="${default_settings_folder}/extensions"
+  local persistent_extensions_dir="${persistent_settings_folder}/extensions"
+
+  # if extensions directory doesn't exist then this is the first time opening the app
+  if [ ! -d "${persistent_extensions_dir}" ]; then
+    mkdir -p $persistent_extensions_dir
+
+    # find all pre-packaged extensions folders, symlink them to the persistent volume
+    find "$prepackaged_extensions_dir" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+        dir_name=$(basename "$dir")
+
+        ln -s "$dir" "${persistent_extensions_dir}/${dir_name}"
+        echo "Added extension: $dir"
+    done
+  fi
+}
+
 eval "$(micromamba shell hook --shell=bash)"
 
 # Activate conda environment 'base', which is the default environment for sagemaker-distribution
@@ -49,12 +67,13 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker app.
   override_machine_settings
   copy_user_settings
+  install_prepackaged_extensions
   # Configure the base url to be `/<app-type-in-lower-case>/default`.
   sagemaker-code-editor --host 0.0.0.0 --port 8888 \
     --without-connection-token \
     --base-path "/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
     --server-data-dir $persistent_settings_folder \
-    --extensions-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions \
+    --extensions-dir ${persistent_settings_folder}/extensions \
     --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 else
   sagemaker-code-editor --host 0.0.0.0 --port 8888 \
