@@ -6,35 +6,68 @@ on:
     inputs:
       image-version:
         required: true
-        description: Image version to validate=
+        description: Image version to validate
+      pr-number:
+        required: true
+        description: PR number to validate
   # Call from other workflow
   workflow_call:
     inputs:
       image-version:
         type: string
         required: true
+      pr-number:
+        type: string
+        required: true
 defaults:
   run:
     shell: bash -l {0}
 jobs:
-  get-pr-number:
+  validate-pr:
     runs-on: ubuntu-latest
-    name: Get PR Number by title
+    name: Validate PR
     outputs:
-      pr_id: ${{ steps.get_pr_id.outputs.pr_id }}
+      pr_id: ${{ steps.validate_pr.outputs.pr_id }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      - name: Get PR number
-        id: get_pr_id
+      - name: Validate PR
+        id: validate_pr
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          PR=$(gh pr list --search "in:title 'release: v${{ inputs.image-version }}'" --json number --jq '.[0].number')
-          echo "pr_id=$PR" >> $GITHUB_OUTPUT
+          PR_NUMBER=${{ inputs.pr-number }}
+          PR_INFO=$(gh pr view $PR_NUMBER --json number,title,isCrossRepository)
+          
+          # Check if PR exists
+          if [ -z "$PR_INFO" ]; then
+            echo "Error: PR #$PR_NUMBER does not exist"
+            exit 1
+          fi
+          
+          # Check PR title
+          PR_TITLE=$(echo $PR_INFO | jq -r '.title')
+          EXPECTED_TITLE_PREFIX="release: v${{ inputs.image-version }}"
+          if [[ "$PR_TITLE" != "$EXPECTED_TITLE_PREFIX"* ]]; then
+            echo "Error: PR title does not start with the expected prefix"
+            echo "Expected prefix: $EXPECTED_TITLE_PREFIX"
+            echo "Actual title: $PR_TITLE"
+            exit 1
+          fi
+          
+          # Check if PR is from a fork
+          IS_CROSS_REPO=$(echo $PR_INFO | jq -r '.isCrossRepository')
+          if [ "$IS_CROSS_REPO" = "true" ]; then
+            echo "Error: PR is from a forked repository"
+            exit 1
+          fi
+          
+          echo "PR validation successful"
+          echo "pr_id=$PR_NUMBER" >> $GITHUB_OUTPUT
+
   call-codebuild-project:
     runs-on: ubuntu-latest
-    needs: get-pr-number
+    needs: validate-pr
     permissions:
       pull-requests: write
       contents: write
@@ -51,7 +84,7 @@ jobs:
       - name: Run CodeBuild
         uses: dark-mechanicum/aws-codebuild@v1
         env:
-          CODEBUILD__sourceVersion: 'pr/${{ needs.get-pr-number.outputs.pr_id }}'
+          CODEBUILD__sourceVersion: 'pr/${{ needs.validate-pr.outputs.pr_id }}'
         with:
           projectName: ${{ secrets.CODEBUILD_VALIDATION_JOB_NAME }}
           buildspec: '{"imageOverride": "aws/codebuild/standard:7.0", "imagePullCredentialsTypeOverride": "CODEBUILD"}'
