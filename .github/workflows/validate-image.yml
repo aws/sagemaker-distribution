@@ -37,7 +37,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           PR_NUMBER=${{ inputs.pr-number }}
-          PR_INFO=$(gh pr view $PR_NUMBER --json number,title,headRepositoryOwner,baseRepositoryOwner)
+          PR_INFO=$(gh pr view $PR_NUMBER --json number,title,isCrossRepository)
           
           # Check if PR exists
           if [ -z "$PR_INFO" ]; then
@@ -56,9 +56,8 @@ jobs:
           fi
           
           # Check if PR is from a fork
-          HEAD_REPO=$(echo $PR_INFO | jq -r '.headRepositoryOwner.login')
-          BASE_REPO=$(echo $PR_INFO | jq -r '.baseRepositoryOwner.login')
-          if [ "$HEAD_REPO" != "$BASE_REPO" ]; then
+          IS_CROSS_REPO=$(echo $PR_INFO | jq -r '.isCrossRepository')
+          if [ "$IS_CROSS_REPO" = "true" ]; then
             echo "Error: PR is from a forked repository"
             exit 1
           fi
