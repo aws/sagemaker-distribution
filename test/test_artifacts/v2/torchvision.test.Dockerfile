@@ -3,6 +3,8 @@ FROM $SAGEMAKER_DISTRIBUTION_IMAGE
 
 ARG MAMBA_DOCKERFILE_ACTIVATE=1
 
+ENV OPENBLAS_NUM_THREADS=1
+
 RUN sudo apt-get update && \
     sudo apt-get install -y git && \
     git clone --recursive https://github.com/pytorch/vision 
