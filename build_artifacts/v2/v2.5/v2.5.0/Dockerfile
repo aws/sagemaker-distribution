@@ -90,7 +90,8 @@ ARG CONDA_OVERRIDE_CUDA=$CUDA_MAJOR_MINOR_VERSION
 
 # Make sure that $ENV_IN_FILENAME and $PINNED_ENV_IN_FILENAME has a newline at the end before the `tee` command runs.
 # Otherwise, nasty things will happen.
-RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
+RUN --mount=type=bind,source=./patched-packages,target=/tmp/patched-packages \
+    if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     then echo 'No ARG_BASED_ENV_IN_FILENAME passed' ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi && \
