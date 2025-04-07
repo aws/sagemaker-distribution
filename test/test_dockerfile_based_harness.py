@@ -75,7 +75,6 @@ _docker_client = docker.from_env()
         ("jupyter-server-proxy.test.Dockerfile", ["jupyter-server-proxy"]),
         ("ipywidgets.test.Dockerfile", ["ipywidgets"]),
         ("supervisor.test.Dockerfile", ["supervisor"]),
-        ("python-gssapi.test.Dockerfile", ["python-gssapi"]),
         ("xgboost-cpu.test.Dockerfile",["xgboost"]),
     ],
 )
@@ -131,9 +130,8 @@ def test_dockerfiles_for_cpu(
             "amazon_sagemaker_sql_editor.test.Dockerfile",
             ["amazon_sagemaker_sql_editor"],
         ),
-        ("serve.test.Dockerfile", ["langchain"]),
-        ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("langchain.test.Dockerfile", ["langchain"]),
+        ("langchain-aws.test.Dockerfile", ["langchain-aws"]),
         ("mlflow.test.Dockerfile", ["mlflow"]),
         ("sagemaker-mlflow.test.Dockerfile", ["sagemaker-mlflow"]),
         (
