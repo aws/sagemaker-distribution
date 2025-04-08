@@ -67,8 +67,6 @@ _docker_client = docker.from_env()
         ("s3fs.test.Dockerfile", ["s3fs"]),
         ("seaborn.test.Dockerfile", ["seaborn"]),
         ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
-        ("s3fs.test.Dockerfile", ["s3fs"]),
-        ("seaborn.test.Dockerfile", ["seaborn"]),
         ("sagemaker_workflows.test.Dockerfile", ["sagemaker_workflows"]),
         ("sagemaker_workflows_artifacts.test.Dockerfile", ["sagemaker_workflows"]),
         ("sagemaker_studio.test.Dockerfile", ["sagemaker_studio"]),
@@ -224,7 +222,7 @@ def _validate_docker_images(
         image, _ = _docker_client.images.build(
             path=test_artifacts_path,
             dockerfile=dockerfile_path,
-            shmsize="512000000",
+            shmsize="2048000000",
             tag=dockerfile_path.lower().replace(".", "-"),
             rm=True,
             buildargs={"SAGEMAKER_DISTRIBUTION_IMAGE": docker_image_identifier},
