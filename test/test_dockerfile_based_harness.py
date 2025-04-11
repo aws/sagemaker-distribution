@@ -67,6 +67,14 @@ _docker_client = docker.from_env()
         ("s3fs.test.Dockerfile", ["s3fs"]),
         ("seaborn.test.Dockerfile", ["seaborn"]),
         ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
+        ("sagemaker_workflows.test.Dockerfile", ["sagemaker_workflows"]),
+        ("sagemaker_workflows_artifacts.test.Dockerfile", ["sagemaker_workflows"]),
+        ("sagemaker_studio.test.Dockerfile", ["sagemaker_studio"]),
+        ("sagemaker_studio_cli.test.Dockerfile", ["sagemaker_studio_cli"]),
+        ("sm_spark_cli.test.Dockerfile", []),
+        ("sagemaker_studio_dataengineering_sessions.test.Dockerfile", ["sagemaker-studio-dataengineering-sessions"]),
+        ("sagemaker_studio_dataengineering_extensions.test.Dockerfile", ["sagemaker-studio-dataengineering-extensions"]),
+        ("sagemaker_studio.integ.Dockerfile", ["sagemaker_studio"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -133,6 +141,16 @@ def test_dockerfiles_for_cpu(
         ("s3fs.test.Dockerfile", ["s3fs"]),
         ("seaborn.test.Dockerfile", ["seaborn"]),
         ("sagemaker-recovery-mode.test.Dockerfile", ["sagemaker-jupyterlab-extension"]),
+        ("s3fs.test.Dockerfile", ["s3fs"]),
+        ("seaborn.test.Dockerfile", ["seaborn"]),
+        ("sagemaker_workflows.test.Dockerfile", ["sagemaker_workflows"]),
+        ("sagemaker_workflows_artifacts.test.Dockerfile", ["sagemaker_workflows"]),
+        ("sagemaker_studio.test.Dockerfile", ["sagemaker_studio"]),
+        ("sagemaker_studio_cli.test.Dockerfile", ["sagemaker_studio_cli"]),
+        ("sm_spark_cli.test.Dockerfile", []),
+        ("sagemaker_studio_dataengineering_sessions.test.Dockerfile", ["sagemaker-studio-dataengineering-sessions"]),
+        ("sagemaker_studio_dataengineering_extensions.test.Dockerfile", ["sagemaker-studio-dataengineering-extensions"]),
+        ("sagemaker_studio.integ.Dockerfile", ["sagemaker_studio"]),
     ],
 )
 def test_dockerfiles_for_gpu(
