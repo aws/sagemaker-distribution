@@ -13,4 +13,4 @@ export SAGEMAKER_APP_TYPE_LOWERCASE=$(echo $SAGEMAKER_APP_TYPE | tr '[:upper:]' 
 export SERVICE_NAME='SageMakerUnifiedStudio'
 
 mkdir -p $STUDIO_LOGGING_DIR/$SAGEMAKER_APP_TYPE_LOWERCASE/supervisord
-exec supervisord -c /etc/supervisor/conf.d/supervisord-sagemaker-ui.conf -n
+exec supervisord -c /etc/supervisor/conf.d/supervisord-sagemaker-ui-code-editor.conf -n
