@@ -159,6 +159,8 @@ def _create_new_version_conda_specs(
             out.append(f"conda-forge::{package_name}")
         else:
             channel = match_out.get("channel").channel_name
+            # E.g. "tensorflow ==2.17.0 cuda120py311h51447cc_202"
+            version_spec = match_out.spec
 
             min_version_inclusive = match_out.get("version")
             assert str(min_version_inclusive).startswith("==")
@@ -167,8 +169,12 @@ def _create_new_version_conda_specs(
             max_version_str = _get_dependency_upper_bound_for_runtime_upgrade(
                 package_name, min_version_inclusive, runtime_version_upgrade_type
             )
+            version_constraint = f"version='>={min_version_inclusive}{max_version_str}'"
+            # Explicitly constraint build string for GPU packages, like PyTorch, tensorflow.
+            if "cuda" in version_spec:
+                version_constraint += ",build='*cuda*'"
 
-            out.append(f"{channel}::{package_name}[version='>={min_version_inclusive}{max_version_str}']")
+            out.append(f"{channel}::{package_name}[{version_constraint}]")
 
     with open(f"{new_version_dir}/{env_in_filename}", "w") as f:
         f.write("# This file is auto-generated.\n")
