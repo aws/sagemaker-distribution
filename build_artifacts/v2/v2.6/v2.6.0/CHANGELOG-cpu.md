@@ -18,5 +18,7 @@ langchain-aws|0.2.10|0.2.19
 sagemaker-code-editor|1.4.2|1.5.0
 sagemaker-python-sdk|2.243.0|2.243.1
 sagemaker-studio|1.0.9|1.0.11
+sagemaker-studio-dataengineering-extensions|1.0.8|1.0.9
+sagemaker-studio-dataengineering-sessions|1.0.6|1.0.7
 tensorflow|2.17.0|2.18.0
 tf-keras|2.17.0|2.18.0
