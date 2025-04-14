@@ -32,7 +32,7 @@ notebook|7.4.0|7.4.0
 aws-glue-sessions|1.0.9|1.0.9
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
-uvicorn|0.34.0|0.34.0
+uvicorn|0.34.1|0.34.1
 fastapi|0.115.12|0.115.12
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.1|0.3.1
