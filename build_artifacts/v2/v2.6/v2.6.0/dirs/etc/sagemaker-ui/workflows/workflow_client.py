@@ -1,5 +1,4 @@
 import argparse
-import boto3
 from typing import Optional
 import requests
 from datetime import datetime, timezone
@@ -7,7 +6,6 @@ from datetime import datetime, timezone
 JUPYTERLAB_URL = "http://default:8888/jupyterlab/default/"
 WORKFLOWS_API_ENDPOINT = "api/sagemaker/workflows"
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f%z"
-DZ_CLIENT = boto3.client("datazone")
 
 def _validate_response(function_name: str, response: requests.Response):
     if response.status_code == 200:
@@ -50,18 +48,10 @@ def stop_local_runner(session: requests.Session, **kwargs):
     )
     return _validate_response("StopLocalRunner", response)
 
-def check_blueprint(domain_id: str, **kwargs):
-    try:
-        workflow_blueprint = DZ_CLIENT.list_environment_blueprints(domainIdentifier=domain_id, name='Workflows')['items']
-        print(str(bool(workflow_blueprint)))
-    except:
-        print("False")
-
 COMMAND_REGISTRY = {
     "update-local-runner-status": update_local_runner_status,
     "start-local-runner": start_local_runner,
-    "stop-local-runner": stop_local_runner,
-    "check-blueprint": check_blueprint
+    "stop-local-runner": stop_local_runner
 }
 
 def main():
@@ -79,9 +69,6 @@ def main():
     start_parser = subparsers.add_parser("start-local-runner", help="Start local runner")
 
     stop_parser = subparsers.add_parser("stop-local-runner", help="Stop local runner")
-
-    check_blueprint_parser = subparsers.add_parser("check-blueprint", help="Check Workflows blueprint")
-    check_blueprint_parser.add_argument("--domain-id", type=str, required=True, help="Datazone Domain ID for blueprint check")
 
     args = parser.parse_args()
 

@@ -6,21 +6,18 @@ handle_workflows_startup_error() {
     local detailed_status=""
     case $step in
         0)
-            detailed_status="Workflows blueprint not enabled"
-            ;;
-        1)
             detailed_status="Not enough memory"
             ;;
-        2)
+        1)
             detailed_status="Error creating directories"
             ;;
-        3)
+        2)
             detailed_status="Error installing docker"
             ;;
-        4)
+        3)
             detailed_status="Error copying prerequisite files"
             ;;
-        5)
+        4)
             detailed_status="Error starting workflows image"
             # Kill any orphans that may have started
             python /etc/sagemaker-ui/workflows/workflow_client.py stop-local-runner
@@ -66,18 +63,12 @@ if [ ! -f "${WORKFLOW_HEALTH_PATH}/status.json" ]; then
     echo "[]" > "${WORKFLOW_HEALTH_PATH}/status.json"
 fi
 
-# Only start local runner if Workflows blueprint is enabled
-if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint --domain-id "$DZ_DOMAIN_ID")" = "False" ]; then
-    echo "Workflows blueprint is not enabled. Workflows will not start."
-    handle_workflows_startup_error 0
-fi
-
 # Do minimum system requirements check: 4GB RAM and more than 2 CPU cores
 free_mem=$(free -m | awk '/^Mem:/ {print $7}')
 cpu_cores=$(nproc)
 if [[ $free_mem -lt 4096 ]] || [[ $cpu_cores -le 2 ]]; then
     echo "There is less than 4GB of available RAM or <=2 CPU cores. Workflows will not start. Free mem: $free_mem MB, CPU cores: $cpu_cores"
-    handle_workflows_startup_error 1
+    handle_workflows_startup_error 0
 fi
 
 (
@@ -91,7 +82,7 @@ mkdir -p $WORKFLOW_REQUIREMENTS_PATH
 mkdir -p $WORKFLOW_PLUGINS_PATH
 mkdir -p $WORKFLOW_STARTUP_PATH
 mkdir -p $WORKFLOW_OUTPUT_PATH
-) || handle_workflows_startup_error 2
+) || handle_workflows_startup_error 1
 
 (
 # Set the status of the status file to 'starting'
@@ -111,7 +102,7 @@ sudo apt-get update
 VERSION_ID=$(cat /etc/os-release | grep -oP 'VERSION_ID=".*"' | cut -d'"' -f2)
 VERSION_STRING=$(sudo apt-cache madison docker-ce | awk '{ print $3 }' | grep -i $VERSION_ID | head -n 1)
 sudo apt-get install docker-ce-cli=$VERSION_STRING docker-compose-plugin=2.29.2-1~ubuntu.22.04~jammy -y --allow-downgrades
-) || handle_workflows_startup_error 3
+) || handle_workflows_startup_error 2
 
 (
 # Set status to copying files
@@ -158,7 +149,7 @@ if [ -d $USER_PLUGINS_FOLDER ]; then
     cp -r $USER_PLUGINS_FOLDER/* $WORKFLOW_PLUGINS_PATH
 fi
 
-) || handle_workflows_startup_error 4
+) || handle_workflows_startup_error 3
 
 (
 # Set status to installing workflows image
@@ -179,7 +170,7 @@ DZ_ENV_ID=$DZ_ENV_ID \
 DZ_DOMAIN_REGION=$DZ_DOMAIN_REGION \
 DZ_PROJECT_S3PATH=$DZ_PROJECT_S3PATH \
   docker compose -f /etc/sagemaker-ui/workflows/docker-compose.yaml up -d --quiet-pull
-) || handle_workflows_startup_error 5
+) || handle_workflows_startup_error 4
 
 # Set status to waiting for image to start
 python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Waiting for workflows image to start'
