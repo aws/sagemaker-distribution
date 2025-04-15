@@ -73,7 +73,10 @@ _docker_client = docker.from_env()
         ("sagemaker_studio_cli.test.Dockerfile", ["sagemaker_studio_cli"]),
         ("sm_spark_cli.test.Dockerfile", []),
         ("sagemaker_studio_dataengineering_sessions.test.Dockerfile", ["sagemaker-studio-dataengineering-sessions"]),
-        ("sagemaker_studio_dataengineering_extensions.test.Dockerfile", ["sagemaker-studio-dataengineering-extensions"]),
+        (
+            "sagemaker_studio_dataengineering_extensions.test.Dockerfile",
+            ["sagemaker-studio-dataengineering-extensions"],
+        ),
         ("sagemaker_studio.integ.Dockerfile", ["sagemaker_studio"]),
     ],
 )
@@ -149,7 +152,10 @@ def test_dockerfiles_for_cpu(
         ("sagemaker_studio_cli.test.Dockerfile", ["sagemaker_studio_cli"]),
         ("sm_spark_cli.test.Dockerfile", []),
         ("sagemaker_studio_dataengineering_sessions.test.Dockerfile", ["sagemaker-studio-dataengineering-sessions"]),
-        ("sagemaker_studio_dataengineering_extensions.test.Dockerfile", ["sagemaker-studio-dataengineering-extensions"]),
+        (
+            "sagemaker_studio_dataengineering_extensions.test.Dockerfile",
+            ["sagemaker-studio-dataengineering-extensions"],
+        ),
         ("sagemaker_studio.integ.Dockerfile", ["sagemaker_studio"]),
     ],
 )
