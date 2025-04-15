@@ -1,4 +1,5 @@
 import argparse
+import boto3
 from typing import Optional
 import requests
 from datetime import datetime, timezone
@@ -48,10 +49,24 @@ def stop_local_runner(session: requests.Session, **kwargs):
     )
     return _validate_response("StopLocalRunner", response)
 
+def check_blueprint(region: str, domain_id: str, endpoint:str, **kwargs):
+    DZ_CLIENT = boto3.client("datazone")
+    # add correct endpoint for gamma env
+    if endpoint != "":
+        DZ_CLIENT = boto3.client("datazone", endpoint_url=endpoint)
+    try:
+        blueprint_id = DZ_CLIENT.list_environment_blueprints(managed=True, domainIdentifier=domain_id, name='Workflows')['items'][0]['id']
+        blueprint_config = DZ_CLIENT.get_environment_blueprint_configuration(domainIdentifier=domain_id, environmentBlueprintIdentifier=blueprint_id)
+        enabled_regions = blueprint_config['enabledRegions']
+        print(str(region in enabled_regions))
+    except:
+        print("False")
+
 COMMAND_REGISTRY = {
     "update-local-runner-status": update_local_runner_status,
     "start-local-runner": start_local_runner,
-    "stop-local-runner": stop_local_runner
+    "stop-local-runner": stop_local_runner,
+    "check-blueprint": check_blueprint
 }
 
 def main():
@@ -69,6 +84,11 @@ def main():
     start_parser = subparsers.add_parser("start-local-runner", help="Start local runner")
 
     stop_parser = subparsers.add_parser("stop-local-runner", help="Stop local runner")
+
+    check_blueprint_parser = subparsers.add_parser("check-blueprint", help="Check Workflows blueprint")
+    check_blueprint_parser.add_argument("--domain-id", type=str, required=True, help="Datazone Domain ID for blueprint check")
+    check_blueprint_parser.add_argument("--region", type=str, required=True, help="Datazone Domain region")
+    check_blueprint_parser.add_argument("--endpoint", type=str, required=True, help="Datazone endpoint for blueprint check")
 
     args = parser.parse_args()
 
