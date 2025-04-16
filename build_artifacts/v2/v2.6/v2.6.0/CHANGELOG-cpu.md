@@ -7,8 +7,10 @@ Package | Previous Version | Current Version
 pytorch|2.4.1|2.6.0
 ipython|8.34.0|8.35.0
 jupyterlab|4.3.6|4.4.0
+amazon-q-developer-jupyterlab-ext|3.4.7|3.4.8
 langchain|0.3.22|0.3.23
 jupyter-ai|2.31.1|2.31.3
+amazon-sagemaker-jupyter-ai-q-developer|1.2.2|1.2.3
 amazon_sagemaker_sql_editor|0.1.15|0.1.16
 torchvision|0.19.1|0.21.0
 ipywidgets|8.1.5|8.1.6
@@ -17,7 +19,7 @@ uvicorn|0.34.0|0.34.1
 jupyterlab-git|0.50.2|0.51.1
 langchain-aws|0.2.10|0.2.19
 sagemaker-code-editor|1.4.2|1.5.0
-sagemaker-python-sdk|2.243.0|2.243.1
+sagemaker-python-sdk|2.243.0|2.243.2
 sagemaker-studio|1.0.9|1.0.11
 sagemaker-studio-dataengineering-extensions|1.0.8|1.0.9
 sagemaker-studio-dataengineering-sessions|1.0.6|1.0.7

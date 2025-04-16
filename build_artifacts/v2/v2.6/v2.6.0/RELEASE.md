@@ -12,10 +12,10 @@ boto3|1.37.1|1.37.1
 ipython|8.35.0|8.35.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.4.0|4.4.0
-amazon-q-developer-jupyterlab-ext|3.4.7|3.4.7
+amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 langchain|0.3.23|0.3.23
 jupyter-ai|2.31.3|2.31.3
-amazon-sagemaker-jupyter-ai-q-developer|1.2.2|1.2.2
+amazon-sagemaker-jupyter-ai-q-developer|1.2.3|1.2.3
 jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.11|3.1.11
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
@@ -54,7 +54,7 @@ sagemaker-jupyterlab-emr-extension|0.3.8|0.3.8
 sagemaker-jupyterlab-extension|0.4.0|0.4.0
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
-sagemaker-python-sdk|2.243.1|2.243.1
+sagemaker-python-sdk|2.243.1|2.243.2
 sagemaker-studio|1.0.11|1.0.11
 sagemaker-studio-analytics-extension|0.1.6|0.1.6
 sagemaker-studio-cli|1.0.6|1.0.6
