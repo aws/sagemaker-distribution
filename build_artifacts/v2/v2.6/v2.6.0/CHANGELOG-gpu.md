@@ -6,8 +6,10 @@ Package | Previous Version | Current Version
 ---|---|---
 ipython|8.34.0|8.35.0
 jupyterlab|4.3.6|4.4.0
+amazon-q-developer-jupyterlab-ext|3.4.7|3.4.8
 langchain|0.3.22|0.3.23
 jupyter-ai|2.31.1|2.31.3
+amazon-sagemaker-jupyter-ai-q-developer|1.2.2|1.2.3
 amazon_sagemaker_sql_editor|0.1.15|0.1.16
 ipywidgets|8.1.5|8.1.6
 notebook|7.3.3|7.4.0
