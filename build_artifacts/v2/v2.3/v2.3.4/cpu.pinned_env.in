@@ -1,0 +1,7 @@
+conda-forge::libmamba[version='>=1.5.11,<1.6.0']
+conda-forge::dash[version='<=2.18.1']
+conda-forge::evaluate[version='<0.4.2']
+conda-forge::catboost[version='>=1.1.1,<1.3.0',build='*cpu*']
+conda-forge::sentencepiece[version='>=0.1.99,<0.2.0']
+conda-forge::libsqlite[version='<3.49.0']
+conda-forge::sagemaker-jupyterlab-extension-common[version='<0.2.0']
