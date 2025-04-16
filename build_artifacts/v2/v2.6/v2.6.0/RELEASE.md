@@ -14,7 +14,7 @@ jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.4.0|4.4.0
 amazon-q-developer-jupyterlab-ext|3.4.7|3.4.7
 langchain|0.3.23|0.3.23
-jupyter-ai|2.31.2|2.31.2
+jupyter-ai|2.31.3|2.31.3
 amazon-sagemaker-jupyter-ai-q-developer|1.2.2|1.2.2
 jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.11|3.1.11

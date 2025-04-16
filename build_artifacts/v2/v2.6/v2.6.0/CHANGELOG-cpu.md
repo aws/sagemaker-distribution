@@ -8,7 +8,7 @@ pytorch|2.4.1|2.6.0
 ipython|8.34.0|8.35.0
 jupyterlab|4.3.6|4.4.0
 langchain|0.3.22|0.3.23
-jupyter-ai|2.31.1|2.31.2
+jupyter-ai|2.31.1|2.31.3
 amazon_sagemaker_sql_editor|0.1.15|0.1.16
 torchvision|0.19.1|0.21.0
 ipywidgets|8.1.5|8.1.6
