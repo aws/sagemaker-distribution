@@ -54,12 +54,12 @@ sagemaker-jupyterlab-emr-extension|0.3.8|0.3.8
 sagemaker-jupyterlab-extension|0.4.0|0.4.0
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
-sagemaker-python-sdk|2.243.1|2.243.2
-sagemaker-studio|1.0.11|1.0.11
+sagemaker-python-sdk|2.243.2|2.243.2
+sagemaker-studio|1.0.12|1.0.12
 sagemaker-studio-analytics-extension|0.1.6|0.1.6
 sagemaker-studio-cli|1.0.6|1.0.6
 sagemaker-studio-dataengineering-extensions|1.0.9|1.0.9
-sagemaker-studio-dataengineering-sessions|1.0.7|1.0.7
+sagemaker-studio-dataengineering-sessions|1.0.9|1.0.9
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.17.0|2.18.0
