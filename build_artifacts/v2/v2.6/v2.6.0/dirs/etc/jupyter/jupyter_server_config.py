@@ -1,10 +1,8 @@
-import os
+# Default Jupyter server config
+# Note: those config can be overridden by user-level configs.
 
 c.ServerApp.terminado_settings = {"shell_command": ["/bin/bash"]}
-region = os.environ.get("AWS_REGION")
-csp_rule = os.environ.get("JUPYTERSERVER_CSP_RULE")
-
-c.ServerApp.tornado_settings = {"compress_response": True, "headers": {"Content-Security-Policy": csp_rule}}
+c.ServerApp.tornado_settings = {"compress_response": True}
 
 # Do not delete files to trash. Instead, permanently delete files.
 c.FileContentsManager.delete_to_trash = False
