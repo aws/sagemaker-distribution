@@ -3,6 +3,7 @@ import os
 from itertools import islice
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
+import warnings
 
 import boto3
 import conda.cli.python_api
@@ -72,7 +73,10 @@ def _generate_staleness_report_per_image(
     # Use previous month to get full month of data
     previous_month = (datetime.now() - relativedelta(months=1)).strftime('%Y-%m')
     pkg_list = list(package_versions_in_upstream.keys())
-    conda_download_stats = overall(pkg_list, month=previous_month)
+    # Suppress FutureWarning from pandas so it doesn't show in report
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        conda_download_stats = overall(pkg_list, month=previous_month)
 
     for package in package_versions_in_upstream:
         version_in_sagemaker_distribution = str(target_packages_match_spec_out[package].get("version")).removeprefix(
