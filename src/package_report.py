@@ -1,14 +1,14 @@
 import json
 import os
-from itertools import islice
-from datetime import datetime
-from dateutil.relativedelta import relativedelta
 import warnings
+from datetime import datetime
+from itertools import islice
 
 import boto3
 import conda.cli.python_api
 from conda.models.match_spec import MatchSpec
 from condastats.cli import overall
+from dateutil.relativedelta import relativedelta
 
 from config import _image_generator_configs
 from dependency_upgrader import _dependency_metadata
