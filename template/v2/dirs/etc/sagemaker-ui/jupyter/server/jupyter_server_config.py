@@ -1,15 +1,10 @@
 import os
 
 c.ServerApp.terminado_settings = {"shell_command": ["/bin/bash"]}
-region = os.environ.get('AWS_REGION')
-csp_rule = os.environ.get('JUPYTERSERVER_CSP_RULE')
+region = os.environ.get("AWS_REGION")
+csp_rule = os.environ.get("JUPYTERSERVER_CSP_RULE")
 
-c.ServerApp.tornado_settings = {
-    "compress_response": True,
-    'headers': {
-        'Content-Security-Policy': csp_rule
-    }
-}
+c.ServerApp.tornado_settings = {"compress_response": True, "headers": {"Content-Security-Policy": csp_rule}}
 
 # Do not delete files to trash. Instead, permanently delete files.
 c.FileContentsManager.delete_to_trash = False
