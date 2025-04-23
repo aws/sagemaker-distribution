@@ -96,7 +96,12 @@ def _generate_staleness_report_per_image(
             }
         )
 
-    staleness_report_rows.sort(key=lambda x: x["package"])
+    staleness_report_rows.sort(
+        key=lambda x: (
+            not x["package"].startswith("${\\color"),  # Stale packages at top of list
+            -x["downloads"],  # Sorted by downloads
+        )
+    )
     print(
         create_markdown_table(
             [
