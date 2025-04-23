@@ -1,10 +1,14 @@
 import json
 import os
+import warnings
+from datetime import datetime
 from itertools import islice
 
 import boto3
 import conda.cli.python_api
 from conda.models.match_spec import MatchSpec
+from condastats.cli import overall
+from dateutil.relativedelta import relativedelta
 
 from config import _image_generator_configs
 from dependency_upgrader import _dependency_metadata
@@ -64,6 +68,16 @@ def _generate_staleness_report_per_image(
 ):
     print("\n# Staleness Report: " + str(version) + "(" + image_config["image_type"] + ")\n")
     staleness_report_rows = []
+
+    # Get conda download statistics for all installed packages
+    # Use previous month to get full month of data
+    previous_month = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m")
+    pkg_list = list(package_versions_in_upstream.keys())
+    # Suppress FutureWarning from pandas so it doesn't show in report
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
+        conda_download_stats = overall(pkg_list, month=previous_month)
+
     for package in package_versions_in_upstream:
         version_in_sagemaker_distribution = str(target_packages_match_spec_out[package].get("version")).removeprefix(
             "=="
@@ -78,11 +92,24 @@ def _generate_staleness_report_per_image(
                 "package": package_string,
                 "version_in_sagemaker_distribution": version_in_sagemaker_distribution,
                 "latest_relavant_version": package_versions_in_upstream[package],
+                "downloads": conda_download_stats[package],
             }
         )
+
+    staleness_report_rows.sort(
+        key=lambda x: (
+            not x["package"].startswith("${\\color"),  # Stale packages at top of list
+            -x["downloads"],  # Sorted by downloads
+        )
+    )
     print(
         create_markdown_table(
-            ["Package", "Current Version in the Distribution image", "Latest Relevant Version in " "Upstream"],
+            [
+                "Package",
+                "Current Version in the Distribution image",
+                "Latest Relevant Version in " "Upstream",
+                "Downloads (Conda, previous month)",
+            ],
             staleness_report_rows,
         )
     )
