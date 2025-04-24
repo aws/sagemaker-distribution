@@ -10,7 +10,7 @@ NB_USER=sagemaker-user
 JUPYTER_AI_CONFIG_PATH=/home/${NB_USER}/.local/share/jupyter/jupyter_ai/config.json
 JUPYTER_AI_CONFIG_CONTENT='{
     "model_provider_id": "amazon-q:Q-Developer",
-    "embeddings_provider_id": "codesage:codesage-small",
+    "embeddings_provider_id": null,
     "send_with_shift_enter": false,
     "fields": {},
     "api_keys": {},
