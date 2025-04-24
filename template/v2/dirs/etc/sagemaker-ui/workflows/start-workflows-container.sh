@@ -15,10 +15,10 @@ handle_workflows_startup_error() {
             detailed_status="Error creating directories"
             ;;
         3)
-            detailed_status="Error installing docker"
+            detailed_status="Error copying prerequisite files"
             ;;
         4)
-            detailed_status="Error copying prerequisite files"
+            detailed_status="Error installing docker"
             ;;
         5)
             detailed_status="Error starting workflows image"
@@ -42,6 +42,7 @@ DZ_DOMAIN_ID=$(jq -r '.AdditionalMetadata.DataZoneDomainId' < $RESOURCE_METADATA
 DZ_PROJECT_ID=$(jq -r '.AdditionalMetadata.DataZoneProjectId' < $RESOURCE_METADATA_FILE)
 DZ_ENV_ID=$(jq -r '.AdditionalMetadata.DataZoneEnvironmentId' < $RESOURCE_METADATA_FILE)
 DZ_DOMAIN_REGION=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $RESOURCE_METADATA_FILE)
+DZ_ENDPOINT=$(jq -r '.AdditionalMetadata.DataZoneEndpoint' < $RESOURCE_METADATA_FILE)
 DZ_PROJECT_S3PATH=$(jq -r '.AdditionalMetadata.ProjectS3Path' < $RESOURCE_METADATA_FILE)
 WORKFLOW_DAG_PATH="/home/sagemaker-user/${HOME_FOLDER_NAME}/workflows/dags"
 WORKFLOW_CONFIG_PATH="/home/sagemaker-user/${HOME_FOLDER_NAME}/workflows/config"
@@ -67,7 +68,7 @@ if [ ! -f "${WORKFLOW_HEALTH_PATH}/status.json" ]; then
 fi
 
 # Only start local runner if Workflows blueprint is enabled
-if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint --domain-id "$DZ_DOMAIN_ID")" = "False" ]; then
+if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint --region "$DZ_DOMAIN_REGION" --domain-id "$DZ_DOMAIN_ID" --endpoint "$DZ_ENDPOINT")" = "False" ]; then
     echo "Workflows blueprint is not enabled. Workflows will not start."
     handle_workflows_startup_error 0
 fi
@@ -94,26 +95,6 @@ mkdir -p $WORKFLOW_OUTPUT_PATH
 ) || handle_workflows_startup_error 2
 
 (
-# Set the status of the status file to 'starting'
-python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Installing prerequisites'
-
-# Workflows execution environment install
-sudo apt-get update
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo rm -f /etc/apt/keyrings/docker.gpg
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-echo \
-"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-VERSION_ID=$(cat /etc/os-release | grep -oP 'VERSION_ID=".*"' | cut -d'"' -f2)
-VERSION_STRING=$(sudo apt-cache madison docker-ce | awk '{ print $3 }' | grep -i $VERSION_ID | head -n 1)
-sudo apt-get install docker-ce-cli=$VERSION_STRING docker-compose-plugin=2.29.2-1~ubuntu.22.04~jammy -y --allow-downgrades
-) || handle_workflows_startup_error 3
-
-(
 # Set status to copying files
 python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Copying files'
 
@@ -131,6 +112,7 @@ cp $WORKFLOW_REQUIREMENTS_SOURCE_PATH $WORKFLOW_REQUIREMENTS_PATH
 cp /etc/sagemaker-ui/workflows/startup/startup.sh $WORKFLOW_STARTUP_PATH
 
 # Append user's custom startup script, if exists
+echo -e "\n\n" >> "${WORKFLOW_STARTUP_PATH}startup.sh"
 if [ -f $USER_STARTUP_FILE ]; then
     tail -n +2 $USER_STARTUP_FILE >> "${WORKFLOW_STARTUP_PATH}startup.sh"
 else
@@ -143,6 +125,7 @@ else
 fi
 
 # Append user's custom requirements, if exists
+echo -e "\n\n" >> "${WORKFLOW_REQUIREMENTS_PATH}requirements.txt"
 if [ -f $USER_REQUIREMENTS_FILE ]; then
     cat $USER_REQUIREMENTS_FILE >> "${WORKFLOW_REQUIREMENTS_PATH}requirements.txt"
 else
@@ -158,6 +141,26 @@ if [ -d $USER_PLUGINS_FOLDER ]; then
     cp -r $USER_PLUGINS_FOLDER/* $WORKFLOW_PLUGINS_PATH
 fi
 
+) || handle_workflows_startup_error 3
+
+(
+# Set the status of the status file to 'starting'
+python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Installing prerequisites'
+
+# Workflows execution environment install
+sudo apt-get update
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo rm -f /etc/apt/keyrings/docker.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo \
+"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+VERSION_ID=$(cat /etc/os-release | grep -oP 'VERSION_ID=".*"' | cut -d'"' -f2)
+VERSION_STRING=$(sudo apt-cache madison docker-ce | awk '{ print $3 }' | grep -i $VERSION_ID | head -n 1)
+sudo apt-get install docker-ce-cli=$VERSION_STRING docker-compose-plugin=2.29.2-1~ubuntu.22.04~jammy -y --allow-downgrades
 ) || handle_workflows_startup_error 4
 
 (
