@@ -14,6 +14,7 @@ jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.4.1|4.4.1
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 langchain|0.3.24|0.3.24
+jupyter-ai|2.31.4|2.31.4
 amazon-sagemaker-jupyter-ai-q-developer|1.2.4|1.2.4
 jupyter-scheduler|2.10.0|2.10.0
 amazon-sagemaker-jupyter-scheduler|3.1.11|3.1.11
@@ -27,7 +28,7 @@ pip|24.3.1|24.3.1
 torchvision|0.19.1|0.21.0
 autogluon|1.2.0|1.2.0
 ipywidgets|8.1.6|8.1.6
-notebook|7.4.0|7.4.0
+notebook|7.4.1|7.4.1
 aws-glue-sessions|1.0.9|1.0.9
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
@@ -50,7 +51,7 @@ s3fs|2024.10.0|2024.10.0
 sagemaker-code-editor|1.5.0|1.5.0
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.3.8|0.3.8
-sagemaker-jupyterlab-extension|0.4.0|0.4.0
+sagemaker-jupyterlab-extension|0.4.2|0.4.2
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
 sagemaker-python-sdk|2.243.2|2.243.2
