@@ -10,6 +10,7 @@ WORKFLOWS_API_ENDPOINT = "api/sagemaker/workflows"
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f%z"
 
 
+
 def _validate_response(function_name: str, response: requests.Response):
     if response.status_code == 200:
         return response
@@ -48,6 +49,7 @@ def stop_local_runner(session: requests.Session, **kwargs):
     return _validate_response("StopLocalRunner", response)
 
 
+<<<<<<< HEAD
 def check_blueprint(region: str, domain_id: str, endpoint: str, **kwargs):
     DZ_CLIENT = boto3.client("datazone")
     # add correct endpoint for gamma env
@@ -62,6 +64,14 @@ def check_blueprint(region: str, domain_id: str, endpoint: str, **kwargs):
         )
         enabled_regions = blueprint_config["enabledRegions"]
         print(str(region in enabled_regions))
+=======
+def check_blueprint(domain_id: str, **kwargs):
+    try:
+        workflow_blueprint = DZ_CLIENT.list_environment_blueprints(domainIdentifier=domain_id, name="Workflows")[
+            "items"
+        ]
+        print(str(bool(workflow_blueprint)))
+>>>>>>> main
     except:
         print("False")
 

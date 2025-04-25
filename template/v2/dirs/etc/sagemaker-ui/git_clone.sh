@@ -8,7 +8,6 @@ dataZoneDomainId=$(jq -r '.AdditionalMetadata.DataZoneDomainId' < $sourceMetaDat
 dataZoneUserId=$(jq -r '.AdditionalMetadata.DataZoneUserId' < $sourceMetaData)
 dataZoneEndPoint=$(jq -r '.AdditionalMetadata.DataZoneEndpoint' < $sourceMetaData)
 dataZoneProjectId=$(jq -r '.AdditionalMetadata.DataZoneProjectId' < $sourceMetaData)
-dataZoneDomainRegion=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $sourceMetaData)
 
 DEFAULT_DESTINATION_PATH=$HOME/src
 DESTINATION_PATH=${1:-$DEFAULT_DESTINATION_PATH}
@@ -48,10 +47,8 @@ if [[ -n "$cloneUrl" ]]; then
     if [[ "$cloneUrl" == *"codeconnections"* ]] || [[ "$cloneUrl" == *"codestar-connections"* ]]; then
         # Check if the DomainExecutionRoleCreds profile exists in the AWS config file
         if grep -q 'DomainExecutionRoleCreds' /home/sagemaker-user/.aws/config; then
-            # Configure Git to use the AWS CodeCommit credential helper with profile DomainExecutionRoleCreds
-            git config --global credential.helper "!aws --profile DomainExecutionRoleCreds --region $dataZoneDomainRegion codecommit credential-helper --ignore-host-check $@"
-            git config --global credential.UseHttpPath true
-             # Clone the repository using the cloneUrl and gitBranchName
+            /bin/bash /etc/sagemaker-ui/git_config.sh
+            # Clone the repository using the cloneUrl and gitBranchName
             git clone "$cloneUrl" $DESTINATION_PATH -b "$gitBranchName"
         fi
     else
