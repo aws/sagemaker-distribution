@@ -106,12 +106,23 @@ def _generate_staleness_report_per_image(
             }
         )
 
-    staleness_report_rows.sort(
-        key=lambda x: (
-            not x["package"].startswith("${\\color"),  # Stale packages at top of list
-            -x["downloads"],  # Sorted by downloads
-        )
-    )
+    def sort_key(x):
+        # First key: False for stale packages (they start with "${\\color")
+        is_current = not x["package"].startswith("${\\color")
+        
+        # Second key: downloads count, with "N/A" treated as lowest priority
+        downloads = x["downloads"]
+        if downloads == "N/A":
+            download_value = float('-inf')  # Put N/A at the bottom
+        else:
+            try:
+                download_value = float(downloads)
+            except (ValueError, TypeError):
+                download_value = float('-inf')  # Handle any other non-numeric values
+        
+        return (is_current, download_value)
+
+    staleness_report_rows.sort(key=sort_key, reverse=True)
     print(
         create_markdown_table(
             [
