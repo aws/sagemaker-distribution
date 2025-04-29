@@ -85,7 +85,6 @@ def _generate_staleness_report_per_image(
                 pkg_stats = overall([pkg], month=previous_month)
                 conda_download_stats[pkg] = pkg_stats.get(pkg, "N/A")
         except ValueError as e:
-            print(f"Warning: Unable to fetch download statistics for {pkg}: {str(e)}")
             conda_download_stats[pkg] = "N/A"
 
     for package in package_versions_in_upstream:
