@@ -73,10 +73,19 @@ def _generate_staleness_report_per_image(
     # Use previous month to get full month of data
     previous_month = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m")
     pkg_list = list(package_versions_in_upstream.keys())
-    # Suppress FutureWarning from pandas so it doesn't show in report
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=FutureWarning)
-        conda_download_stats = overall(pkg_list, month=previous_month)
+
+    # Process packages individually to handle exceptions per package
+    conda_download_stats = {}
+    for pkg in pkg_list:
+        try:
+            # Suppress FutureWarning from pandas so it doesn't show in report
+            with warnings.catch_warnings():
+                warnings.filterwarnings("ignore", category=FutureWarning)
+                # Get stats for single package
+                pkg_stats = overall([pkg], month=previous_month)
+                conda_download_stats[pkg] = pkg_stats.get(pkg, "N/A")
+        except ValueError as e:
+            conda_download_stats[pkg] = "N/A"
 
     for package in package_versions_in_upstream:
         version_in_sagemaker_distribution = str(target_packages_match_spec_out[package].get("version")).removeprefix(
@@ -96,12 +105,23 @@ def _generate_staleness_report_per_image(
             }
         )
 
-    staleness_report_rows.sort(
-        key=lambda x: (
-            not x["package"].startswith("${\\color"),  # Stale packages at top of list
-            -x["downloads"],  # Sorted by downloads
-        )
-    )
+    def sort_key(x):
+        # First key: False for stale packages (they start with "${\\color")
+        is_current = not x["package"].startswith("${\\color")
+
+        # Second key: downloads count, with "N/A" treated as lowest priority
+        downloads = x["downloads"]
+        if downloads == "N/A":
+            download_value = float('-inf')  # Put N/A at the bottom
+        else:
+            try:
+                download_value = float(downloads)
+            except (ValueError, TypeError):
+                download_value = float('-inf')  # Handle any other non-numeric values
+
+        return (is_current, download_value)
+
+    staleness_report_rows.sort(key=sort_key, reverse=True)
     print(
         create_markdown_table(
             [
