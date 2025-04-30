@@ -15,6 +15,6 @@ COPY --chown=$MAMBA_USER:$MAMBA_USER scripts/run_altair_example_notebooks.sh ./
 RUN chmod +x run_altair_example_notebooks.sh
 
 # Example notebooks' dependencies
-RUN micromamba install -y --freeze-installed -c conda-forge papermill vega_datasets pandas matplotlib numpy
+RUN micromamba install -y --freeze-installed -c conda-forge papermill vega_datasets
 
 CMD ["./run_altair_example_notebooks.sh"]
