@@ -1,4 +1,4 @@
---- /opt/conda/lib/python3.12/site-packages/sparkmagic/utils/utils.py
+--- /opt/conda/lib/python3.12/site-packages/sparkmagic/utils/utils.py 
 +++ /opt/conda/lib/python3.12/site-packages/sparkmagic/utils/utils.py
 @@ -94,15 +94,12 @@
  
