@@ -8,7 +8,6 @@ import requests
 JUPYTERLAB_URL = "http://default:8888/jupyterlab/default/"
 WORKFLOWS_API_ENDPOINT = "api/sagemaker/workflows"
 TIMESTAMP_FORMAT = "%Y-%m-%d %H:%M:%S.%f%z"
-DZ_CLIENT = boto3.client("datazone")
 
 
 def _validate_response(function_name: str, response: requests.Response):
@@ -49,12 +48,20 @@ def stop_local_runner(session: requests.Session, **kwargs):
     return _validate_response("StopLocalRunner", response)
 
 
-def check_blueprint(domain_id: str, **kwargs):
+def check_blueprint(region: str, domain_id: str, endpoint: str, **kwargs):
+    DZ_CLIENT = boto3.client("datazone")
+    # add correct endpoint for gamma env
+    if endpoint != "":
+        DZ_CLIENT = boto3.client("datazone", endpoint_url=endpoint)
     try:
-        workflow_blueprint = DZ_CLIENT.list_environment_blueprints(domainIdentifier=domain_id, name="Workflows")[
-            "items"
-        ]
-        print(str(bool(workflow_blueprint)))
+        blueprint_id = DZ_CLIENT.list_environment_blueprints(
+            managed=True, domainIdentifier=domain_id, name="Workflows"
+        )["items"][0]["id"]
+        blueprint_config = DZ_CLIENT.get_environment_blueprint_configuration(
+            domainIdentifier=domain_id, environmentBlueprintIdentifier=blueprint_id
+        )
+        enabled_regions = blueprint_config["enabledRegions"]
+        print(str(region in enabled_regions))
     except:
         print("False")
 
@@ -82,6 +89,10 @@ def main():
     check_blueprint_parser = subparsers.add_parser("check-blueprint", help="Check Workflows blueprint")
     check_blueprint_parser.add_argument(
         "--domain-id", type=str, required=True, help="Datazone Domain ID for blueprint check"
+    )
+    check_blueprint_parser.add_argument("--region", type=str, required=True, help="Datazone Domain region")
+    check_blueprint_parser.add_argument(
+        "--endpoint", type=str, required=True, help="Datazone endpoint for blueprint check"
     )
 
     args = parser.parse_args()
