@@ -183,8 +183,8 @@ nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
     # do not fail immediately for non-zero exit code returned
     # by start-workflows-container. An expected non-zero exit
-    # code will be returned if there are not a minimum of 4 GB
-    # of ram in the instance config
+    # code will be returned if there is not a minimum of 2
+    # CPU cores available.
     # Start workflows local runner
     bash /etc/sagemaker-ui/workflows/start-workflows-container.sh
 
