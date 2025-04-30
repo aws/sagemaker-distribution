@@ -15,3 +15,4 @@ dependencies:
   - isort
   - pre-commit
   - condastats
+  - s3fs
