@@ -172,8 +172,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
-    jupyter labextension disable @jupyter/collaboration-extension && \
-    jupyter labextension disable @jupyter/docprovider-extension
+    jupyter labextension disable @jupyter/collaboration-extension
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
@@ -186,6 +185,7 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     chmod a+rw $SAGEMAKER_LOGGING_DIR && \
     mkdir -p ${STUDIO_LOGGING_DIR} && \
     chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} && \
+
     # Clean up CodeEditor artifacts
     rm -rf /etc/code-editor && \
     # Create supervisord runtime directory
@@ -207,7 +207,7 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
 
 # Explicitly disable BuildKit for SM Studio Docker functionality
 ENV DOCKER_BUILDKIT=0
-ENV PATH="/etc/sagemaker-inference-server:/opt/conda/bin:/opt/conda/condabin:$PATH"
+ENV PATH="/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
 ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
