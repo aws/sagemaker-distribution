@@ -70,8 +70,8 @@ def _generate_staleness_report_per_image(
     staleness_report_rows = []
 
     # Get conda download statistics for all installed packages
-    # Use previous month to get full month of data
-    previous_month = (datetime.now() - relativedelta(months=1)).strftime("%Y-%m")
+    # Use the month before last to get full month of data
+    previous_month = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m")
     pkg_list = list(package_versions_in_upstream.keys())
     # Suppress FutureWarning from pandas so it doesn't show in report
     with warnings.catch_warnings():
