@@ -28,7 +28,7 @@ scikit-learn|1.6.1|1.6.1
 pip|25.1.1|25.1.1
 torchvision|0.21.0|0.21.0
 autogluon|1.3.0|1.3.0
-ipywidgets|8.1.6|8.1.6
+ipywidgets|8.1.7|8.1.7
 notebook|7.4.1|7.4.1
 aws-glue-sessions|1.0.9|1.0.9
 conda|25.3.1|25.3.1
