@@ -14,7 +14,7 @@ ipython|8.36.0|8.36.0
 jupyter-lsp|2.2.5|2.2.5
 jupyterlab|4.4.1|4.4.1
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
-langchain|0.3.24|0.3.24
+langchain|0.3.25|0.3.25
 jupyter-ai|2.31.4|2.31.4
 amazon-sagemaker-jupyter-ai-q-developer|1.2.4|1.2.4
 jupyter-scheduler|2.10.0|2.10.0
@@ -24,10 +24,10 @@ jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.16|0.1.16
 scipy|1.15.2|1.15.2
 matplotlib-base|3.10.1|3.10.1
-scikit-learn|1.5.2|1.5.2
-pip|25.1|25.1
+scikit-learn|1.6.1|1.6.1
+pip|25.1.1|25.1.1
 torchvision|0.21.0|0.21.0
-autogluon|1.2.0|1.2.0
+autogluon|1.3.0|1.3.0
 ipywidgets|8.1.6|8.1.6
 notebook|7.4.1|7.4.1
 aws-glue-sessions|1.0.9|1.0.9
@@ -55,7 +55,7 @@ sagemaker-jupyterlab-emr-extension|0.3.8|0.3.8
 sagemaker-jupyterlab-extension|0.4.2|0.4.2
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
-sagemaker-python-sdk|2.243.2|2.243.2
+sagemaker-python-sdk|2.244.0|2.244.0
 sagemaker-studio-analytics-extension|0.1.7|0.1.7
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
