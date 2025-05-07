@@ -44,9 +44,9 @@ The tables below list SageMaker Distribution Image versions that are no longer s
 
 | Image Version | ECR Image URI | End of Support Date |
 | :---:         | :---:         | :---:               |
-| 2.3.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.3-gpu  | Apr 25th, 2025   |
-| 2.2.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.2-gpu  | Apr 25th, 2025   |
-| 2.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.1-gpu  | Apr 25th, 2025   |
+| 2.3.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.3-cpu  | Apr 25th, 2025   |
+| 2.2.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.2-cpu  | Apr 25th, 2025   |
+| 2.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.1-cpu  | Apr 25th, 2025   |
 | 2.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.0-cpu  | Feb 25th, 2025   |
 | 1.11.x        | public.ecr.aws/sagemaker/sagemaker-distribution:1.11-cpu | Jan 8th, 2025    |
 | 1.10.x        | public.ecr.aws/sagemaker/sagemaker-distribution:1.10-cpu | Feb 5th, 2025    |
@@ -71,9 +71,9 @@ The tables below list SageMaker Distribution Image versions that are no longer s
 ### GPU Images
 | Image Version | ECR Image URI | End of Support Date |
 | :---:         | :---:         | :---:               |
-| 2.3.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.3-cpu  | Apr 25th, 2025   |
-| 2.2.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.2-cpu  | Apr 25th, 2025   |
-| 2.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.1-cpu  | Apr 25th, 2025   |
+| 2.3.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.3-gpu  | Apr 25th, 2025   |
+| 2.2.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.2-gpu  | Apr 25th, 2025   |
+| 2.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.1-gpu  | Apr 25th, 2025   |
 | 2.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.0-gpu  | Feb 25th, 2025   |
 | 1.11.x        | public.ecr.aws/sagemaker/sagemaker-distribution:1.11-gpu | Jan 8th, 2025    |
 | 1.10.x        | public.ecr.aws/sagemaker/sagemaker-distribution:1.10-gpu | Feb 5th, 2025    |
