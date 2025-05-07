@@ -8,9 +8,8 @@ RUN git clone --recursive https://github.com/pytorch/examples
 # But libcuda.so.1 exists. Adding this resolves, but also adding `2>/dev/null` to ignore if not needed.
 RUN sudo ln -s /usr/lib/x86_64-linux-gnu/libcuda.so.1 /usr/lib/x86_64-linux-gnu/libcuda.so 2>/dev/null
 
+RUN micromamba install --freeze-installed -y conda-forge::uv
+
 WORKDIR "examples"
 
-RUN ./run_python_examples.sh install_deps
-
-# We skip `imagenet` because it requires a lot of resources and so aren't a good fit for us.
-CMD ["./run_python_examples.sh", "dcgan,fast_neural_style,distributed,mnist,mnist_forward_forward,mnist_hogwild,mnist_rnn,regression,reinforcement_learning,siamese_network,super_resolution,time_sequence_prediction,vae,word_language_model,fx"]
+CMD ./run_python_examples.sh
