@@ -1,6 +1,30 @@
 #!/bin/bash
 set -eux
 
+# Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab
+if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
+    # Override Jupyter AI config file with specific content only for 2.6
+    # this is a potential workaround for Q chat issue where the chat does not
+    # load since it does not pick up the latest config file
+    NB_USER=sagemaker-user
+    # Check if Jupyter AI config file exists, override with specific content if so only for 2.6
+    # this is a potential workaround for Q chat issue
+    JUPYTER_AI_CONFIG_PATH=/home/${NB_USER}/.local/share/jupyter/jupyter_ai/config.json
+    JUPYTER_AI_CONFIG_CONTENT='{
+        "model_provider_id": "amazon-q:Q-Developer",
+        "embeddings_provider_id": null,
+        "send_with_shift_enter": false,
+        "fields": {},
+        "api_keys": {},
+        "completions_model_provider_id": null,
+        "completions_fields": {},
+        "embeddings_fields": {}
+    }'
+
+    # Overwrite the file if it exists (or create it if it doesn't)
+    echo "$JUPYTER_AI_CONFIG_CONTENT" > "$JUPYTER_AI_CONFIG_PATH"
+fi
+
 # Writes script status to file. This file is read by an IDE extension responsible for dispatching UI post-startup-status to the user.
 write_status_to_file() {
     local status="$1"
@@ -91,14 +115,14 @@ set +x
 
 # Note: The $? check immediately follows the sagemaker-studio command to ensure we're checking its exit status.
 # Adding commands between these lines could lead to incorrect error handling.
-response=$( sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id "$dataZoneDomainId" --profile default)
+response=$(timeout 30 sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id "$dataZoneDomainId" --profile default)
 responseStatus=$?
 
 set -x
 
 if [ $responseStatus -ne 0 ]; then
         echo "Failed to fetch domain execution role credentials. Will skip adding new credentials profile: DomainExecutionRoleCreds."
-        write_status_to_file "error" "Network issue detected. Your domain may be using a public subnet, which affects IDE functionality. Please contact your administrator."
+        write_status_to_file "error" "Network issue detected. Your domain may be using a public subnet, which affects IDE functionality. Please contact your admin."
 else
         aws configure set credential_process "sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id $dataZoneDomainId --profile default" --profile DomainExecutionRoleCreds
         echo "Successfully configured DomainExecutionRoleCreds profile"
@@ -153,18 +177,23 @@ else
   echo readonly LOGNAME >> ~/.bashrc
 fi
 
-set -e
-
-# write unexpected error to file if any of the remaining scripts fail.
-trap 'write_status_to_file "error" "An unexpected error occurred. Please stop and restart your space to retry."' ERR
-
 # Generate sagemaker pysdk intelligent default config
 nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 # Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab
 if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
+    # do not fail immediately for non-zero exit code returned
+    # by start-workflows-container. An expected non-zero exit
+    # code will be returned if there is not a minimum of 2
+    # CPU cores available.
     # Start workflows local runner
     bash /etc/sagemaker-ui/workflows/start-workflows-container.sh
 
+    # ensure functions inherit traps and fail immediately
+    set -eE
+
+    # write unexpected error to file if any of the remaining scripts fail.
+    trap 'write_status_to_file "error" "An unexpected error occurred. Please stop and restart your space to retry."' ERR
+    
     # Install conda and pip dependencies if lib mgmt config existing
     bash /etc/sagemaker-ui/libmgmt/install-lib.sh $HOME/src
 

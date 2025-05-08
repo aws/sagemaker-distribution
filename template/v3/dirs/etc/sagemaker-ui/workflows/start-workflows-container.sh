@@ -42,6 +42,7 @@ DZ_DOMAIN_ID=$(jq -r '.AdditionalMetadata.DataZoneDomainId' < $RESOURCE_METADATA
 DZ_PROJECT_ID=$(jq -r '.AdditionalMetadata.DataZoneProjectId' < $RESOURCE_METADATA_FILE)
 DZ_ENV_ID=$(jq -r '.AdditionalMetadata.DataZoneEnvironmentId' < $RESOURCE_METADATA_FILE)
 DZ_DOMAIN_REGION=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $RESOURCE_METADATA_FILE)
+DZ_ENDPOINT=$(jq -r '.AdditionalMetadata.DataZoneEndpoint' < $RESOURCE_METADATA_FILE)
 DZ_PROJECT_S3PATH=$(jq -r '.AdditionalMetadata.ProjectS3Path' < $RESOURCE_METADATA_FILE)
 WORKFLOW_DAG_PATH="/home/sagemaker-user/${HOME_FOLDER_NAME}/workflows/dags"
 WORKFLOW_CONFIG_PATH="/home/sagemaker-user/${HOME_FOLDER_NAME}/workflows/config"
@@ -67,7 +68,7 @@ if [ ! -f "${WORKFLOW_HEALTH_PATH}/status.json" ]; then
 fi
 
 # Only start local runner if Workflows blueprint is enabled
-if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint --domain-id "$DZ_DOMAIN_ID")" = "False" ]; then
+if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint --region "$DZ_DOMAIN_REGION" --domain-id "$DZ_DOMAIN_ID" --endpoint "$DZ_ENDPOINT")" = "False" ]; then
     echo "Workflows blueprint is not enabled. Workflows will not start."
     handle_workflows_startup_error 0
 fi
