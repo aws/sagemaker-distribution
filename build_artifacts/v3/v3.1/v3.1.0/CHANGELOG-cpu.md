@@ -6,7 +6,7 @@ Package | Previous Version | Current Version
 ---|---|---
 pytorch|2.5.1|2.6.0
 ipython|8.34.0|8.36.0
-jupyterlab|4.3.6|4.4.1
+jupyterlab|4.3.6|4.4.2
 amazon-q-developer-jupyterlab-ext|3.4.7|3.4.8
 langchain|0.3.21|0.3.25
 jupyter-ai|2.30.0|2.31.4
@@ -19,7 +19,7 @@ pip|25.0.1|25.1.1
 torchvision|0.20.1|0.21.0
 autogluon|1.2.0|1.3.0
 ipywidgets|8.1.5|8.1.7
-notebook|7.3.3|7.4.1
+notebook|7.3.3|7.4.2
 aws-glue-sessions|1.0.8|1.0.9
 conda|25.1.1|25.3.1
 uvicorn|0.34.0|0.34.2
@@ -33,3 +33,12 @@ sagemaker-jupyterlab-emr-extension|0.3.7|0.3.8
 sagemaker-jupyterlab-extension|0.4.0|0.4.2
 sagemaker-python-sdk|2.242.0|2.244.0
 sagemaker-studio-analytics-extension|0.1.5|0.1.7
+
+## What's new: 
+
+Package | Version 
+---|---
+sagemaker-studio|1.0.13
+sagemaker-studio-cli|1.0.6
+sagemaker-studio-dataengineering-extensions|1.0.9
+sagemaker-studio-dataengineering-sessions|1.0.10
