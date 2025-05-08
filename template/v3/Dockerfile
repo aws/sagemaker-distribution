@@ -49,7 +49,7 @@ ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
 RUN apt-get update && apt-get upgrade -y && \
-    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc && \
+    apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc jq ca-certificates gnupg && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
     chmod g+w /etc/passwd && \
@@ -185,7 +185,9 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     chmod a+rw $SAGEMAKER_LOGGING_DIR && \
     mkdir -p ${STUDIO_LOGGING_DIR} && \
     chown ${NB_USER}:${MAMBA_USER} ${STUDIO_LOGGING_DIR} && \
-
+    # Create sagemaker pysdk admin default config directory
+    mkdir -p /etc/xdg/sagemaker && \
+    chmod a+rw /etc/xdg/sagemaker && \
     # Clean up CodeEditor artifacts
     rm -rf /etc/code-editor && \
     # Create supervisord runtime directory
