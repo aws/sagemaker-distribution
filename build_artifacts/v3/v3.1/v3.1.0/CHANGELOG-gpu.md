@@ -14,6 +14,7 @@ amazon-sagemaker-jupyter-ai-q-developer|1.1.0|1.2.4
 amazon-sagemaker-jupyter-scheduler|3.1.10|3.1.11
 amazon-sagemaker-sql-magic|0.1.3|0.1.4
 amazon_sagemaker_sql_editor|0.1.15|0.1.16
+matplotlib-base|3.10.1|3.10.3
 scikit-learn|1.5.2|1.6.1
 pip|25.0.1|25.1.1
 torchvision|0.20.1|0.21.0
