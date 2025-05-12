@@ -1,0 +1,36 @@
+name: Update environment.lock
+# Update environment.lock weekly, so we can quickly install environment without having
+# to solve environment.yml every time.
+on:
+  # Every Monday
+  schedule:
+    - cron: '0 0 * * MON'
+  # Manually call
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash -l {0}
+jobs:
+  update-environment:
+    name: Install environment.yml, generate environment.lock
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: mamba-org/setup-micromamba@v1
+        with:
+          environment-file: ./environment.yml
+          environment-name: sagemaker-distribution
+          init-shell: bash
+      - name: Create environment-lock.yml
+        run: micromamba env export --explicit > environment.lock
+      - name: Run sagemaker-distribution unit tests to check for regressions
+        run: pytest -m unit
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add environment.lock
+          git commit -m 'Update environment.lock'
+          git push

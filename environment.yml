@@ -14,3 +14,5 @@ dependencies:
   - black
   - isort
   - pre-commit
+  - condastats>=0.2.1
+  - s3fs>=2025.3.2
