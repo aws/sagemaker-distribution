@@ -22,7 +22,7 @@ amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.16|0.1.16
 scipy|1.15.2|1.15.2
-matplotlib-base|3.10.1|3.10.1
+matplotlib-base|3.10.3|3.10.3
 scikit-learn|1.5.2|1.5.2
 pip|24.3.1|24.3.1
 torchvision|0.19.1|0.21.0
@@ -55,11 +55,11 @@ sagemaker-jupyterlab-extension|0.4.2|0.4.2
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
 sagemaker-python-sdk|2.243.4|2.243.4
-sagemaker-studio|1.0.13|1.0.13
+sagemaker-studio|1.0.14|1.0.14
 sagemaker-studio-analytics-extension|0.1.7|0.1.7
 sagemaker-studio-cli|1.0.6|1.0.6
-sagemaker-studio-dataengineering-extensions|1.0.9|1.0.9
-sagemaker-studio-dataengineering-sessions|1.0.10|1.0.10
+sagemaker-studio-dataengineering-extensions|1.0.10|1.0.10
+sagemaker-studio-dataengineering-sessions|1.0.11|1.0.11
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.17.0|2.18.0
