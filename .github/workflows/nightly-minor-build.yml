@@ -1,8 +1,11 @@
-name: Generate monthly minor release(s)
+name: Kickoff nightly Minor version builds
+run-name: Kickoff Minor nightly builds $(date +'%m-%d-%Y')
 on:
-  # Run first day of the month at 8AM PST / 9AM PDT
-  #schedule:
-  #  - cron: '0 16 1 * *'
+  # Run manually
+  workflow_dispatch:
+  # Run on 1st-10th day each month at 4PM PST / 5PM PDT
+  schedule:
+    - cron: '0 0 1-10 * *'
 jobs:
   generate-version-matrix:
     name: Generate version matrix
@@ -12,14 +15,25 @@ jobs:
       matrix: ${{ steps.gen-mat.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
+      - name: Get supported Major versions
+        id: supported-major-versions
+        # Check support_policy.md to determine active Major versions
+        run: |
+            major_versions=$(sed -n '/^### CPU Images/,/^### GPU Images/{
+                /^### GPU Images/q
+                /^| [0-9]/{
+                    s/^| \([0-9]\+\).*/\1/p
+                }
+            }' support_policy.md | sort -n | uniq | tr '\n' ',' | sed 's/,$//' | sed 's/,/","/g')
+            echo "majors=[\"$major_versions\"]" >> $GITHUB_OUTPUT
       - name: Generate base patch version matrix
         id: gen-mat
-        # Output looks like: matrix={"version":["0.11.0","1.4.1"]}
-        # For each major, get highest minor version. Then get highest patch
-        # for that minor. Use this patch as base version.
+        # Output looks like: matrix={"version":["1.13.1","2.5.0","3.0.0"]}
+        # For each active Major version, get highest Minor version. Then get highest Patch
+        # for that Minor. Use this Patch as base version.
         run: |
           versions=("{\"version\":[")
-          for major in build_artifacts/v*; do
+          for major in build_artifacts/v${{ steps.supported-major-versions.outputs.majors }}; do
             highest_minor=$(ls $major | sort -t. -k2n | tail -n1)
             highest_patch=$(ls $major/$highest_minor | sort -t. -k2n | tail -n1)
             versions+="\"${highest_patch#v}\""
@@ -28,7 +42,7 @@ jobs:
           versions=${versions::-1}
           versions+="]}"
           echo "matrix=$versions" >> $GITHUB_OUTPUT
-  start-monthly-minor:
+  start-minor-build:
     name: Start monthly minor release
     needs: generate-version-matrix
     permissions:
@@ -42,16 +56,4 @@ jobs:
     secrets: inherit
     with:
       release-type: "minor"
-      base-version: ${{ matrix.version }}
-  check-image-size:
-    name: Check Image Size
-    needs: start-monthly-minor
-    permissions:
-      pull-requests: write
-      contents: write
-    strategy:
-      matrix: ${{ fromJson(needs.generate-version-matrix.outputs.matrix) }}
-      fail-fast: false
-    uses: aws/sagemaker-distribution/.github/workflows/check-image-size.yml@main
-    with:
       base-version: ${{ matrix.version }}
