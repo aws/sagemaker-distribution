@@ -115,14 +115,14 @@ set +x
 
 # Note: The $? check immediately follows the sagemaker-studio command to ensure we're checking its exit status.
 # Adding commands between these lines could lead to incorrect error handling.
-response=$( sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id "$dataZoneDomainId" --profile default)
+response=$(timeout 30 sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id "$dataZoneDomainId" --profile default)
 responseStatus=$?
 
 set -x
 
 if [ $responseStatus -ne 0 ]; then
         echo "Failed to fetch domain execution role credentials. Will skip adding new credentials profile: DomainExecutionRoleCreds."
-        write_status_to_file "error" "Network issue detected. Your domain may be using a public subnet, which affects IDE functionality. Please contact your administrator."
+        write_status_to_file "error" "Network issue detected. Your domain may be using a public subnet, which affects IDE functionality. Please contact your admin."
 else
         aws configure set credential_process "sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id $dataZoneDomainId --profile default" --profile DomainExecutionRoleCreds
         echo "Successfully configured DomainExecutionRoleCreds profile"
@@ -177,18 +177,23 @@ else
   echo readonly LOGNAME >> ~/.bashrc
 fi
 
-set -e
-
-# write unexpected error to file if any of the remaining scripts fail.
-trap 'write_status_to_file "error" "An unexpected error occurred. Please stop and restart your space to retry."' ERR
-
 # Generate sagemaker pysdk intelligent default config
 nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 # Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab
 if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
+    # do not fail immediately for non-zero exit code returned
+    # by start-workflows-container. An expected non-zero exit
+    # code will be returned if there is not a minimum of 2
+    # CPU cores available.
     # Start workflows local runner
     bash /etc/sagemaker-ui/workflows/start-workflows-container.sh
 
+    # ensure functions inherit traps and fail immediately
+    set -eE
+
+    # write unexpected error to file if any of the remaining scripts fail.
+    trap 'write_status_to_file "error" "An unexpected error occurred. Please stop and restart your space to retry."' ERR
+    
     # Install conda and pip dependencies if lib mgmt config existing
     bash /etc/sagemaker-ui/libmgmt/install-lib.sh $HOME/src
 
