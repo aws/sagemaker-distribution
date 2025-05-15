@@ -1,0 +1,57 @@
+# Workflow to start nightly build(s) upon new image version release.
+# Triggered by release (https://github.com/aws/sagemaker-distribution/releases) publication, for `*-cpu` only so we run once per image version.
+# Can also be triggered manually.
+# When a minor version (X.y.0) is released, we'll start the next minor (X.(y+1).0) and patch (X.y.1).
+# When a patch version (X.y.z) is released, we'll start the next patch (X.y.(z+1)).
+name: Add New Nightly Build(s)
+on:
+    release:
+        types: [published]
+    workflow_dispatch:
+        inputs:
+            version:
+                description: 'Released version to add next versions for (x.y.z)'
+                required: true
+                type: string
+defaults:
+    run:
+        shell: bash -l {0}
+jobs:
+    update-nightly-schedule:
+        name: Update NIGHTLY_BUILD_SCHEDULE with new version(s).
+        runs-on: ubuntu-latest
+        # Only run for CPU releases or manual triggers
+        if: |
+            github.event_name == 'workflow_dispatch' ||
+            (github.event_name == 'release' && endsWith(github.event.release.tag_name, '-cpu'))
+        steps:
+            - uses: actions/checkout@v4
+            - uses: mamba-org/setup-micromamba@v1
+              with:
+                environment-file: ./environment.lock
+                environment-name: sagemaker-distribution
+                init-shell: bash
+            - name: Set version
+              id: version
+              run: |
+                if [ "${{ github.event_name }}" == "release" ]; then
+                    # Extract x.y.z from x.y.z-cpu
+                    VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/-cpu$//')
+                    echo "version=$VERSION" >> $GITHUB_OUTPUT
+                else
+                    # Use manually provided version
+                    echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+                fi
+            - name: Update nightly_build_schedule.json
+              id: update-schedule
+              env:
+                GH_TOKEN: ${{ secrets.GH_TOKEN }}
+              run: |
+                micromamba activate sagemaker-distribution
+                VERSION=$()
+                echo '${{ vars.NIGHTLY_BUILD_SCHEDULE }}' > schedule.json
+                python ./.github/workflows/utils/nightly_build_helper.py \
+                    add-next-versions ${{ steps.version.outputs.version }} \
+                    --current-schedule-file schedule.json
+                gh variable set NIGHTLY_BUILD_SCHEDULE < schedule.json
+                echo Successfully set NIGHTLY_BUILD_SCHEDULE environment variable: https://github.com/aws/sagemaker-distribution/settings/variables/actions
