@@ -8,6 +8,7 @@ pysdk_version=$(micromamba list | grep sagemaker-python-sdk | tr -s ' ' | cut -d
 
 # Checkout the corresponding sagemaker-python-sdk version
 git checkout tags/v$pysdk_version
+git status
 
 # Install test dependencies of sagemaker-python-sdk
 # Using pip as some of the packages are not available on conda-forge
