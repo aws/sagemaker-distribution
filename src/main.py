@@ -425,7 +425,7 @@ def get_arg_parser():
         help="Specify the base patch version for which the package staleness report needs to be " "generated.",
     )
     package_staleness_parser.add_argument(
-        "--download_stats",
+        "--download-stats",
         action="store_true",
         help="Specify if download count stats should be included in the package staleness report.",
     )
