@@ -3,7 +3,7 @@ run-name: Kickoff nightly builds ${{ github.event.schedule }}
 on:
   # Run manually
   workflow_dispatch:
-  # Run on 1st-10th day each month at 4PM PST / 5PM PDT
+  # Run on Mon-Fri at 4PM PST / 5PM PDT
   schedule:
     - cron: '0 0 * * 1-5'
 jobs:

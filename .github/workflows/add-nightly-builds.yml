@@ -42,7 +42,7 @@ jobs:
                     # Use manually provided version
                     echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
                 fi
-            - name: Update nightly_build_schedule.json
+            - name: Update nightly build schedule
               id: update-schedule
               env:
                 GH_TOKEN: ${{ secrets.GH_TOKEN }}

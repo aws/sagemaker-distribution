@@ -13,7 +13,7 @@ defaults:
         shell: bash -l {0}
 jobs:
     update-nightly-schedule:
-        name: Update nightly_build_schedule.json
+        name: Update nightly build schedule
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v4
