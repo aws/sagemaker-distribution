@@ -1,0 +1,4 @@
+conda-forge::dash[version='<=2.18.1']
+conda-forge::evaluate[version='<0.4.2']
+conda-forge::libsqlite[version='<3.49.0']
+conda-forge::sagemaker-jupyterlab-extension-common[version='<0.2.0']

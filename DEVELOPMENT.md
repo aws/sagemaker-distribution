@@ -3,7 +3,7 @@
 This project uses Conda to manage its dependencies. Run the following to setup your local environment:
 
 ```shell
-conda env update --file environment.yml -n sagemaker-distribution
+conda env update --file environment.lock -n sagemaker-distribution
 ```
 
 ## Tests
