@@ -87,12 +87,19 @@ def _generate_staleness_report_per_image(
             if version_in_sagemaker_distribution == package_versions_in_upstream[package]
             else "${\color{red}" + package + "}$"
         )
+
+        # Get download count with error handling
+        try:
+            download_count = conda_download_stats[package]
+        except (KeyError, TypeError):
+            download_count = 0
+
         staleness_report_rows.append(
             {
                 "package": package_string,
                 "version_in_sagemaker_distribution": version_in_sagemaker_distribution,
                 "latest_relavant_version": package_versions_in_upstream[package],
-                "downloads": conda_download_stats[package],
+                "downloads": download_count,
             }
         )
 
