@@ -424,6 +424,11 @@ def get_arg_parser():
         required=True,
         help="Specify the base patch version for which the package staleness report needs to be " "generated.",
     )
+    package_staleness_parser.add_argument(
+        "--download-stats",
+        action="store_true",
+        help="Specify if download count stats should be included in the package staleness report.",
+    )
     package_size_parser = subparsers.add_parser(
         "generate-size-report",
         help="Generates toatl image size and package size report for each of the packages in the given "
