@@ -295,7 +295,11 @@ def generate_package_staleness_report(args):
             latest_package_versions_in_upstream,
         ) = _get_installed_package_versions_and_conda_versions(image_config, target_version_dir, target_version)
         _generate_staleness_report_per_image(
-            latest_package_versions_in_upstream, target_packages_match_spec_out, image_config, target_version, args.download_stats
+            latest_package_versions_in_upstream,
+            target_packages_match_spec_out,
+            image_config,
+            target_version,
+            args.download_stats,
         )
 
 
