@@ -17,8 +17,7 @@ class NightlyBuildHelper:
         if not repo_name:
             raise ValueError("GITHUB_REPOSITORY environment variable is required")
 
-        self.g = Github(token)
-        self.repo = self.g.get_repo(repo_name)
+        self.repo = Github(token).get_repo(repo_name)
         self.schedule_variable, self.current_schedule = self._load_schedule()
 
     def _load_schedule(self):
@@ -57,6 +56,10 @@ class NightlyBuildHelper:
 
     def remove_version(self, version):
         """Remove a version from active builds and update base versions accordingly."""
+        version_obj = semver.VersionInfo.parse(version)
+        if str(version_obj) != version:
+            raise ValueError(f"Version must be in x.y.z format, got: {version}")
+
         print(f"Current schedule: {json.dumps(self.current_schedule, indent=4, sort_keys=True)}")
         print(f"Removing version: {version}")
 
@@ -66,8 +69,6 @@ class NightlyBuildHelper:
 
         # Remove from active builds
         self.current_schedule["active_nightly_builds"].remove(version)
-
-        version_obj = semver.VersionInfo.parse(version)
 
         if version_obj.patch == 0:  # Handling minor version
             # Remove previous minor version from minor_base_versions
@@ -85,10 +86,12 @@ class NightlyBuildHelper:
 
     def add_next_versions(self, version):
         """Add next version(s) based on the removed version."""
+        version_obj = semver.VersionInfo.parse(version)
+        if str(version_obj) != version:
+            raise ValueError(f"Version must be in x.y.z format, got: {version}")
+
         print(f"Current schedule: {self.current_schedule}")
         print(f"Adding next versions for released: {version}")
-
-        version_obj = semver.VersionInfo.parse(version)
 
         next_versions = [str(version_obj.bump_patch())]
         if version_obj.patch == 0:  # Handling minor version

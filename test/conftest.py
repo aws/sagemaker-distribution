@@ -1,5 +1,7 @@
 import pytest
-
+import sys
+import os
+from pathlib import Path
 
 def pytest_addoption(parser):
     parser.addoption(
@@ -21,3 +23,7 @@ def local_image_version(request) -> str:
 @pytest.fixture
 def use_gpu(request) -> bool:
     return request.config.getoption("--use-gpu")
+
+# Add the github workflows utils directory to Python path
+root_dir = Path(__file__).parent.parent
+sys.path.append(str(root_dir / '.github' / 'workflows' / 'utils'))
