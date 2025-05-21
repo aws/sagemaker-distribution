@@ -1,5 +1,5 @@
 name: Kickoff Nightly builds
-run-name: Kickoff nightly builds ${{ github.event.schedule }}
+run-name: Kickoff nightly builds
 on:
   # Run manually
   workflow_dispatch:

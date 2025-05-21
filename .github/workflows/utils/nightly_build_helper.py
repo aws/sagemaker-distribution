@@ -57,7 +57,7 @@ class NightlyBuildHelper:
 
     def remove_version(self, version):
         """Remove a version from active builds and update base versions accordingly."""
-        print(f"Current schedule: {self.current_schedule}")
+        print(f"Current schedule: {json.dumps(self.current_schedule, indent=4, sort_keys=True)}")
         print(f"Removing version: {version}")
 
         if version not in self.current_schedule["active_nightly_builds"]:
