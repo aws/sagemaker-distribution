@@ -18,6 +18,7 @@ _docker_client = docker.from_env()
 @pytest.mark.parametrize(
     "dockerfile_path, required_packages",
     [
+        ("anaconda.test.Dockerfile", ["conda"]),
         ("keras.test.Dockerfile", ["keras"]),
         ("autogluon.test.Dockerfile", ["autogluon"]),
         ("matplotlib.test.Dockerfile", ["matplotlib"]),
@@ -102,6 +103,7 @@ def test_dockerfiles_for_cpu(
 @pytest.mark.parametrize(
     "dockerfile_path, required_packages",
     [
+        ("anaconda.test.Dockerfile", ["conda"]),
         ("keras.test.Dockerfile", ["keras"]),
         ("autogluon.test.Dockerfile", ["autogluon"]),
         ("matplotlib.test.Dockerfile", ["matplotlib"]),
