@@ -270,11 +270,16 @@ def _generate_python_package_dependency_report(image_config, base_version_dir, t
 
     results = dict()
     for package, version in new_packages.items():
-        # Pull package metadata from conda-forge and dump into json file
-        search_result = conda.cli.python_api.run_command("search", f"{package}=={version}", "--json")
-        package_metadata = json.loads(search_result[0])[package][0]
-        results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
-
+        try:
+            # Pull package metadata from conda-forge and dump into json file
+            search_result = conda.cli.python_api.run_command(
+                "search", "-c", "conda-forge", f"{package}=={version}", "--json"
+            )
+            package_metadata = json.loads(search_result[0])[package][0]
+            results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
+        except Exception as e:
+            print(f"Error in report generation: {str(e)}")
+            results[package] = "N/A - see logs"
     print(
         create_markdown_table(
             ["Package", "Version in the Target Image", "Dependencies"],
@@ -339,6 +344,11 @@ def generate_package_dependency_report(args):
     target_version = get_semver(args.target_patch_version)
     target_version_dir = get_dir_for_version(target_version)
 
+    # No new packages for patch versions, so skip dependency report.
+    if target_version.patch != 0:
+        print("Skipping dependency report for patch release.")
+        return
+
     base_version = None
     source_version_txt_file_path = f"{target_version_dir}/source-version.txt"
     if os.path.exists(source_version_txt_file_path):
@@ -352,10 +362,9 @@ def generate_package_dependency_report(args):
     print("\n### Target Image Version: " + str(target_version) + " | Base Image Version: " + str(base_version) + "\n")
     if not base_version:
         print("WARNING: No base version or base version directory found, will generate full report for target version.")
-    for _, configs in _image_generator_configs.items():
-        for image_config in configs:
-            print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
-            _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)
+    for image_config in _image_generator_configs[target_version.major]:
+        print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
+        _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)
 
 
 def get_image_size(image_tag, staging_repo_name, staging_account):
