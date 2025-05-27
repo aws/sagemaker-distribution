@@ -40,6 +40,8 @@ jobs:
       target_version: ${{ steps.calc_target.outputs.target_version }}
     steps:
       - uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
       - uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: ./environment.lock
