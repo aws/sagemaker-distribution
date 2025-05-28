@@ -22,9 +22,3 @@ sagemaker-studio|1.0.13|1.0.14
 sagemaker-studio-analytics-extension|0.1.6|0.1.7
 sagemaker-studio-dataengineering-extensions|1.0.9|1.0.11
 sagemaker-studio-dataengineering-sessions|1.0.10|1.0.12
-
-## What's new: 
-
-Package | Version 
----|---
-amzn-sagemaker-aiops-jupyterlab-extension|1.0.3

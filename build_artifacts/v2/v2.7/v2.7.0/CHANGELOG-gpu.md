@@ -26,9 +26,3 @@ sagemaker-studio-dataengineering-extensions|1.0.9|1.0.11
 sagemaker-studio-dataengineering-sessions|1.0.10|1.0.12
 tensorflow|2.17.0|2.18.0
 tf-keras|2.17.0|2.18.0
-
-## What's new: 
-
-Package | Version 
----|---
-amzn-sagemaker-aiops-jupyterlab-extension|1.0.3

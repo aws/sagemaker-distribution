@@ -21,7 +21,6 @@ amazon-sagemaker-jupyter-scheduler|3.1.11|3.1.11
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.16|0.1.16
-amzn-sagemaker-aiops-jupyterlab-extension|1.0.3|1.0.3
 scipy|1.15.2|1.15.2
 matplotlib-base|3.10.3|3.10.3
 scikit-learn|1.6.1|1.6.1
