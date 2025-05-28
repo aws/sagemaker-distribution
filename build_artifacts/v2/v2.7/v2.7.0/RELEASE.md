@@ -11,7 +11,7 @@ altair|5.5.0|5.5.0
 boto3|1.37.3|1.37.3
 ipython|8.36.0|8.36.0
 jupyter-lsp|2.2.5|2.2.5
-jupyterlab|4.4.2|4.4.2
+jupyterlab|4.4.3|4.4.3
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 langchain|0.3.25|0.3.25
 jupyter-ai|2.31.4|2.31.4
@@ -29,7 +29,7 @@ pip|24.3.1|24.3.1
 torchvision|0.21.0|0.21.0
 autogluon|1.3.0|1.3.0
 ipywidgets|8.1.7|8.1.7
-notebook|7.4.2|7.4.2
+notebook|7.4.3|7.4.3
 aws-glue-sessions|1.0.9|1.0.9
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
@@ -55,7 +55,7 @@ sagemaker-jupyterlab-emr-extension|0.3.8|0.3.8
 sagemaker-jupyterlab-extension|0.4.2|0.4.2
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
-sagemaker-python-sdk|2.244.1|2.244.1
+sagemaker-python-sdk|2.244.2|2.244.2
 sagemaker-studio|1.0.14|1.0.14
 sagemaker-studio-analytics-extension|0.1.7|0.1.7
 sagemaker-studio-cli|1.0.6|1.0.6
