@@ -21,12 +21,13 @@ amazon-sagemaker-jupyter-scheduler|3.1.11|3.1.11
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.16|0.1.16
+amzn-sagemaker-aiops-jupyterlab-extension|1.0.3|1.0.3
 scipy|1.15.2|1.15.2
 matplotlib-base|3.10.3|3.10.3
 scikit-learn|1.6.1|1.6.1
 pip|24.3.1|24.3.1
 torchvision|0.21.0|0.21.0
-autogluon|1.3.0|1.3.0
+autogluon|1.3.1|1.3.1
 ipywidgets|8.1.7|8.1.7
 notebook|7.4.3|7.4.3
 aws-glue-sessions|1.0.9|1.0.9
@@ -54,7 +55,7 @@ sagemaker-jupyterlab-emr-extension|0.3.8|0.3.8
 sagemaker-jupyterlab-extension|0.4.2|0.4.2
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
-sagemaker-python-sdk|2.244.2|2.244.2
+sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.0.14|1.0.14
 sagemaker-studio-analytics-extension|0.1.7|0.1.7
 sagemaker-studio-cli|1.0.6|1.0.6
