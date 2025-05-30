@@ -23,7 +23,7 @@ sagemaker-python-sdk|2.243.2|2.245.0
 sagemaker-studio|1.0.13|1.0.14
 sagemaker-studio-analytics-extension|0.1.6|0.1.7
 sagemaker-studio-dataengineering-extensions|1.0.9|1.0.11
-sagemaker-studio-dataengineering-sessions|1.0.10|1.0.12
+sagemaker-studio-dataengineering-sessions|1.0.10|1.0.13
 tensorflow|2.17.0|2.18.0
 tf-keras|2.17.0|2.18.0
 
