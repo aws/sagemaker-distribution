@@ -61,7 +61,7 @@ sagemaker-studio|1.0.14|1.0.14
 sagemaker-studio-analytics-extension|0.1.7|0.1.7
 sagemaker-studio-cli|1.0.6|1.0.6
 sagemaker-studio-dataengineering-extensions|1.0.11|1.0.11
-sagemaker-studio-dataengineering-sessions|1.0.12|1.0.12
+sagemaker-studio-dataengineering-sessions|1.0.13|1.0.13
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
