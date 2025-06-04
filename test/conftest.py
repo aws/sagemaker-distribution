@@ -1,3 +1,6 @@
+import sys
+from pathlib import Path
+
 import pytest
 
 
@@ -21,3 +24,8 @@ def local_image_version(request) -> str:
 @pytest.fixture
 def use_gpu(request) -> bool:
     return request.config.getoption("--use-gpu")
+
+
+# Add the github workflows utils directory to Python path
+root_dir = Path(__file__).parent.parent
+sys.path.append(str(root_dir / ".github" / "workflows" / "utils"))

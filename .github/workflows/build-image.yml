@@ -40,9 +40,11 @@ jobs:
       target_version: ${{ steps.calc_target.outputs.target_version }}
     steps:
       - uses: actions/checkout@v4
-      - uses: mamba-org/setup-micromamba@v1
         with:
-          environment-file: ./environment.yml
+            fetch-depth: 0
+      - uses: mamba-org/setup-micromamba@v2
+        with:
+          environment-file: ./environment.lock
           environment-name: sagemaker-distribution
           init-shell: bash
       - name: Free up disk space
@@ -54,30 +56,51 @@ jobs:
         run: |
           TARGET_VERSION=$(python -c 'import semver; print(semver.bump_${{ inputs.release-type }}("${{ inputs.base-version }}"))')
           echo "target_version=$TARGET_VERSION" >> $GITHUB_OUTPUT
-      - name: Create new branch
+      - name: Create or merge release branch
         # Note - CodeBuild depends on this branch name. Don't change without corresponding backend change.
-        run: git checkout -b release-${{ steps.calc_target.outputs.target_version }}
+        id: check_branch
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          if git ls-remote --exit-code --heads origin release-${{ steps.calc_target.outputs.target_version }}; then
+            echo "Branch exists, merging latest changes in"
+            git checkout release-${{ steps.calc_target.outputs.target_version }}
+            git merge main
+            git push
+          else
+            echo "Branch doesn't exist, creating now..."
+            git checkout -b release-${{ steps.calc_target.outputs.target_version }}
+          fi
       - name: Generate artifacts
         run: python ./src/main.py create-${{ inputs.release-type }}-version-artifacts --base-patch-version ${{ inputs.base-version }} --force
       - name: Commit .in artifacts to branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # Generate the artifacts every time, only push if there are changes
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
           git add ./build_artifacts
-          git commit -m 'chore: Generate build artifacts for ${{ steps.calc_target.outputs.target_version }} release'
+          git diff-index --quiet HEAD || git commit -m 'chore: Generate build artifacts for ${{ steps.calc_target.outputs.target_version }} release'
           git push --set-upstream origin release-${{ steps.calc_target.outputs.target_version }}
-      - name: Open pull request
+      - name: Create or fetch release PR
         id: get_pr_id
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # Note - CodeBuild depends on this PR title. Don't change without corresponding backend change.
+        # Create PR if it doesn't exist; fetch existing PR number if it does
         run: |
-          URL=$(gh pr create -H release-${{ steps.calc_target.outputs.target_version }} \
-                    --title 'release: v${{ steps.calc_target.outputs.target_version }}' -F ./.github/workflows/PR_TEMPLATE.md)
-          PR=$(echo $URL | sed 's:.*/::')
-          echo "pr_id=$PR" >> $GITHUB_OUTPUT
+          if gh pr list --head release-${{ steps.calc_target.outputs.target_version }} --state open --json number | grep -q '"number":'; then
+            echo "PR exists already, just fetching ID"
+            PR_ID=$(gh pr view release-${{ steps.calc_target.outputs.target_version }} --json number | jq -r .number)
+            echo "pr_id=$PR_ID" >> $GITHUB_OUTPUT
+          else
+            echo "PR doesn't exist, creating now..."
+            git push --set-upstream origin release-${{ steps.calc_target.outputs.target_version }}
+            URL=$(gh pr create -H release-${{ steps.calc_target.outputs.target_version }} -B main \
+                  --title 'release: v${{ steps.calc_target.outputs.target_version }}' -F ./.github/workflows/PR_TEMPLATE.md)
+            PR_ID=$(echo $URL | sed 's:.*/::')
+            echo "pr_id=$PR_ID" >> $GITHUB_OUTPUT
+          fi
   call-codebuild-project:
     runs-on: ubuntu-latest
     needs: open-pr

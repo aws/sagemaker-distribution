@@ -64,19 +64,20 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
 
 
 def _generate_staleness_report_per_image(
-    package_versions_in_upstream, target_packages_match_spec_out, image_config, version
+    package_versions_in_upstream, target_packages_match_spec_out, image_config, version, download_stats
 ):
     print("\n# Staleness Report: " + str(version) + "(" + image_config["image_type"] + ")\n")
     staleness_report_rows = []
 
-    # Get conda download statistics for all installed packages
-    # Use the month before last to get full month of data
-    previous_month = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m")
-    pkg_list = list(package_versions_in_upstream.keys())
-    # Suppress FutureWarning from pandas so it doesn't show in report
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=FutureWarning)
-        conda_download_stats = overall(pkg_list, month=previous_month)
+    if download_stats:
+        # Get conda download statistics for all installed packages
+        # Use the month before last to get full month of data
+        previous_month = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m")
+        pkg_list = list(package_versions_in_upstream.keys())
+        # Suppress FutureWarning from pandas so it doesn't show in report
+        with warnings.catch_warnings():
+            warnings.filterwarnings("ignore", category=FutureWarning)
+            conda_download_stats = overall(pkg_list, month=previous_month)
 
     for package in package_versions_in_upstream:
         version_in_sagemaker_distribution = str(target_packages_match_spec_out[package].get("version")).removeprefix(
@@ -87,32 +88,45 @@ def _generate_staleness_report_per_image(
             if version_in_sagemaker_distribution == package_versions_in_upstream[package]
             else "${\color{red}" + package + "}$"
         )
-        staleness_report_rows.append(
-            {
-                "package": package_string,
-                "version_in_sagemaker_distribution": version_in_sagemaker_distribution,
-                "latest_relavant_version": package_versions_in_upstream[package],
-                "downloads": conda_download_stats[package],
-            }
-        )
 
-    staleness_report_rows.sort(
-        key=lambda x: (
-            not x["package"].startswith("${\\color"),  # Stale packages at top of list
-            -x["downloads"],  # Sorted by downloads
+        if download_stats:
+            # Get download count with error handling
+            try:
+                download_count = conda_download_stats[package]
+            except (KeyError, TypeError):
+                download_count = 0
+
+            staleness_report_rows.append(
+                {
+                    "package": package_string,
+                    "version_in_sagemaker_distribution": version_in_sagemaker_distribution,
+                    "latest_relavant_version": package_versions_in_upstream[package],
+                    "downloads": download_count,
+                }
+            )
+        else:
+            staleness_report_rows.append(
+                {
+                    "package": package_string,
+                    "version_in_sagemaker_distribution": version_in_sagemaker_distribution,
+                    "latest_relavant_version": package_versions_in_upstream[package],
+                }
+            )
+
+    markdown_table_columns = [
+        "Package",
+        "Current Version in the Distribution image",
+        "Latest Relevant Version in " "Upstream",
+    ]
+    if download_stats:
+        markdown_table_columns.append("Downloads (Conda, previous month)")
+        staleness_report_rows.sort(
+            key=lambda x: (
+                not x["package"].startswith("${\\color"),  # Stale packages at top of list
+                -x["downloads"],  # Sorted by downloads
+            )
         )
-    )
-    print(
-        create_markdown_table(
-            [
-                "Package",
-                "Current Version in the Distribution image",
-                "Latest Relevant Version in " "Upstream",
-                "Downloads (Conda, previous month)",
-            ],
-            staleness_report_rows,
-        )
-    )
+    print(create_markdown_table(markdown_table_columns, staleness_report_rows))
 
 
 def _get_installed_package_versions_and_conda_versions(
@@ -256,11 +270,16 @@ def _generate_python_package_dependency_report(image_config, base_version_dir, t
 
     results = dict()
     for package, version in new_packages.items():
-        # Pull package metadata from conda-forge and dump into json file
-        search_result = conda.cli.python_api.run_command("search", f"{package}=={version}", "--json")
-        package_metadata = json.loads(search_result[0])[package][0]
-        results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
-
+        try:
+            # Pull package metadata from conda-forge and dump into json file
+            search_result = conda.cli.python_api.run_command(
+                "search", "-c", "conda-forge", f"{package}=={version}", "--json"
+            )
+            package_metadata = json.loads(search_result[0])[package][0]
+            results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
+        except Exception as e:
+            print(f"Error in report generation: {str(e)}")
+            results[package] = "N/A - see logs"
     print(
         create_markdown_table(
             ["Package", "Version in the Target Image", "Dependencies"],
@@ -281,7 +300,11 @@ def generate_package_staleness_report(args):
             latest_package_versions_in_upstream,
         ) = _get_installed_package_versions_and_conda_versions(image_config, target_version_dir, target_version)
         _generate_staleness_report_per_image(
-            latest_package_versions_in_upstream, target_packages_match_spec_out, image_config, target_version
+            latest_package_versions_in_upstream,
+            target_packages_match_spec_out,
+            image_config,
+            target_version,
+            args.download_stats,
         )
 
 
@@ -321,6 +344,11 @@ def generate_package_dependency_report(args):
     target_version = get_semver(args.target_patch_version)
     target_version_dir = get_dir_for_version(target_version)
 
+    # No new packages for patch versions, so skip dependency report.
+    if target_version.patch != 0:
+        print("Skipping dependency report for patch release.")
+        return
+
     base_version = None
     source_version_txt_file_path = f"{target_version_dir}/source-version.txt"
     if os.path.exists(source_version_txt_file_path):
@@ -334,10 +362,9 @@ def generate_package_dependency_report(args):
     print("\n### Target Image Version: " + str(target_version) + " | Base Image Version: " + str(base_version) + "\n")
     if not base_version:
         print("WARNING: No base version or base version directory found, will generate full report for target version.")
-    for _, configs in _image_generator_configs.items():
-        for image_config in configs:
-            print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
-            _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)
+    for image_config in _image_generator_configs[target_version.major]:
+        print("## Image Type: " + "(" + image_config["image_type"].upper() + ")")
+        _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir)
 
 
 def get_image_size(image_tag, staging_repo_name, staging_account):
