@@ -2,7 +2,7 @@
 
 set -e 
 
-torchvision_version=$(micromamba list | grep torchvision | tr -s ' ' | cut -d ' ' -f 3)
+torchvision_version=$(micromamba list | awk '$1=="torchvision" {print $2}')
 
 git checkout tags/v$torchvision_version
 
