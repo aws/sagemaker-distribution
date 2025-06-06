@@ -1,0 +1,9 @@
+# Change log: 2.7.1(cpu)
+
+## Upgrades: 
+
+Package | Previous Version | Current Version
+---|---|---
+jupyter-ai|2.31.4|2.31.5
+amazon-sagemaker-jupyter-ai-q-developer|1.2.4|1.2.7
+uvicorn|0.34.2|0.34.3
