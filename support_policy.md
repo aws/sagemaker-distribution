@@ -20,17 +20,21 @@ The tables below lists the supported SageMaker Distribution image versions and t
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
+| 3.2.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.2-cpu  | Dec  4th, 2025  |
 | 3.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.1-cpu  | Nov 19th, 2025  |
 | 3.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.0-cpu  | Jun 30th, 2025  |
-| 2.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.6-cpu  | Oct 28th, 2025  |
+| 2.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.7-cpu  | Dec  4th, 2025  |
+| 2.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.6-cpu  | Jun 30th, 2025  |
 
 ### GPU Images
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
+| 3.2.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.2-gpu  | Dec  4th, 2025  |
 | 3.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.1-gpu  | Nov 19th, 2025  |
 | 3.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.0-gpu  | Jun 30th, 2025  |
-| 2.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.6-gpu  | Oct 28th, 2025  |
+| 2.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.7-gpu  | Dec  4th, 2025  |
+| 2.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.6-gpu  | Jun 30th, 2025  |
 
 
 ## Unsupported Image Versions
