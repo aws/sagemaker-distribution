@@ -79,9 +79,6 @@ dataZoneDomainRegion=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $sourc
 
 set +e
 
-# Creating a directory where the repository will be cloned
-mkdir -p $HOME/src
-
 # Remove the ~/.aws/config file to start clean when space restart
 rm -f /home/sagemaker-user/.aws/config
 echo "Successfully removed the ~/.aws/config file"
@@ -128,8 +125,6 @@ else
         echo "Successfully configured DomainExecutionRoleCreds profile"
 fi
 
-echo "Starting execution of Git Cloning script"
-bash /etc/sagemaker-ui/git_clone.sh
 
 # Run AWS CLI command to get the username from DataZone User Profile.
 if [ ! -z "$dataZoneEndPoint" ]; then
@@ -164,9 +159,34 @@ case "$auth_mode" in
         ;;
 esac
 
-# Setting up the Git identity for the user .
-git config --global user.email "$email"
-git config --global user.name "$username"
+# Checks if the project is using Git or Non-Git storage
+is_non_git_storage() {
+  getProjectDefaultEnvResponse=$(sagemaker-studio project get-project-default-environment --domain-id "$dataZoneDomainId" --project-id "$dataZoneProjectId" --profile DomainExecutionRoleCreds)
+  gitConnectionArn=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="gitConnectionArn") | .value')
+  codeRepositoryName=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="codeRepositoryName") | .value')
+
+  if [ -z "$gitConnectionArn" ] && [ -z "$codeRepositoryName" ]; then
+      return 0
+  else
+      return 1
+  fi
+}
+
+echo "Checking Project Storage Type"
+
+if ! is_non_git_storage; then
+  # Creating a directory where the repository will be cloned
+  mkdir -p "$HOME/src"
+
+  echo "Starting execution of Git Cloning script"
+  bash /etc/sagemaker-ui/git_clone.sh
+
+  # Setting up the Git identity for the user .
+  git config --global user.email "$email"
+  git config --global user.name "$username"
+else
+  echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation"
+fi
 
 # MLFlow tracking server uses the LOGNAME environment variable to track identity. Set the LOGNAME to the username of the user associated with the space
 export LOGNAME=$username
