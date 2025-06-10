@@ -1,6 +1,9 @@
 #!/bin/bash
 set -eu
 
+# Get the is_s3_storage_flag parameter passed from the calling script
+is_s3_storage=${1:-"1"}  # Default to 1 (Git storage) if no parameter is passed
+
 # Get the Datazone project metadata from resource-metadata file
 RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json
 SM_DOMAIN_ID=$(jq -r ".DomainId" < $RESOURCE_METADATA_FILE)
@@ -13,24 +16,13 @@ DZ_DOMAIN_REGION=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $RESOURCE_
 DZ_ENDPOINT=$(jq -r '.AdditionalMetadata.DataZoneEndpoint' < $RESOURCE_METADATA_FILE)
 DZ_PROJECT_S3PATH=$(jq -r '.AdditionalMetadata.ProjectS3Path' < $RESOURCE_METADATA_FILE)
 
-# Helper to check if the project is using Git storage
-is_s3_storage() {
-  getProjectDefaultEnvResponse=$(sagemaker-studio project get-project-default-environment --domain-id "$DZ_DOMAIN_ID" --project-id "$DZ_PROJECT_ID" --profile DomainExecutionRoleCreds)
-  gitConnectionArn=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="gitConnectionArn") | .value')
-  codeRepositoryName=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="codeRepositoryName") | .value')
-
-  if [ -z "$gitConnectionArn" ] && [ -z "$codeRepositoryName" ]; then
-      return 0
-  else
-      return 1
-  fi
-}
-
 # Set project directory based on storage type
-if is_s3_storage; then
+if [ "$is_s3_storage" -eq 0 ]; then
     PROJECT_DIR="$HOME/shared-files"
+    echo "Project is using S3 storage, project directory set to: $PROJECT_DIR"
 else
     PROJECT_DIR="$HOME/src"
+    echo "Project is using Git storage, project directory set to: $PROJECT_DIR"
 fi
 
 # Workflows paths in JL

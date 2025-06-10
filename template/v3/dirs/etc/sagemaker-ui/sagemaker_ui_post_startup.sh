@@ -101,7 +101,6 @@ else
         echo "Successfully configured DomainExecutionRoleCreds profile"
 fi
 
-
 # Run AWS CLI command to get the username from DataZone User Profile.
 if [ ! -z "$dataZoneEndPoint" ]; then
     response=$( aws datazone get-user-profile --endpoint-url "$dataZoneEndPoint" --domain-identifier "$dataZoneDomainId" --user-identifier "$dataZoneUserId" --region "$dataZoneDomainRegion" )
@@ -135,8 +134,8 @@ case "$auth_mode" in
         ;;
 esac
 
-# Checks if the project is using Git or Non-Git storage
-is_non_git_storage() {
+# Checks if the project is using Git or S3 storage
+is_s3_storage() {
   getProjectDefaultEnvResponse=$(sagemaker-studio project get-project-default-environment --domain-id "$dataZoneDomainId" --project-id "$dataZoneProjectId" --profile DomainExecutionRoleCreds)
   gitConnectionArn=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="gitConnectionArn") | .value')
   codeRepositoryName=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="codeRepositoryName") | .value')
@@ -150,7 +149,11 @@ is_non_git_storage() {
 
 echo "Checking Project Storage Type"
 
-if ! is_non_git_storage; then
+# Execute once to store the result
+is_s3_storage
+is_s3_storage_flag=$?  # 0 if S3 storage, 1 if Git
+
+if [ $is_s3_storage_flag -ne 0 ]; then
   # Creating a directory where the repository will be cloned
   mkdir -p "$HOME/src"
 
@@ -182,7 +185,7 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
     # code will be returned if there is not a minimum of 2
     # CPU cores available.
     # Start workflows local runner
-    bash /etc/sagemaker-ui/workflows/start-workflows-container.sh
+    bash /etc/sagemaker-ui/workflows/start-workflows-container.sh "$is_s3_storage_flag"
 
     # ensure functions inherit traps and fail immediately
     set -eE
