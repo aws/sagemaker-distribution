@@ -1,30 +1,6 @@
 #!/bin/bash
 set -eux
 
-# Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab
-if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
-    # Override Jupyter AI config file with specific content only for 2.6
-    # this is a potential workaround for Q chat issue where the chat does not
-    # load since it does not pick up the latest config file
-    NB_USER=sagemaker-user
-    # Check if Jupyter AI config file exists, override with specific content if so only for 2.6
-    # this is a potential workaround for Q chat issue
-    JUPYTER_AI_CONFIG_PATH=/home/${NB_USER}/.local/share/jupyter/jupyter_ai/config.json
-    JUPYTER_AI_CONFIG_CONTENT='{
-        "model_provider_id": "amazon-q:Q-Developer",
-        "embeddings_provider_id": null,
-        "send_with_shift_enter": false,
-        "fields": {},
-        "api_keys": {},
-        "completions_model_provider_id": null,
-        "completions_fields": {},
-        "embeddings_fields": {}
-    }'
-
-    # Overwrite the file if it exists (or create it if it doesn't)
-    echo "$JUPYTER_AI_CONFIG_CONTENT" > "$JUPYTER_AI_CONFIG_PATH"
-fi
-
 # Writes script status to file. This file is read by an IDE extension responsible for dispatching UI post-startup-status to the user.
 write_status_to_file() {
     local status="$1"
@@ -79,9 +55,6 @@ dataZoneDomainRegion=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $sourc
 
 set +e
 
-# Creating a directory where the repository will be cloned
-mkdir -p $HOME/src
-
 # Remove the ~/.aws/config file to start clean when space restart
 rm -f /home/sagemaker-user/.aws/config
 echo "Successfully removed the ~/.aws/config file"
@@ -128,9 +101,6 @@ else
         echo "Successfully configured DomainExecutionRoleCreds profile"
 fi
 
-echo "Starting execution of Git Cloning script"
-bash /etc/sagemaker-ui/git_clone.sh
-
 # Run AWS CLI command to get the username from DataZone User Profile.
 if [ ! -z "$dataZoneEndPoint" ]; then
     response=$( aws datazone get-user-profile --endpoint-url "$dataZoneEndPoint" --domain-identifier "$dataZoneDomainId" --user-identifier "$dataZoneUserId" --region "$dataZoneDomainRegion" )
@@ -164,9 +134,34 @@ case "$auth_mode" in
         ;;
 esac
 
-# Setting up the Git identity for the user .
-git config --global user.email "$email"
-git config --global user.name "$username"
+# Checks if the project is using Git or Non-Git storage
+is_non_git_storage() {
+  getProjectDefaultEnvResponse=$(sagemaker-studio project get-project-default-environment --domain-id "$dataZoneDomainId" --project-id "$dataZoneProjectId" --profile DomainExecutionRoleCreds)
+  gitConnectionArn=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="gitConnectionArn") | .value')
+  codeRepositoryName=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="codeRepositoryName") | .value')
+
+  if [ -z "$gitConnectionArn" ] && [ -z "$codeRepositoryName" ]; then
+      return 0
+  else
+      return 1
+  fi
+}
+
+echo "Checking Project Storage Type"
+
+if ! is_non_git_storage; then
+  # Creating a directory where the repository will be cloned
+  mkdir -p "$HOME/src"
+
+  echo "Starting execution of Git Cloning script"
+  bash /etc/sagemaker-ui/git_clone.sh
+
+  # Setting up the Git identity for the user .
+  git config --global user.email "$email"
+  git config --global user.name "$username"
+else
+  echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation"
+fi
 
 # MLFlow tracking server uses the LOGNAME environment variable to track identity. Set the LOGNAME to the username of the user associated with the space
 export LOGNAME=$username
