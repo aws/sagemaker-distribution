@@ -1,6 +1,30 @@
 #!/bin/bash
 set -eux
 
+# Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlabAdd commentMore actions
+if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
+    # Override Jupyter AI config file with specific content only for 2.6
+    # this is a potential workaround for Q chat issue where the chat does not
+    # load since it does not pick up the latest config file
+    NB_USER=sagemaker-user
+    # Check if Jupyter AI config file exists, override with specific content if so only for 2.6
+    # this is a potential workaround for Q chat issue
+    JUPYTER_AI_CONFIG_PATH=/home/${NB_USER}/.local/share/jupyter/jupyter_ai/config.json
+    JUPYTER_AI_CONFIG_CONTENT='{
+        "model_provider_id": "amazon-q:Q-Developer",
+        "embeddings_provider_id": null,
+        "send_with_shift_enter": false,
+        "fields": {},
+        "api_keys": {},
+        "completions_model_provider_id": null,
+        "completions_fields": {},
+        "embeddings_fields": {}
+    }'
+
+    # Overwrite the file if it exists (or create it if it doesn't)
+    echo "$JUPYTER_AI_CONFIG_CONTENT" > "$JUPYTER_AI_CONFIG_PATH"
+fi
+
 # Writes script status to file. This file is read by an IDE extension responsible for dispatching UI post-startup-status to the user.
 write_status_to_file() {
     local status="$1"
