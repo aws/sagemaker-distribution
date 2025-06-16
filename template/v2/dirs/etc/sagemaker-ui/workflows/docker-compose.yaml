@@ -39,7 +39,7 @@ x-airflow-common: &airflow-common
     DataZoneDomainRegion: ${DZ_DOMAIN_REGION}
     ProjectS3Path: ${DZ_PROJECT_S3PATH}
   volumes:
-    - /home/sagemaker-user/${HOME_FOLDER_NAME}/workflows/dags:/usr/local/airflow/dags
+    - /home/sagemaker-user/${PROJECT_DIR}/workflows/dags:/usr/local/airflow/dags
     - /home/sagemaker-user/.workflows_setup/plugins:/usr/local/airflow/plugins
     - /home/sagemaker-user/.workflows_setup/requirements:/usr/local/airflow/requirements
     - /home/sagemaker-user/.workflows_setup/startup:/usr/local/airflow/startup
