@@ -1,6 +1,46 @@
 #!/bin/bash
 set -eu
 
+# Get the is_s3_storage_flag parameter passed from the calling script
+is_s3_storage=${1:-"1"}  # Default to 1 (Git storage) if no parameter is passed
+# Set project directory based on storage type
+if [ "$is_s3_storage" -eq 0 ]; then
+    PROJECT_DIR="$HOME/shared-files"
+    echo "Project is using S3 storage, project directory set to: $PROJECT_DIR"
+else
+    PROJECT_DIR="$HOME/src"
+    echo "Project is using Git storage, project directory set to: $PROJECT_DIR"
+fi
+
+# Datazone project metadata
+RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json
+SM_DOMAIN_ID=$(jq -r ".DomainId" < $RESOURCE_METADATA_FILE)
+AWS_ACCOUNT_ID=$(jq -r '.ExecutionRoleArn | split(":")[4]' < $RESOURCE_METADATA_FILE)
+ECR_ACCOUNT_ID=058264401727
+DZ_DOMAIN_ID=$(jq -r '.AdditionalMetadata.DataZoneDomainId' < $RESOURCE_METADATA_FILE)
+DZ_PROJECT_ID=$(jq -r '.AdditionalMetadata.DataZoneProjectId' < $RESOURCE_METADATA_FILE)
+DZ_ENV_ID=$(jq -r '.AdditionalMetadata.DataZoneEnvironmentId' < $RESOURCE_METADATA_FILE)
+DZ_DOMAIN_REGION=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $RESOURCE_METADATA_FILE)
+DZ_ENDPOINT=$(jq -r '.AdditionalMetadata.DataZoneEndpoint' < $RESOURCE_METADATA_FILE)
+DZ_PROJECT_S3PATH=$(jq -r '.AdditionalMetadata.ProjectS3Path' < $RESOURCE_METADATA_FILE)
+
+# Workflows paths in JL
+WORKFLOW_DAG_PATH="${PROJECT_DIR}/workflows/dags"
+WORKFLOW_CONFIG_PATH="${PROJECT_DIR}/workflows/config"
+WORKFLOW_DB_DATA_PATH="$HOME/.workflows_setup/db-data"
+WORKFLOW_REQUIREMENTS_PATH="$HOME/.workflows_setup/requirements/"
+WORKFLOW_PLUGINS_PATH="$HOME/.workflows_setup/plugins"
+WORKFLOW_STARTUP_PATH="$HOME/.workflows_setup/startup/"
+WORKFLOW_ARTIFACTS_SOURCE_DIR="/etc/sagemaker-ui/workflows"
+WORKFLOW_PLUGINS_SOURCE_PATH="${WORKFLOW_ARTIFACTS_SOURCE_DIR}/plugins/*.whl"
+WORKFLOW_REQUIREMENTS_SOURCE_PATH="${WORKFLOW_ARTIFACTS_SOURCE_DIR}/requirements/requirements.txt"
+WORKFLOW_AIRFLOW_REQUIREMENTS_SOURCE_PATH="/etc/sagemaker-ui/workflows/requirements/requirements.txt"
+WORKFLOW_OUTPUT_PATH="$HOME/jobs"
+USER_REQUIREMENTS_FILE="${WORKFLOW_CONFIG_PATH}/requirements.txt"
+USER_PLUGINS_FOLDER="${WORKFLOW_CONFIG_PATH}/plugins"
+USER_STARTUP_FILE="${WORKFLOW_CONFIG_PATH}/startup.sh"
+
+
 handle_workflows_startup_error() {
     local step=$1
     local detailed_status=""
@@ -33,34 +73,8 @@ handle_workflows_startup_error() {
     exit 1
 }
 
-RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json
-SM_DOMAIN_ID=$(jq -r ".DomainId" < $RESOURCE_METADATA_FILE)
-HOME_FOLDER_NAME=src
-AWS_ACCOUNT_ID=$(jq -r '.ExecutionRoleArn | split(":")[4]' < $RESOURCE_METADATA_FILE)
-ECR_ACCOUNT_ID=058264401727
-DZ_DOMAIN_ID=$(jq -r '.AdditionalMetadata.DataZoneDomainId' < $RESOURCE_METADATA_FILE)
-DZ_PROJECT_ID=$(jq -r '.AdditionalMetadata.DataZoneProjectId' < $RESOURCE_METADATA_FILE)
-DZ_ENV_ID=$(jq -r '.AdditionalMetadata.DataZoneEnvironmentId' < $RESOURCE_METADATA_FILE)
-DZ_DOMAIN_REGION=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $RESOURCE_METADATA_FILE)
-DZ_ENDPOINT=$(jq -r '.AdditionalMetadata.DataZoneEndpoint' < $RESOURCE_METADATA_FILE)
-DZ_PROJECT_S3PATH=$(jq -r '.AdditionalMetadata.ProjectS3Path' < $RESOURCE_METADATA_FILE)
-WORKFLOW_DAG_PATH="/home/sagemaker-user/${HOME_FOLDER_NAME}/workflows/dags"
-WORKFLOW_CONFIG_PATH="/home/sagemaker-user/${HOME_FOLDER_NAME}/workflows/config"
-WORKFLOW_DB_DATA_PATH="/home/sagemaker-user/.workflows_setup/db-data"
-WORKFLOW_REQUIREMENTS_PATH="/home/sagemaker-user/.workflows_setup/requirements/"
-WORKFLOW_PLUGINS_PATH="/home/sagemaker-user/.workflows_setup/plugins"
-WORKFLOW_STARTUP_PATH="/home/sagemaker-user/.workflows_setup/startup/"
-WORKFLOW_ARTIFACTS_SOURCE_DIR="/etc/sagemaker-ui/workflows"
-WORKFLOW_PLUGINS_SOURCE_PATH="${WORKFLOW_ARTIFACTS_SOURCE_DIR}/plugins/*.whl"
-WORKFLOW_REQUIREMENTS_SOURCE_PATH="${WORKFLOW_ARTIFACTS_SOURCE_DIR}/requirements/requirements.txt"
-WORKFLOW_AIRFLOW_REQUIREMENTS_SOURCE_PATH="/etc/sagemaker-ui/workflows/requirements/requirements.txt"
-WORKFLOW_OUTPUT_PATH="/home/sagemaker-user/jobs"
-USER_REQUIREMENTS_FILE="${WORKFLOW_CONFIG_PATH}/requirements.txt"
-USER_PLUGINS_FOLDER="${WORKFLOW_CONFIG_PATH}/plugins"
-USER_STARTUP_FILE="${WORKFLOW_CONFIG_PATH}/startup.sh"
-
 # Create status log file if it doesn't exist
-WORKFLOW_HEALTH_PATH="/home/sagemaker-user/.workflows_setup/health"
+WORKFLOW_HEALTH_PATH="$HOME/.workflows_setup/health"
 mkdir -p $WORKFLOW_HEALTH_PATH
 if [ ! -f "${WORKFLOW_HEALTH_PATH}/status.json" ]; then
     echo "Creating status file"
@@ -171,7 +185,7 @@ cp -n "/etc/sagemaker-ui/workflows/sample_dag.py" "${WORKFLOW_DAG_PATH}/"
 # Log into ECR repository
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
-HOME_FOLDER_NAME=$HOME_FOLDER_NAME \
+PROJECT_DIR=$(basename $PROJECT_DIR)  \
 ECR_ACCOUNT_ID=$ECR_ACCOUNT_ID \
 ACCOUNT_ID=$AWS_ACCOUNT_ID \
 DZ_DOMAIN_ID=$DZ_DOMAIN_ID \
