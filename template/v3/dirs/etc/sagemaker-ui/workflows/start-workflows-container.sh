@@ -5,7 +5,7 @@ set -eu
 is_s3_storage=${1:-"1"}  # Default to 1 (Git storage) if no parameter is passed
 # Set project directory based on storage type
 if [ "$is_s3_storage" -eq 0 ]; then
-    PROJECT_DIR="$HOME/shared-files"
+    PROJECT_DIR="$HOME/shared"
     echo "Project is using S3 storage, project directory set to: $PROJECT_DIR"
 else
     PROJECT_DIR="$HOME/src"
