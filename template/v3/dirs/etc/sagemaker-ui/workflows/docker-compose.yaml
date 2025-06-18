@@ -43,7 +43,7 @@ x-airflow-common: &airflow-common
     - /home/sagemaker-user/.workflows_setup/plugins:/usr/local/airflow/plugins
     - /home/sagemaker-user/.workflows_setup/requirements:/usr/local/airflow/requirements
     - /home/sagemaker-user/.workflows_setup/startup:/usr/local/airflow/startup
-    - /home/sagemaker-user/src:/home/sagemaker-user/src:rw
+    - ${MOUNT_DIR}:/home/sagemaker-user/src:rw
     - /home/sagemaker-user/jobs:/home/sagemaker-user/jobs:rw
   depends_on: &airflow-common-depends-on
     postgres:
