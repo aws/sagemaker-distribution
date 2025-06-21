@@ -17,6 +17,12 @@ c.FileContentsManager.always_delete_dir = True
 # Related documentation: https://jupyterlab.readthedocs.io/en/stable/user/files.html#displaying-hidden-files
 c.ContentsManager.allow_hidden = True
 
+# Disable exporters that are not supported by the sagemaker distribution
+c.PDFExporter.enabled = False
+c.WebPDFExporter.enabled = False
+c.QtPNGExporter.enabled = False
+c.QtPDFExporter.enabled = False
+
 # This will set the LanguageServerManager.extra_node_roots setting if amazon_sagemaker_sql_editor exists in the
 # environment. Ignore otherwise, don't fail the JL server start
 # Related documentation: https://jupyterlab-lsp.readthedocs.io/en/v3.4.0/Configuring.html
