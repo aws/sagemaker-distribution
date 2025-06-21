@@ -38,13 +38,13 @@ jobs:
         run: |
           PR_NUMBER=${{ inputs.pr-number }}
           PR_INFO=$(gh pr view $PR_NUMBER --json number,title,isCrossRepository)
-          
+
           # Check if PR exists
           if [ -z "$PR_INFO" ]; then
             echo "Error: PR #$PR_NUMBER does not exist"
             exit 1
           fi
-          
+
           # Check PR title
           PR_TITLE=$(echo $PR_INFO | jq -r '.title')
           EXPECTED_TITLE_PREFIX="release: v${{ inputs.image-version }}"
@@ -54,14 +54,14 @@ jobs:
             echo "Actual title: $PR_TITLE"
             exit 1
           fi
-          
+
           # Check if PR is from a fork
           IS_CROSS_REPO=$(echo $PR_INFO | jq -r '.isCrossRepository')
           if [ "$IS_CROSS_REPO" = "true" ]; then
             echo "Error: PR is from a forked repository"
             exit 1
           fi
-          
+
           echo "PR validation successful"
           echo "pr_id=$PR_NUMBER" >> $GITHUB_OUTPUT
 
@@ -82,9 +82,9 @@ jobs:
           role-duration-seconds: 28800
           audience: https://sts.us-east-1.amazonaws.com
       - name: Run CodeBuild
-        uses: dark-mechanicum/aws-codebuild@v1
-        env:
-          CODEBUILD__sourceVersion: 'pr/${{ needs.validate-pr.outputs.pr_id }}'
+        uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          projectName: ${{ secrets.CODEBUILD_VALIDATION_JOB_NAME }}
-          buildspec: '{"imageOverride": "aws/codebuild/standard:7.0", "imagePullCredentialsTypeOverride": "CODEBUILD"}'
+          project-name: ${{ secrets.CODEBUILD_JOB_NAME }}
+          image-override: "aws/codebuild/standard:7.0"
+          image-pull-credentials-type-override: "CODEBUILD"
+          source-version-override: "pr/${{ needs.validate-pr.outputs.pr_id }}"
