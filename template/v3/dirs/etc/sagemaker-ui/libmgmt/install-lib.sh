@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eux
-
+PROJECT_DIR=${PROJECT_DIR:-"$HOME/src"}
 # Check if the .libs.json file exists
-if [ -e $1/.libs.json ]; then
-  lib_config_json=`cat $1/.libs.json`
+if [ -e $PROJECT_DIR/.libs.json ]; then
+  lib_config_json=`cat $PROJECT_DIR/.libs.json`
 
   apply_change_to_space=`echo $lib_config_json | jq -r '.ApplyChangeToSpace'`
   # Extract conda channels from the config, add `-c ` before each channel and join the strings

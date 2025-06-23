@@ -4,13 +4,7 @@ set -eu
 # Get the is_s3_storage_flag parameter passed from the calling script
 is_s3_storage=${1:-"1"}  # Default to 1 (Git storage) if no parameter is passed
 # Set project directory based on storage type
-if [ "$is_s3_storage" -eq 0 ]; then
-    PROJECT_DIR="$HOME/shared"
-    echo "Project is using S3 storage, project directory set to: $PROJECT_DIR"
-else
-    PROJECT_DIR="$HOME/src"
-    echo "Project is using Git storage, project directory set to: $PROJECT_DIR"
-fi
+PROJECT_DIR=${PROJECT_DIR:-"$HOME/src"}
 
 # Datazone project metadata
 RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json

@@ -157,6 +157,14 @@ echo "Checking Project Storage Type"
 is_s3_storage
 is_s3_storage_flag=$?  # 0 if S3 storage, 1 if Git
 
+if [ "$is_s3_storage_flag" -eq 0 ]; then
+    export PROJECT_DIR="$HOME/shared"
+    echo "Project is using S3 storage, project directory set to: $PROJECT_DIR"
+else
+    export PROJECT_DIR="$HOME/src"
+    echo "Project is using Git storage, project directory set to: $PROJECT_DIR"
+fi
+
 if [ $is_s3_storage_flag -ne 0 ]; then
   # Creating a directory where the repository will be cloned
   mkdir -p "$HOME/src"
@@ -198,7 +206,7 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
     trap 'write_status_to_file "error" "An unexpected error occurred. Please stop and restart your space to retry."' ERR
     
     # Install conda and pip dependencies if lib mgmt config existing
-    bash /etc/sagemaker-ui/libmgmt/install-lib.sh $HOME/src
+    bash /etc/sagemaker-ui/libmgmt/install-lib.sh
 
     # Install sm-spark-cli
     bash /etc/sagemaker-ui/workflows/sm-spark-cli-install.sh
