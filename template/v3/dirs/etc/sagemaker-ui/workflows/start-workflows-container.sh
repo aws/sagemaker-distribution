@@ -1,10 +1,8 @@
 #!/bin/bash
 set -eu
 
-# Get the is_s3_storage_flag parameter passed from the calling script
-is_s3_storage=${1:-"1"}  # Default to 1 (Git storage) if no parameter is passed
-# Set project directory based on storage type
-PROJECT_DIR=${PROJECT_DIR:-"$HOME/src"}
+# Get project directory based on storage type
+PROJECT_DIR=${SMUS_PROJECT_DIR:-"$HOME/src"}
 
 # Datazone project metadata
 RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json

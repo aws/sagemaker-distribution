@@ -158,18 +158,18 @@ is_s3_storage
 is_s3_storage_flag=$?  # 0 if S3 storage, 1 if Git
 
 if [ "$is_s3_storage_flag" -eq 0 ]; then
-    export PROJECT_DIR="$HOME/shared"
-    echo "Project is using S3 storage, project directory set to: $PROJECT_DIR"
+    export SMUS_PROJECT_DIR="$HOME/shared"
+    echo "Project is using S3 storage, project directory set to: $SMUS_PROJECT_DIR"
 else
-    export PROJECT_DIR="$HOME/src"
-    echo "Project is using Git storage, project directory set to: $PROJECT_DIR"
+    export SMUS_PROJECT_DIR="$HOME/src"
+    echo "Project is using Git storage, project directory set to: $SMUS_PROJECT_DIR"
 fi
 
-if grep -q "^PROJECT_DIR=" ~/.bashrc; then
-  echo "PROJECT_DIR is defined in the env"
+if grep -q "^SMUS_PROJECT_DIR=" ~/.bashrc; then
+  echo "SMUS_PROJECT_DIR is defined in the env"
 else
-  echo PROJECT_DIR="$PROJECT_DIR" >> ~/.bashrc
-  echo readonly PROJECT_DIR >> ~/.bashrc
+  echo SMUS_PROJECT_DIR="$SMUS_PROJECT_DIR" >> ~/.bashrc
+  echo readonly SMUS_PROJECT_DIR >> ~/.bashrc
 fi
 
 if [ $is_s3_storage_flag -ne 0 ]; then
@@ -204,7 +204,7 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
     # code will be returned if there is not a minimum of 2
     # CPU cores available.
     # Start workflows local runner
-    bash /etc/sagemaker-ui/workflows/start-workflows-container.sh "$is_s3_storage_flag"
+    bash /etc/sagemaker-ui/workflows/start-workflows-container.sh
 
     # ensure functions inherit traps and fail immediately
     set -eE

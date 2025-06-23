@@ -1,6 +1,6 @@
 #!/bin/bash
 set -eux
-PROJECT_DIR=${PROJECT_DIR:-"$HOME/src"}
+PROJECT_DIR=${SMUS_PROJECT_DIR:-"$HOME/src"}
 # Check if the .libs.json file exists
 if [ -e $PROJECT_DIR/.libs.json ]; then
   lib_config_json=`cat $PROJECT_DIR/.libs.json`
