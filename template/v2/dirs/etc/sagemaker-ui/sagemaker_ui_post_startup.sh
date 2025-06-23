@@ -165,6 +165,13 @@ else
     echo "Project is using Git storage, project directory set to: $PROJECT_DIR"
 fi
 
+if grep -q "^PROJECT_DIR=" ~/.bashrc; then
+  echo "PROJECT_DIR is defined in the env"
+else
+  echo PROJECT_DIR="$PROJECT_DIR" >> ~/.bashrc
+  echo readonly PROJECT_DIR >> ~/.bashrc
+fi
+
 if [ $is_s3_storage_flag -ne 0 ]; then
   # Creating a directory where the repository will be cloned
   mkdir -p "$HOME/src"
