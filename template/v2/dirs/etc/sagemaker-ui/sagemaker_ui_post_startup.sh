@@ -62,6 +62,10 @@ echo "Successfully removed the ~/.aws/config file"
 aws configure set credential_source EcsContainer
 echo "Successfully configured default profile"
 
+# Add region configuration using REGION_NAME environment variable
+aws configure set region "${REGION_NAME}"
+echo "Successfully configured region to ${REGION_NAME}"
+
 # add SparkMonitor and Connection Magic entrypoint
 NB_USER=sagemaker-user
 
@@ -134,8 +138,8 @@ case "$auth_mode" in
         ;;
 esac
 
-# Checks if the project is using Git or Non-Git storage
-is_non_git_storage() {
+# Checks if the project is using Git or S3 storage
+is_s3_storage() {
   getProjectDefaultEnvResponse=$(sagemaker-studio project get-project-default-environment --domain-id "$dataZoneDomainId" --project-id "$dataZoneProjectId" --profile DomainExecutionRoleCreds)
   gitConnectionArn=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="gitConnectionArn") | .value')
   codeRepositoryName=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="codeRepositoryName") | .value')
@@ -149,7 +153,26 @@ is_non_git_storage() {
 
 echo "Checking Project Storage Type"
 
-if ! is_non_git_storage; then
+# Execute once to store the result
+is_s3_storage
+is_s3_storage_flag=$?  # 0 if S3 storage, 1 if Git
+
+if [ "$is_s3_storage_flag" -eq 0 ]; then
+    export SMUS_PROJECT_DIR="$HOME/shared"
+    echo "Project is using S3 storage, project directory set to: $SMUS_PROJECT_DIR"
+else
+    export SMUS_PROJECT_DIR="$HOME/src"
+    echo "Project is using Git storage, project directory set to: $SMUS_PROJECT_DIR"
+fi
+
+if grep -q "^SMUS_PROJECT_DIR=" ~/.bashrc; then
+  echo "SMUS_PROJECT_DIR is defined in the env"
+else
+  echo SMUS_PROJECT_DIR="$SMUS_PROJECT_DIR" >> ~/.bashrc
+  echo readonly SMUS_PROJECT_DIR >> ~/.bashrc
+fi
+
+if [ $is_s3_storage_flag -ne 0 ]; then
   # Creating a directory where the repository will be cloned
   mkdir -p "$HOME/src"
 
@@ -190,7 +213,7 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
     trap 'write_status_to_file "error" "An unexpected error occurred. Please stop and restart your space to retry."' ERR
     
     # Install conda and pip dependencies if lib mgmt config existing
-    bash /etc/sagemaker-ui/libmgmt/install-lib.sh $HOME/src
+    bash /etc/sagemaker-ui/libmgmt/install-lib.sh
 
     # Install sm-spark-cli
     bash /etc/sagemaker-ui/workflows/sm-spark-cli-install.sh
