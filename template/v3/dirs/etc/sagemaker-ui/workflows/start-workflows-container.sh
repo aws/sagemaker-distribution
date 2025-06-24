@@ -3,6 +3,11 @@ set -eu
 
 # Get project directory based on storage type
 PROJECT_DIR=${SMUS_PROJECT_DIR:-"$HOME/src"}
+if [ -z "$SMUS_PROJECT_DIR" ]; then
+    MOUNT_DIR=$PROJECT_DIR
+else
+    MOUNT_DIR=$(readlink -f "$PROJECT_DIR")  # get the symlink source
+fi
 
 # Datazone project metadata
 RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json
@@ -178,6 +183,7 @@ cp -n "/etc/sagemaker-ui/workflows/sample_dag.py" "${WORKFLOW_DAG_PATH}/"
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
 
 PROJECT_DIR=$(basename $PROJECT_DIR)  \
+MOUNT_DIR=$MOUNT_DIR \
 ECR_ACCOUNT_ID=$ECR_ACCOUNT_ID \
 ACCOUNT_ID=$AWS_ACCOUNT_ID \
 DZ_DOMAIN_ID=$DZ_DOMAIN_ID \
