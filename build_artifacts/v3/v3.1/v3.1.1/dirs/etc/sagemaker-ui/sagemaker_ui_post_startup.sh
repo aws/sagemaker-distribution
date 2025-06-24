@@ -65,10 +65,6 @@ echo "Successfully removed the ~/.aws/config file"
 aws configure set credential_source EcsContainer
 echo "Successfully configured default profile"
 
-# Add region configuration using REGION_NAME environment variable
-aws configure set region "${REGION_NAME}"
-echo "Successfully configured region to ${REGION_NAME}"
-
 # add SparkMonitor and Connection Magic entrypoint
 NB_USER=sagemaker-user
 
