@@ -125,13 +125,18 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
 
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
         shutil.copy2(f, new_version_dir)
+    
+    # Copy AWS CLI public key if it exists in template
+    aws_cli_key_path = os.path.relpath(f"assets/aws-cli-public-key.asc")
+    if os.path.exists(aws_cli_key_path):
+        shutil.copy2(aws_cli_key_path, new_version_dir)
 
     if int(new_version_major) >= 1:
         # dirs directory doesn't exist for v0. It was introduced only for v1
         dirs_relative_path = os.path.relpath(f"{base_path}/dirs")
         for f in glob.glob(dirs_relative_path):
             shutil.copytree(f, os.path.join(new_version_dir, "dirs"))
-
+    
 
 def _create_new_version_conda_specs(
     base_version_dir, new_version_dir, runtime_version_upgrade_type, image_generator_config
