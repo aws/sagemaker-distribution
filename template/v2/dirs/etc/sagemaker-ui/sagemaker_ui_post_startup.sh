@@ -172,6 +172,11 @@ else
   echo readonly SMUS_PROJECT_DIR >> ~/.bashrc
 fi
 
+# Write SMUS_PROJECT_DIR to a JSON file to be accessed by JupyterLab Extensions
+jq -n \
+  --arg smusProjectDirectory "$SMUS_PROJECT_DIR" \
+  '{ smusProjectDirectory: $smusProjectDirectory }' > $HOME/.config/smus-storage-metadata.json
+
 if [ $is_s3_storage_flag -ne 0 ]; then
   # Creating a directory where the repository will be cloned
   mkdir -p "$HOME/src"
