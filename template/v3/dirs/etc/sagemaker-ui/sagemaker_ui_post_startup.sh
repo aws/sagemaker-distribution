@@ -200,6 +200,30 @@ else
   echo readonly LOGNAME >> ~/.bashrc
 fi
 
+# Setup Q CLI auth mode
+q_settings_file="$HOME/.aws/amazon_q/settings.json"
+if [ -f "$q_settings_file" ]; then
+    q_auth_mode=$(jq -r '.auth_mode' < $q_settings_file)
+    if [ "$q_auth_mode" == "IAM" ]; then
+        export AMAZON_Q_SIGV4=true
+    else 
+        export AMAZON_Q_SIGV4=false
+    fi
+else
+    export AMAZON_Q_SIGV4=true
+fi
+
+if $AMAZON_Q_SIGV4; then
+    if grep -q "^export AMAZON_Q_SIGV4=" ~/.bashrc; then
+        echo "AMAZON_Q_SIGV4 is defined in the env"
+    else
+        echo export AMAZON_Q_SIGV4=$AMAZON_Q_SIGV4 >> ~/.bashrc
+    fi
+else 
+    # Remove from .bashrc if it exists
+    sed -i '/^export AMAZON_Q_SIGV4=/d' ~/.bashrc
+fi
+
 # Generate sagemaker pysdk intelligent default config
 nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 # Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab
