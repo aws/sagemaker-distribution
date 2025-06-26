@@ -224,4 +224,23 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
     bash /etc/sagemaker-ui/workflows/sm-spark-cli-install.sh
 fi
 
+# Execute network validation script, to check if any required AWS Services are unreachable
+echo "Starting network validation script..."
+
+network_validation_file="/tmp/.network_validation.json"
+
+# Run the validation script; only if it succeeds, check unreachable services
+if bash /etc/sagemaker-ui/network_validation.sh "$is_s3_storage_flag" "$network_validation_file"; then
+    # Read unreachable services from JSON file
+    failed_services=$(jq -r '.UnreachableServices // empty' "$network_validation_file" || echo "")
+    if [[ -n "$failed_services" ]]; then
+        error_message="$failed_services are unreachable. Please contact your admin."
+        # Example error message: Redshift Clusters, Athena, STS, Glue are unreachable. Please contact your admin.
+        write_status_to_file "error" "$error_message"
+        echo "$error_message"
+    fi
+else
+    echo "Warning: network_validation.sh failed, skipping unreachable services check."
+fi
+
 write_status_to_file_on_script_complete
