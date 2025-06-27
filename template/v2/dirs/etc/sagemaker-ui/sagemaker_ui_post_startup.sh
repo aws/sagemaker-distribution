@@ -158,9 +158,11 @@ is_s3_storage
 is_s3_storage_flag=$?  # 0 if S3 storage, 1 if Git
 
 if [ "$is_s3_storage_flag" -eq 0 ]; then
+    export IS_GIT_PROJECT=false
     export SMUS_PROJECT_DIR="$HOME/shared"
     echo "Project is using S3 storage, project directory set to: $SMUS_PROJECT_DIR"
 else
+    export IS_GIT_PROJECT=true
     export SMUS_PROJECT_DIR="$HOME/src"
     echo "Project is using Git storage, project directory set to: $SMUS_PROJECT_DIR"
 fi
@@ -171,6 +173,16 @@ else
   echo SMUS_PROJECT_DIR="$SMUS_PROJECT_DIR" >> ~/.bashrc
   echo readonly SMUS_PROJECT_DIR >> ~/.bashrc
 fi
+
+# Write SMUS_PROJECT_DIR to a JSON file to be accessed by JupyterLab Extensions
+mkdir -p "$HOME/.config"  # Create config directory if it doesn't exist
+jq -n \
+  --arg smusProjectDirectory "$SMUS_PROJECT_DIR" \
+  --arg isGitProject "$IS_GIT_PROJECT" \
+  '{ 
+    smusProjectDirectory: $smusProjectDirectory,
+    isGitProject: ($isGitProject == "true")
+  }' > "$HOME/.config/smus-storage-metadata.json"
 
 if [ $is_s3_storage_flag -ne 0 ]; then
   # Creating a directory where the repository will be cloned
@@ -217,6 +229,25 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
 
     # Install sm-spark-cli
     bash /etc/sagemaker-ui/workflows/sm-spark-cli-install.sh
+fi
+
+# Execute network validation script, to check if any required AWS Services are unreachable
+echo "Starting network validation script..."
+
+network_validation_file="/tmp/.network_validation.json"
+
+# Run the validation script; only if it succeeds, check unreachable services
+if bash /etc/sagemaker-ui/network_validation.sh "$is_s3_storage_flag" "$network_validation_file"; then
+    # Read unreachable services from JSON file
+    failed_services=$(jq -r '.UnreachableServices // empty' "$network_validation_file" || echo "")
+    if [[ -n "$failed_services" ]]; then
+        error_message="$failed_services are unreachable. Please contact your admin."
+        # Example error message: Redshift Clusters, Athena, STS, Glue are unreachable. Please contact your admin.
+        write_status_to_file "error" "$error_message"
+        echo "$error_message"
+    fi
+else
+    echo "Warning: network_validation.sh failed, skipping unreachable services check."
 fi
 
 write_status_to_file_on_script_complete
