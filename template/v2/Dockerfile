@@ -48,22 +48,21 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
+COPY aws-cli-public-key.asc /tmp/
+
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc jq ca-certificates gnupg && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
     DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends tzdata krb5-user libkrb5-dev libsasl2-dev libsasl2-modules && \
     chmod g+w /etc/passwd && \
     echo "ALL    ALL=(ALL)    NOPASSWD:    ALL" >> /etc/sudoers && \
-    touch /etc/krb5.conf.lock && chown ${NB_USER}:${MAMBA_USER} /etc/krb5.conf*
+    touch /etc/krb5.conf.lock && chown ${NB_USER}:${MAMBA_USER} /etc/krb5.conf* && \
     # Note that we do NOT run `rm -rf /var/lib/apt/lists/*` here. If we did, anyone building on top of our images will
     # not be able to run any `apt-get install` commands and that would hamper customizability of the images.
-
-COPY aws-cli-public-key.asc .
-RUN curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
-    curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig"
-RUN gpg --import aws-cli-public-key.asc
-RUN gpg --fingerprint FB5DB77FD5C118B80511ADA8A6310ACC4672475C
-RUN gpg --verify awscli-exe-linux-x86_64.zip.sig awscli-exe-linux-x86_64.zip && \
+    curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
+    curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig" && \
+    gpg --import /tmp/aws-cli-public-key.asc && \
+    gpg --verify awscli-exe-linux-x86_64.zip.sig awscli-exe-linux-x86_64.zip && \
     unzip awscli-exe-linux-x86_64.zip && \
     ./aws/install && \
     rm -rf aws awscli-exe-linux-x86_64.zip awscli-exe-linux-x86_64.zip.sig aws-cli-public-key.asc && \
