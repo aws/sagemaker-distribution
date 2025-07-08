@@ -31,6 +31,7 @@ autogluon|1.3.1|1.3.1
 ipywidgets|8.1.7|8.1.7
 notebook|7.4.4|7.4.4
 aws-glue-sessions|1.0.9|1.0.9
+aws-s3-access-grants-boto3-plugin|1.2.0|1.2.0
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
 uvicorn|0.35.0|0.35.0
@@ -47,7 +48,7 @@ mlflow|2.22.0|2.22.0
 py-xgboost-gpu|2.1.4| 
 pyhive|0.7.0|0.7.0
 python-gssapi|1.9.0|1.9.0
-python-lsp-server|1.12.2|1.12.2
+python-lsp-server|1.12.2|1.13.0
 s3fs|2024.12.0|2024.12.0
 sagemaker-code-editor|1.6.0|1.6.0
 sagemaker-headless-execution-driver|0.0.13|0.0.13

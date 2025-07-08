@@ -19,6 +19,7 @@ fastapi|0.115.12|0.115.14
 jupyter-activity-monitor-extension|0.3.1|0.3.2
 jupyterlab-git|0.51.1|0.51.2
 langchain-aws|0.2.19|0.2.27
+python-lsp-server|1.12.2|1.13.0
 sagemaker-code-editor|1.5.0|1.6.0
 sagemaker-jupyterlab-emr-extension|0.3.8|0.4.0
 sagemaker-jupyterlab-extension|0.4.2|0.5.0
@@ -26,3 +27,9 @@ sagemaker-studio|1.0.14|1.0.16
 sagemaker-studio-analytics-extension|0.1.7|0.2.0
 sagemaker-studio-dataengineering-extensions|1.0.11|1.1.2
 sagemaker-studio-dataengineering-sessions|1.0.13|1.1.2
+
+## What's new: 
+
+Package | Version 
+---|---
+aws-s3-access-grants-boto3-plugin|1.2.0
