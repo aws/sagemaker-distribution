@@ -3,11 +3,7 @@ set -eu
 
 # Get project directory based on storage type
 PROJECT_DIR=${SMUS_PROJECT_DIR:-"$HOME/src"}
-if [ -z "$SMUS_PROJECT_DIR" ]; then
-    export MOUNT_DIR=$PROJECT_DIR
-else
-    export MOUNT_DIR=$(readlink -f "$PROJECT_DIR")  # get the symlink source
-fi
+MOUNT_DIR=$(readlink -f "$PROJECT_DIR")  # get the symlink source if it's symlink
 
 # Datazone project metadata
 RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json
