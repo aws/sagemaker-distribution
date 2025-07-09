@@ -10,6 +10,9 @@ The shared folder:
 - Contains files visible to all project members
 - Is accessible across all your tools
 - Updates immediately when any member adds or modifies files
+- Is designed for storage and sharing, not active data processing
+- Should not be used for streaming data or frequently written files
+- Incurs costs for file operations, so use thoughtfully for collaboration
 
 ### Personal local folder
 Your personal local folder:
