@@ -25,3 +25,9 @@ sagemaker-studio|1.0.14|1.0.16
 sagemaker-studio-analytics-extension|0.1.7|0.2.0
 sagemaker-studio-dataengineering-extensions|1.0.11|1.1.2
 sagemaker-studio-dataengineering-sessions|1.0.13|1.1.2
+
+## What's new: 
+
+Package | Version 
+---|---
+aws-s3-access-grants-boto3-plugin|1.2.0
