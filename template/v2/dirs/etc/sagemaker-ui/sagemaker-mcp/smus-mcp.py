@@ -10,7 +10,7 @@ pip install sagemaker_studio
 import json
 import os
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import boto3
 from mcp.server.fastmcp import FastMCP
