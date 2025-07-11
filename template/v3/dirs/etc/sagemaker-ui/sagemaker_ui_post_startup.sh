@@ -195,7 +195,8 @@ if [ $is_s3_storage_flag -ne 0 ]; then
   git config --global user.email "$email"
   git config --global user.name "$username"
 else
-  echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation"
+  echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation and creating README"
+  bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
 fi
 
 # MLFlow tracking server uses the LOGNAME environment variable to track identity. Set the LOGNAME to the username of the user associated with the space
