@@ -19,3 +19,6 @@ The shared folder:
 - Updates immediately when any member adds or modifies files
 - Not well-suited for heavy file read/write workloads due to remote Amazon S3 origin of this folder and potential additional costs associated with frequent Amazon S3 access
 - If two individuals are modifying the same file in this folder at the same time that might result in losing some changes
+
+
+To share your files with other project members, copy or move them to the shared folder when ready.
