@@ -8,8 +8,8 @@ pip install sagemaker_studio
 """
 
 import json
-import os
 import logging
+import os
 from typing import Any, Dict
 
 import boto3
