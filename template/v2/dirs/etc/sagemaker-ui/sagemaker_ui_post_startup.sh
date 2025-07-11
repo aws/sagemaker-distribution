@@ -228,7 +228,7 @@ fi
 echo "Setting up SageMaker MCP configuration..."
 mkdir -p $HOME/.aws/amazonq/
 target_file="$HOME/.aws/amazonq/mcp.json"
-source_file="/etc/sagemaker-mcp/mcp.json"
+source_file="/etc/sagemaker-ui/sagemaker-mcp/mcp.json"
 
 if [ -f "$source_file" ]; then
     # Extract all servers from source configuration
