@@ -55,6 +55,9 @@ dataZoneDomainRegion=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $sourc
 
 set +e
 
+# Creating a directory where the repository will be cloned
+mkdir -p $HOME/src
+
 # Remove the ~/.aws/config file to start clean when space restart
 rm -f /home/sagemaker-user/.aws/config
 echo "Successfully removed the ~/.aws/config file"
@@ -105,6 +108,9 @@ else
         echo "Successfully configured DomainExecutionRoleCreds profile"
 fi
 
+echo "Starting execution of Git Cloning script"
+bash /etc/sagemaker-ui/git_clone.sh
+
 # Run AWS CLI command to get the username from DataZone User Profile.
 if [ ! -z "$dataZoneEndPoint" ]; then
     response=$( aws datazone get-user-profile --endpoint-url "$dataZoneEndPoint" --domain-identifier "$dataZoneDomainId" --user-identifier "$dataZoneUserId" --region "$dataZoneDomainRegion" )
@@ -138,66 +144,9 @@ case "$auth_mode" in
         ;;
 esac
 
-# Checks if the project is using Git or S3 storage
-is_s3_storage() {
-  getProjectDefaultEnvResponse=$(sagemaker-studio project get-project-default-environment --domain-id "$dataZoneDomainId" --project-id "$dataZoneProjectId" --profile DomainExecutionRoleCreds)
-  gitConnectionArn=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="gitConnectionArn") | .value')
-  codeRepositoryName=$(echo "$getProjectDefaultEnvResponse" | jq -r '.provisionedResources[] | select(.name=="codeRepositoryName") | .value')
-
-  if [ -z "$gitConnectionArn" ] && [ -z "$codeRepositoryName" ]; then
-      return 0
-  else
-      return 1
-  fi
-}
-
-echo "Checking Project Storage Type"
-
-# Execute once to store the result
-is_s3_storage
-is_s3_storage_flag=$?  # 0 if S3 storage, 1 if Git
-
-if [ "$is_s3_storage_flag" -eq 0 ]; then
-    export IS_GIT_PROJECT=false
-    export SMUS_PROJECT_DIR="$HOME/shared"
-    echo "Project is using S3 storage, project directory set to: $SMUS_PROJECT_DIR"
-else
-    export IS_GIT_PROJECT=true
-    export SMUS_PROJECT_DIR="$HOME/src"
-    echo "Project is using Git storage, project directory set to: $SMUS_PROJECT_DIR"
-fi
-
-if grep -q "^SMUS_PROJECT_DIR=" ~/.bashrc; then
-  echo "SMUS_PROJECT_DIR is defined in the env"
-else
-  echo SMUS_PROJECT_DIR="$SMUS_PROJECT_DIR" >> ~/.bashrc
-  echo readonly SMUS_PROJECT_DIR >> ~/.bashrc
-fi
-
-# Write SMUS_PROJECT_DIR to a JSON file to be accessed by JupyterLab Extensions
-mkdir -p "$HOME/.config"  # Create config directory if it doesn't exist
-jq -n \
-  --arg smusProjectDirectory "$SMUS_PROJECT_DIR" \
-  --arg isGitProject "$IS_GIT_PROJECT" \
-  '{ 
-    smusProjectDirectory: $smusProjectDirectory,
-    isGitProject: ($isGitProject == "true")
-  }' > "$HOME/.config/smus-storage-metadata.json"
-
-if [ $is_s3_storage_flag -ne 0 ]; then
-  # Creating a directory where the repository will be cloned
-  mkdir -p "$HOME/src"
-
-  echo "Starting execution of Git Cloning script"
-  bash /etc/sagemaker-ui/git_clone.sh
-
-  # Setting up the Git identity for the user .
-  git config --global user.email "$email"
-  git config --global user.name "$username"
-else
-  echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation and creating README"
-  bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
-fi
+# Setting up the Git identity for the user .
+git config --global user.email "$email"
+git config --global user.name "$username"
 
 # MLFlow tracking server uses the LOGNAME environment variable to track identity. Set the LOGNAME to the username of the user associated with the space
 export LOGNAME=$username
@@ -226,35 +175,10 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
     trap 'write_status_to_file "error" "An unexpected error occurred. Please stop and restart your space to retry."' ERR
     
     # Install conda and pip dependencies if lib mgmt config existing
-    bash /etc/sagemaker-ui/libmgmt/install-lib.sh
+    bash /etc/sagemaker-ui/libmgmt/install-lib.sh $HOME/src
 
     # Install sm-spark-cli
     bash /etc/sagemaker-ui/workflows/sm-spark-cli-install.sh
-fi
-
-# Execute network validation script, to check if any required AWS Services are unreachable
-echo "Starting network validation script..."
-
-network_validation_file="/tmp/.network_validation.json"
-
-# Run the validation script; only if it succeeds, check unreachable services
-if bash /etc/sagemaker-ui/network_validation.sh "$is_s3_storage_flag" "$network_validation_file"; then
-    # Read unreachable services from JSON file
-    failed_services=$(jq -r '.UnreachableServices // empty' "$network_validation_file" || echo "")
-    if [[ -n "$failed_services" ]]; then
-        # Count number of services by splitting on comma
-        IFS=',' read -ra failed_array <<< "$failed_services"
-        count=${#failed_array[@]}
-        verb="are"
-        [[ "$count" -eq 1 ]] && verb="is"
-
-        error_message="$failed_services $verb unreachable. Please contact your admin."
-        # Example error message: Redshift Clusters, Athena, STS, Glue are unreachable. Please contact your admin.
-        write_status_to_file "error" "$error_message"
-        echo "$error_message"
-    fi
-else
-    echo "Warning: network_validation.sh failed, skipping unreachable services check."
 fi
 
 write_status_to_file_on_script_complete
