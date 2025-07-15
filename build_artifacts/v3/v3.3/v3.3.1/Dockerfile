@@ -103,7 +103,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     SAGEMAKER_JUPYTERLAB_VERSION="sagemaker-jupyterlab-extension==0.4.2" && \
     echo "Installing in sagemaker-recovery-mode micromamba environment: $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
     micromamba create --prefix /opt/conda/envs/sagemaker-recovery-mode && \
-    micromamba install --prefix /opt/conda/envs/sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
+    micromamba install -c conda-forge --prefix /opt/conda/envs/sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
