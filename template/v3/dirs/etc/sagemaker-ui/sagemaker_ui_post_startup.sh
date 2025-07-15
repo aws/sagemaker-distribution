@@ -269,9 +269,6 @@ if [ -f "$source_file" ]; then
         echo "Created new MCP configuration with default servers"
     fi
     
-    # Set proper ownership and permissions
-    chown $NB_USER:$NB_GID "$target_file"
-    chmod 644 "$target_file"
     echo "Successfully configured MCP for SageMaker"
 else
     echo "Warning: MCP configuration file not found at $source_file"
