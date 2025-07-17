@@ -1,10 +1,6 @@
 """
 SageMaker Unified Studio Project Context MCP Server in stdio transport.
 
-This is a self-contained MCP Server, ready to be used directly.
-Dependencies:
-pip install mcp[cli]
-pip install sagemaker_studio
 """
 
 import json
@@ -12,9 +8,7 @@ import logging
 import os
 from typing import Any, Dict
 
-import boto3
 from mcp.server.fastmcp import FastMCP
-from sagemaker_studio import ClientConfig, Project
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -43,14 +37,15 @@ class ProjectContext:
                     self.domain_id = metadata["AdditionalMetadata"]["DataZoneDomainId"]
                     self.project_id = metadata["AdditionalMetadata"]["DataZoneProjectId"]
                     self.region = metadata["AdditionalMetadata"]["DataZoneDomainRegion"]
-
-            logger.info(f"Read self.domain: {self.domain_id}")
-
-            self.session = boto3.Session(profile_name="DomainExecutionRoleCreds", region_name=self.region)
-            client_conf = ClientConfig(session=self.session, region=self.region)
-            self.project = Project(id=self.project_id, domain_id=self.domain_id, config=client_conf)
         except Exception as e:
             raise RuntimeError(f"Failed to initialize project: {e}")
+
+        if not self.domain_id:
+            raise RuntimeError(f"Domain id should not be empty")
+        if not self.project_id:
+            raise RuntimeError(f"Project id should not be empty")
+        if not self.region:
+            raise RuntimeError(f"Region should not be empty")
 
 
 def safe_get_attr(obj: Any, attr: str, default: Any = None) -> Any:
@@ -66,12 +61,12 @@ def safe_get_attr(obj: Any, attr: str, default: Any = None) -> Any:
                 try:
                     return value()
                 except (RuntimeError, Exception) as e:
-                    logger.debug(f"Error calling attribute {attr}: {e}")
+                    logger.error(f"Error calling attribute {attr}: {e}")
                     return default
             return value
         return default
     except Exception as e:
-        logger.debug(f"Error getting attribute {attr}: {e}")
+        logger.error(f"Error getting attribute {attr}: {e}")
         return default
 
 
@@ -99,7 +94,6 @@ async def aws_context_provider() -> Dict[str, Any]:
     - domain identifier: Unique identifier for the AWS DataZone domain
     - project identifier: Identifier for the specific project being worked on
     - profile name: Name of the AWS profile to use for credentials
-    - project profile connection name: Connection name for project integration
     - region: AWS region where operations should be performed
     - aws profiles: use the aws profile named DomainExecutionRoleCreds for calling datazone APIs; otherwise use default AWS profile
 
@@ -116,7 +110,7 @@ async def aws_context_provider() -> Dict[str, Any]:
         return {"response": identifiers_response}
     except Exception as e:
         logger.error(f"Error providing SMUS context identifiers: {e}")
-        return {"response": identifiers_response, "error": str(e)}
+        return {"response": identifiers_response, "error": "Error providing SMUS context identifiers"}
 
 
 if __name__ == "__main__":
