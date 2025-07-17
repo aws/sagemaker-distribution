@@ -195,7 +195,8 @@ if [ $is_s3_storage_flag -ne 0 ]; then
   git config --global user.email "$email"
   git config --global user.name "$username"
 else
-  echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation"
+  echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation and creating README"
+  bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
 fi
 
 # MLFlow tracking server uses the LOGNAME environment variable to track identity. Set the LOGNAME to the username of the user associated with the space
@@ -241,7 +242,13 @@ if bash /etc/sagemaker-ui/network_validation.sh "$is_s3_storage_flag" "$network_
     # Read unreachable services from JSON file
     failed_services=$(jq -r '.UnreachableServices // empty' "$network_validation_file" || echo "")
     if [[ -n "$failed_services" ]]; then
-        error_message="$failed_services are unreachable. Please contact your admin."
+        # Count number of services by splitting on comma
+        IFS=',' read -ra failed_array <<< "$failed_services"
+        count=${#failed_array[@]}
+        verb="are"
+        [[ "$count" -eq 1 ]] && verb="is"
+
+        error_message="$failed_services $verb unreachable. Please contact your admin."
         # Example error message: Redshift Clusters, Athena, STS, Glue are unreachable. Please contact your admin.
         write_status_to_file "error" "$error_message"
         echo "$error_message"
