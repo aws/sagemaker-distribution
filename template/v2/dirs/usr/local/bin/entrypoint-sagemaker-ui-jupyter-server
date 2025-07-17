@@ -14,6 +14,7 @@ micromamba activate base
 
 export SAGEMAKER_APP_TYPE_LOWERCASE=$(echo $SAGEMAKER_APP_TYPE | tr '[:upper:]' '[:lower:]')
 export SERVICE_NAME='SageMakerUnifiedStudio'
+export Q_CLI_CLIENT_APPLICATION='SMUS_JUPYTER_LAB'
 
 mkdir -p $STUDIO_LOGGING_DIR/$SAGEMAKER_APP_TYPE_LOWERCASE/supervisord
 exec supervisord -c /etc/supervisor/conf.d/supervisord-sagemaker-ui.conf -n
