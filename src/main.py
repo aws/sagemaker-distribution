@@ -257,6 +257,7 @@ def _build_local_images(
 
     for image_generator_config in _image_generator_configs[target_version.major]:
         config = _get_config_for_image(target_version_dir, image_generator_config, force)
+        image_type = config["image_type"]
         config["build_args"]["IMAGE_VERSION"] = config["image_tag_generator"].format(image_version=str(target_version))
         try:
             image, log_gen = _docker_client.images.build(
@@ -268,7 +269,7 @@ def _build_local_images(
                     print(line["stream"].strip())
             # After printing the logs, raise the exception (which is the old behavior)
             raise
-        print(f"Successfully built an image with id: {image.id}")
+        print(f"Successfully built an image {image} with id: {image.id}, image type: {image_type}")
         generated_image_ids.append(image.id)
         try:
             container_logs = _docker_client.containers.run(
@@ -278,14 +279,16 @@ def _build_local_images(
         except ContainerError as e:
             print(e.container.logs().decode("utf-8"))
             # After printing the logs, raise the exception (which is the old behavior)
-            raise
+            raise e
 
         with open(f'{target_version_dir}/{config["env_out_filename"]}', "wb") as f:
             f.write(container_logs)
+        print(f"Write env.out file successfully for image {image.id}, image type: {image_type}")
 
         # Generate change logs. Use the original image generator config which contains the name
         # of the actual env.in file instead of the 'config'.
         generate_change_log(target_version, image_generator_config)
+        print(f"Generated CHANGELOG-{image_type} file successfully for image {image.id}")
 
         version_tags_to_apply = _get_version_tags(target_version, config["env_out_filename"])
         image_tags_to_apply = [config["image_tag_generator"].format(image_version=i) for i in version_tags_to_apply]
