@@ -6,6 +6,7 @@ SageMaker Unified Studio Project Context MCP Server in stdio transport.
 import json
 import logging
 import os
+import re
 from typing import Any, Dict
 
 from mcp.server.fastmcp import FastMCP
@@ -40,12 +41,12 @@ class ProjectContext:
         except Exception as e:
             raise RuntimeError(f"Failed to initialize project: {e}")
 
-        if not self.domain_id:
-            raise RuntimeError(f"Domain id should not be empty")
-        if not self.project_id:
-            raise RuntimeError(f"Project id should not be empty")
-        if not self.region:
-            raise RuntimeError(f"Region should not be empty")
+        if not re.match("^dzd[-_][a-zA-Z0-9_-]{1,36}$", self.domain_id):
+            raise RuntimeError(f"Invalid domain id")
+        if not re.match("^[a-zA-Z0-9_-]{1,36}$", self.project_id):
+            raise RuntimeError(f"Invalid project id")
+        if not re.match("^[a-z]{2}-[a-z]{4,10}-\\d$", self.region):
+            raise RuntimeError(f"Invalid region")
 
 
 def safe_get_attr(obj: Any, attr: str, default: Any = None) -> Any:
