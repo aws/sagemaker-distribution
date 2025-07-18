@@ -32,7 +32,11 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
         # packages such as pytorch-gpu are present only in linux-64 sub directory
         match_spec_out = target_packages_match_spec_out[package]
         package_version = str(match_spec_out.get("version")).removeprefix("==")
-        package_version = get_semver(package_version)
+        try:
+            package_version = get_semver(package_version)
+        except ValueError:
+            print(f"Skipping package {package} with non-semver version: {package_version}")
+            continue
         channel = match_spec_out.get("channel").channel_name
         subdir_filter = "[subdir=" + match_spec_out.get("subdir") + "]"
         search_result = conda.cli.python_api.run_command(
