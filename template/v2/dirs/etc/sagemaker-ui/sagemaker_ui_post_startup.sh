@@ -87,22 +87,43 @@ c.Application.logging_config = {
 EOT
 fi
 
-# Setting this to +x to not log credentials from the response of fetching credentials.
-set +x
+# Add debug call to get domain info
+if [ ! -z "$dataZoneEndPoint" ]; then
+    domain_response=$(aws datazone get-domain --debug --endpoint-url "$dataZoneEndPoint" --identifier "$dataZoneDomainId" --region "$dataZoneDomainRegion" 2>&1)
 
-# Note: The $? check immediately follows the sagemaker-studio command to ensure we're checking its exit status.
-# Adding commands between these lines could lead to incorrect error handling.
-response=$(timeout 30 sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id "$dataZoneDomainId" --profile default)
-responseStatus=$?
+else
+    domain_response=$(aws datazone get-domain --debug --identifier "$dataZoneDomainId" --region "$dataZoneDomainRegion" 2>&1)
+fi
 
-set -x
+# Check if domain is in express mode
+response_body=$(echo "$domain_response" | grep -A1 "Response body:" | tail -n1 | sed 's/^b'\''//;s/'\''$//')
+# Remove leading/trailing whitespace and the 'b' prefix
+cleaned_response=$(echo "$response_body" | sed 's/\\n//g')
+is_express_mode=$(echo "$cleaned_response" | jq -r '.preferences.DOMAIN_MODE == "EXPRESS"')
 
-if [ $responseStatus -ne 0 ]; then
+if [ "$is_express_mode" = "true" ]; then
+    echo "Domain is in express mode. Using default credentials"
+    # Use default credentials - no additional configuration needed
+    aws configure set credential_source EcsContainer --profile DomainExecutionRoleCreds
+    echo "Successfully configured DomainExecutionRoleCreds profile with default credentials"
+else
+    echo "Domain is not in express mode"
+    # Setting this to +x to not log credentials from the response of fetching credentials.
+    set +x
+    # Note: The $? check immediately follows the sagemaker-studio command to ensure we're checking its exit status.
+    # Adding commands between these lines could lead to incorrect error handling.
+    response=$(timeout 30 sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id "$dataZoneDomainId" --profile default)
+    responseStatus=$?
+
+    set -x
+
+    if [ $responseStatus -ne 0 ]; then
         echo "Failed to fetch domain execution role credentials. Will skip adding new credentials profile: DomainExecutionRoleCreds."
         write_status_to_file "error" "Network issue detected. Your domain may be using a public subnet, which affects IDE functionality. Please contact your admin."
-else
+    else
         aws configure set credential_process "sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id $dataZoneDomainId --profile default" --profile DomainExecutionRoleCreds
         echo "Successfully configured DomainExecutionRoleCreds profile"
+    fi
 fi
 
 # Run AWS CLI command to get the username from DataZone User Profile.
