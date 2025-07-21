@@ -62,6 +62,12 @@ RUN apt-get update && apt-get upgrade -y && \
     sudo ./aws/install && \
     rm -rf aws awscliv2.zip && \
     : && \
+    # Install Q CLI
+    curl --proto '=https' --tlsv1.2 -sSf "https://desktop-release.q.us-east-1.amazonaws.com/latest/q-x86_64-linux.zip" -o "q.zip" && \
+    unzip q.zip && \
+    Q_INSTALL_GLOBAL=true ./q/install.sh --no-confirm && \
+    rm -rf q q.zip && \
+    : && \
     echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
 # CodeEditor - create server, user data dirs
     mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
