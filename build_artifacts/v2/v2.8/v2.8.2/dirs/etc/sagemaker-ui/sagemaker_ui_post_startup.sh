@@ -87,43 +87,22 @@ c.Application.logging_config = {
 EOT
 fi
 
-# Add debug call to get domain info
-if [ ! -z "$dataZoneEndPoint" ]; then
-    domain_response=$(aws datazone get-domain --debug --endpoint-url "$dataZoneEndPoint" --identifier "$dataZoneDomainId" --region "$dataZoneDomainRegion" 2>&1)
+# Setting this to +x to not log credentials from the response of fetching credentials.
+set +x
 
-else
-    domain_response=$(aws datazone get-domain --debug --identifier "$dataZoneDomainId" --region "$dataZoneDomainRegion" 2>&1)
-fi
+# Note: The $? check immediately follows the sagemaker-studio command to ensure we're checking its exit status.
+# Adding commands between these lines could lead to incorrect error handling.
+response=$(timeout 30 sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id "$dataZoneDomainId" --profile default)
+responseStatus=$?
 
-# Check if domain is in express mode
-response_body=$(echo "$domain_response" | grep -A1 "Response body:" | tail -n1 | sed 's/^b'\''//;s/'\''$//')
-# Remove leading/trailing whitespace and the 'b' prefix
-cleaned_response=$(echo "$response_body" | sed 's/\\n//g')
-is_express_mode=$(echo "$cleaned_response" | jq -r '.preferences.DOMAIN_MODE == "EXPRESS"')
+set -x
 
-if [ "$is_express_mode" = "true" ]; then
-    echo "Domain is in express mode. Using default credentials"
-    # Use default credentials - no additional configuration needed
-    aws configure set credential_source EcsContainer --profile DomainExecutionRoleCreds
-    echo "Successfully configured DomainExecutionRoleCreds profile with default credentials"
-else
-    echo "Domain is not in express mode"
-    # Setting this to +x to not log credentials from the response of fetching credentials.
-    set +x
-    # Note: The $? check immediately follows the sagemaker-studio command to ensure we're checking its exit status.
-    # Adding commands between these lines could lead to incorrect error handling.
-    response=$(timeout 30 sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id "$dataZoneDomainId" --profile default)
-    responseStatus=$?
-
-    set -x
-
-    if [ $responseStatus -ne 0 ]; then
+if [ $responseStatus -ne 0 ]; then
         echo "Failed to fetch domain execution role credentials. Will skip adding new credentials profile: DomainExecutionRoleCreds."
         write_status_to_file "error" "Network issue detected. Your domain may be using a public subnet, which affects IDE functionality. Please contact your admin."
-    else
+else
         aws configure set credential_process "sagemaker-studio credentials get-domain-execution-role-credential-in-space --domain-id $dataZoneDomainId --profile default" --profile DomainExecutionRoleCreds
         echo "Successfully configured DomainExecutionRoleCreds profile"
-    fi
 fi
 
 # Run AWS CLI command to get the username from DataZone User Profile.
@@ -229,84 +208,10 @@ else
   echo readonly LOGNAME >> ~/.bashrc
 fi
 
-# Setup Q CLI auth mode
-q_settings_file="$HOME/.aws/amazon_q/settings.json"
-if [ -f "$q_settings_file" ]; then
-    q_auth_mode=$(jq -r '.auth_mode' < $q_settings_file)
-    if [ "$q_auth_mode" == "IAM" ]; then
-        export AMAZON_Q_SIGV4=true
-    else 
-        export AMAZON_Q_SIGV4=false
-    fi
-else
-    export AMAZON_Q_SIGV4=true
-fi
-
-if $AMAZON_Q_SIGV4; then
-    if grep -q "^export AMAZON_Q_SIGV4=" ~/.bashrc; then
-        echo "AMAZON_Q_SIGV4 is defined in the env"
-    else
-        echo export AMAZON_Q_SIGV4=$AMAZON_Q_SIGV4 >> ~/.bashrc
-    fi
-else 
-    # Remove from .bashrc if it exists
-    sed -i '/^export AMAZON_Q_SIGV4=/d' ~/.bashrc
-fi
-
-# Setup SageMaker MCP configuration
-echo "Setting up SageMaker MCP configuration..."
-mkdir -p $HOME/.aws/amazonq/
-target_file="$HOME/.aws/amazonq/mcp.json"
-source_file="/etc/sagemaker-ui/sagemaker-mcp/mcp.json"
-
-if [ -f "$source_file" ]; then
-    # Extract all servers from source configuration
-    if [ -f "$target_file" ]; then
-        # Target file exists - merge configurations
-        echo "Existing MCP configuration found, merging configurations..."
-        
-        # Check if it's valid JSON first
-        if jq empty "$target_file" 2>/dev/null; then
-            # Initialize mcpServers object if it doesn't exist
-            if ! jq -e '.mcpServers' "$target_file" >/dev/null 2>&1; then
-                echo "Creating mcpServers object in existing configuration"
-                jq '. + {"mcpServers":{}}' "$target_file" > "$target_file.tmp"
-                mv "$target_file.tmp" "$target_file"
-            fi
-            
-            servers=$(jq '.mcpServers | keys[]' "$source_file" | tr -d '"')
-            
-            # Add each server from source to target if it doesn't exist
-            for server in $servers; do
-                if ! jq -e ".mcpServers.\"$server\"" "$target_file" >/dev/null 2>&1; then
-                    server_config=$(jq ".mcpServers.\"$server\"" "$source_file")
-                    jq --arg name "$server" --argjson config "$server_config" \
-                        '.mcpServers[$name] = $config' "$target_file" > "$target_file.tmp"
-                    mv "$target_file.tmp" "$target_file"
-                    echo "Added server '$server' to existing configuration"
-                else
-                    echo "Server '$server' already exists in configuration"
-                fi
-            done
-        else
-            echo "Warning: Existing MCP configuration is not valid JSON, replacing with default configuration"
-            cp "$source_file" "$target_file"
-        fi
-    else
-        # File doesn't exist, copy our configuration
-        cp "$source_file" "$target_file"
-        echo "Created new MCP configuration with default servers"
-    fi
-    
-    echo "Successfully configured MCP for SageMaker"
-else
-    echo "Warning: MCP configuration file not found at $source_file"
-fi
-
 # Generate sagemaker pysdk intelligent default config
 nohup python /etc/sagemaker/sm_pysdk_default_config.py &
-# Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab and domain is not in express mode
-if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" != "true" ]; then
+# Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab
+if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
     # do not fail immediately for non-zero exit code returned
     # by start-workflows-container. An expected non-zero exit
     # code will be returned if there is not a minimum of 2
