@@ -8,6 +8,7 @@
       "@amzn/sagemaker-jupyterlab-extensions:spacemenu": true,
       "@amzn/amazon_sagemaker_sql_editor": true,
       "@sagemaker-studio:EmrCluster": true,
+      "@jupyterlab/scheduler": true,
       "@jupyter/collaboration-extension": true
     }
 }

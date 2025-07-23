@@ -1,11 +1,5 @@
 import os
 
-from sagemaker_studio_jupyter_scheduler.scheduler import (
-    SagemakerEnvironmentManager,
-    SageMakerJobFilesManager,
-    SageMakerUnifiedStudioScheduler,
-)
-
 c.ServerApp.terminado_settings = {"shell_command": ["/bin/bash"]}
 region = os.environ.get("AWS_REGION")
 csp_rule = os.environ.get("JUPYTERSERVER_CSP_RULE")
@@ -33,9 +27,4 @@ try:
     module_location = os.path.dirname(module.__file__)
     c.LanguageServerManager.extra_node_roots = [f"{module_location}/sql-language-server"]
 except:
-
     pass
-
-c.SchedulerApp.scheduler_class = SageMakerUnifiedStudioScheduler
-c.SchedulerApp.environment_manager_class = SagemakerEnvironmentManager
-c.SchedulerApp.job_files_manager_class = SageMakerJobFilesManager
