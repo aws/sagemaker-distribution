@@ -5,8 +5,14 @@ import os
 from enum import Enum
 
 
+class SageMakerPlatform(str, Enum):
+    """Simple enum to define environment variables injected by the SageMaker platform."""
+
+    PLATFORM_PORT = "SAGEMAKER_BIND_TO_PORT"
+
+
 class SageMakerInference(str, Enum):
-    """Simple enum to define the mapping between dictionary key and environement variable."""
+    """Simple enum to define the mapping between dictionary key and environment variable."""
 
     BASE_DIRECTORY = "SAGEMAKER_INFERENCE_BASE_DIRECTORY"
     REQUIREMENTS = "SAGEMAKER_INFERENCE_REQUIREMENTS"
@@ -28,7 +34,7 @@ class Environment:
             SageMakerInference.CODE_DIRECTORY: os.getenv(SageMakerInference.CODE_DIRECTORY, None),
             SageMakerInference.CODE: os.getenv(SageMakerInference.CODE, "inference.handler"),
             SageMakerInference.LOG_LEVEL: os.getenv(SageMakerInference.LOG_LEVEL, 10),
-            SageMakerInference.PORT: 8080,
+            SageMakerInference.PORT: self._resolve_port(),
         }
 
     def __str__(self):
@@ -57,3 +63,10 @@ class Environment:
     @property
     def port(self):
         return self._environment_variables.get(SageMakerInference.PORT)
+
+    def _resolve_port(self) -> int:
+        if os.getenv(SageMakerPlatform.PLATFORM_PORT, None):
+            return int(os.getenv(SageMakerPlatform.PLATFORM_PORT))
+        if os.getenv(SageMakerInference.PORT, None):
+            return int(os.getenv(SageMakerInference.PORT))
+        return 8080
