@@ -2,11 +2,19 @@ from __future__ import absolute_import
 
 import json
 import os
+import random
 from enum import Enum
+from typing import Optional
+
+
+class SageMakerPlatform(str, Enum):
+    """Simple enum to define environment variables injected by the SageMaker platform."""
+
+    PLATFORM_PORT = "SAGEMAKER_BIND_TO_PORT"
 
 
 class SageMakerInference(str, Enum):
-    """Simple enum to define the mapping between dictionary key and environement variable."""
+    """Simple enum to define the mapping between dictionary key and environment variable."""
 
     BASE_DIRECTORY = "SAGEMAKER_INFERENCE_BASE_DIRECTORY"
     REQUIREMENTS = "SAGEMAKER_INFERENCE_REQUIREMENTS"
@@ -14,6 +22,7 @@ class SageMakerInference(str, Enum):
     CODE = "SAGEMAKER_INFERENCE_CODE"
     LOG_LEVEL = "SAGEMAKER_INFERENCE_LOG_LEVEL"
     PORT = "SAGEMAKER_INFERENCE_PORT"
+    SAFE_PORT = "SAGEMAKER_SAFE_PORT_RANGE"
 
 
 class Environment:
@@ -28,7 +37,8 @@ class Environment:
             SageMakerInference.CODE_DIRECTORY: os.getenv(SageMakerInference.CODE_DIRECTORY, None),
             SageMakerInference.CODE: os.getenv(SageMakerInference.CODE, "inference.handler"),
             SageMakerInference.LOG_LEVEL: os.getenv(SageMakerInference.LOG_LEVEL, 10),
-            SageMakerInference.PORT: 8080,
+            SageMakerInference.PORT: self._resolve_port(),
+            SageMakerInference.SAFE_PORT: self._resolve_from_safe_port_range(),
         }
 
     def __str__(self):
@@ -57,3 +67,25 @@ class Environment:
     @property
     def port(self):
         return self._environment_variables.get(SageMakerInference.PORT)
+
+    @property
+    def safe_port(self):
+        return self._environment_variables.get(SageMakerInference.SAFE_PORT)
+
+    def _resolve_port(self) -> int:
+        if os.getenv(SageMakerPlatform.PLATFORM_PORT, None):
+            return int(os.getenv(SageMakerPlatform.PLATFORM_PORT))
+        if os.getenv(SageMakerInference.PORT, None):
+            return int(os.getenv(SageMakerInference.PORT))
+        return 8080
+
+    def _resolve_from_safe_port_range(self) -> Optional[int]:
+        safe_port_range = os.getenv(SageMakerInference.SAFE_PORT, None)
+        if safe_port_range:
+            lower, upper = safe_port_range.split("-")
+            if not upper:
+                return None
+
+            return random.randint(int(lower), int(upper))
+
+        return None
