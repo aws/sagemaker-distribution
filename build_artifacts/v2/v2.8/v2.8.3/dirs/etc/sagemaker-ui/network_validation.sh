@@ -126,18 +126,14 @@ temp_dir=$(mktemp -d)
 # Launch all service API checks in parallel background jobs
 for service in "${!SERVICE_COMMANDS[@]}"; do
   {
-    output_file="$temp_dir/${service}_output"
-
-    # Run command with timeout
-    if timeout "${api_time_out_limit}s" bash -c "${SERVICE_COMMANDS[$service]}" > "$output_file" 2>&1; then
+    # Run command with timeout, discard stdout/stderr
+    if timeout "${api_time_out_limit}s" bash -c "${SERVICE_COMMANDS[$service]}" > /dev/null 2>&1; then
       # Success: write OK to temp file
       echo "OK" > "$temp_dir/$service"
     else
       # Get exit code to differentiate timeout or other errors
       exit_code=$?
-      if grep -q "Could not connect to the endpoint URL" "$output_file"; then
-        echo "UNREACHABLE" > "$temp_dir/$service"
-      elif [ "$exit_code" -eq 124 ]; then
+      if [ "$exit_code" -eq 124 ]; then
         # Timeout exit code
         echo "TIMEOUT" > "$temp_dir/$service"
       else
@@ -159,13 +155,10 @@ for service in "${!SERVICE_COMMANDS[@]}"; do
     if [[ "$result" == "TIMEOUT" ]]; then
       echo "$service API did NOT resolve within ${api_time_out_limit}s. Marking as unreachable."
       unreachable_services+=("$service")
-    elif [[ "$result" == "UNREACHABLE" ]]; then
-      echo "$service API failed to connect to the endpoint. Marking as unreachable."
-      unreachable_services+=("$service")
     elif [[ "$result" == "OK" ]]; then
       echo "$service API is reachable."
     else
-      echo "$service API returned an error (but not a timeout or endpoint reachability failure). Ignored for network check."
+      echo "$service API returned an error (but not a timeout). Ignored for network check."
     fi
   else
     echo "$service check did not produce a result file. Skipping."
