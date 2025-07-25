@@ -72,5 +72,7 @@ async def handle(handler: callable, environment: Environment):
         ]
     )
     app.listen(environment.port)
+    if environment.safe_port:
+        app.listen(environment.safe_port)
     logger.debug(f"Asynchronous inference server listening on port: `{environment.port}`")
     await asyncio.Event().wait()
