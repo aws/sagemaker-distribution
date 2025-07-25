@@ -324,7 +324,7 @@ if [ -f "$agents_source_file" ]; then
                 mv "$agents_target_file.tmp" "$agents_target_file"
             fi
             
-            # Add servers from source that don't exist in target
+            # Add servers from source that don't exist in target and update tools
             if jq -e '.mcpServers' "$agents_source_file" >/dev/null 2>&1; then
                 source_server_names=$(jq -r '.mcpServers | keys[]' "$agents_source_file")
                 
@@ -336,12 +336,29 @@ if [ -f "$agents_source_file" ]; then
                             '.mcpServers[$name] = $config' "$agents_target_file" > "$agents_target_file.tmp"
                         mv "$agents_target_file.tmp" "$agents_target_file"
                         echo "Added server '$server_name' to agents configuration"
+                        
+                        # Check if source has tools that reference this server and add them
+                        server_tool_ref="@$server_name"
+                        if jq -e --arg tool "$server_tool_ref" '.tools | index($tool)' "$agents_source_file" >/dev/null 2>&1; then
+                            # Initialize tools array if it doesn't exist
+                            if ! jq -e '.tools' "$agents_target_file" >/dev/null 2>&1; then
+                                jq '. + {"tools":[]}' "$agents_target_file" > "$agents_target_file.tmp"
+                                mv "$agents_target_file.tmp" "$agents_target_file"
+                            fi
+                            
+                            # Add tool reference if it doesn't exist
+                            if ! jq -e --arg tool "$server_tool_ref" '.tools | index($tool)' "$agents_target_file" >/dev/null 2>&1; then
+                                jq --arg tool "$server_tool_ref" '.tools += [$tool]' "$agents_target_file" > "$agents_target_file.tmp"
+                                mv "$agents_target_file.tmp" "$agents_target_file"
+                                echo "Added tool reference '$server_tool_ref' to agents configuration"
+                            fi
+                        fi
                     else
                         echo "Server '$server_name' already exists in configuration, skipping"
                     fi
                 done
                 
-                echo "Successfully added missing mcpServers from default.json to agents configuration"
+                echo "Successfully added missing mcpServers and tools from default.json to agents configuration"
             else
                 echo "No mcpServers found in source configuration"
             fi
