@@ -303,6 +303,78 @@ else
     echo "Warning: MCP configuration file not found at $source_file"
 fi
 
+# Migrating MCP configuration to new config file
+echo "Migrating MCP configuration to Amazon Q agents..."
+agents_target_file="$HOME/.aws/amazonq/agents/default.json"
+agents_source_file="/etc/sagemaker-ui/sagemaker-mcp/default.json"
+
+if [ -f "$agents_source_file" ]; then
+    mkdir -p "$HOME/.aws/amazonq/agents/"
+    
+    if [ -f "$agents_target_file" ]; then
+        echo "Existing Amazon Q agents configuration found, merging mcpServers..."
+        
+        # Check if target file is valid JSON
+        if jq empty "$agents_target_file" 2>/dev/null; then
+            # Initialize mcpServers object if it doesn't exist in target
+            if ! jq -e '.mcpServers' "$agents_target_file" >/dev/null 2>&1; then
+                echo "Creating mcpServers object in existing agents configuration"
+                jq '. + {"mcpServers":{}}' "$agents_target_file" > "$agents_target_file.tmp"
+                mv "$agents_target_file.tmp" "$agents_target_file"
+            fi
+            
+            # Add servers from source that don't exist in target and update tools
+            if jq -e '.mcpServers' "$agents_source_file" >/dev/null 2>&1; then
+                source_server_names=$(jq -r '.mcpServers | keys[]' "$agents_source_file")
+                
+                for server_name in $source_server_names; do
+                    if ! jq -e ".mcpServers.\"$server_name\"" "$agents_target_file" >/dev/null 2>&1; then
+                        # Server doesn't exist in target - add it
+                        server_config=$(jq ".mcpServers.\"$server_name\"" "$agents_source_file")
+                        jq --arg name "$server_name" --argjson config "$server_config" \
+                            '.mcpServers[$name] = $config' "$agents_target_file" > "$agents_target_file.tmp"
+                        mv "$agents_target_file.tmp" "$agents_target_file"
+                        echo "Added server '$server_name' to agents configuration"
+                        
+                        # Check if source has tools that reference this server and add them
+                        server_tool_ref="@$server_name"
+                        if jq -e --arg tool "$server_tool_ref" '.tools | index($tool)' "$agents_source_file" >/dev/null 2>&1; then
+                            # Initialize tools array if it doesn't exist
+                            if ! jq -e '.tools' "$agents_target_file" >/dev/null 2>&1; then
+                                jq '. + {"tools":[]}' "$agents_target_file" > "$agents_target_file.tmp"
+                                mv "$agents_target_file.tmp" "$agents_target_file"
+                            fi
+                            
+                            # Add tool reference if it doesn't exist
+                            if ! jq -e --arg tool "$server_tool_ref" '.tools | index($tool)' "$agents_target_file" >/dev/null 2>&1; then
+                                jq --arg tool "$server_tool_ref" '.tools += [$tool]' "$agents_target_file" > "$agents_target_file.tmp"
+                                mv "$agents_target_file.tmp" "$agents_target_file"
+                                echo "Added tool reference '$server_tool_ref' to agents configuration"
+                            fi
+                        fi
+                    else
+                        echo "Server '$server_name' already exists in configuration, skipping"
+                    fi
+                done
+                
+                echo "Successfully added missing mcpServers and tools from default.json to agents configuration"
+            else
+                echo "No mcpServers found in source configuration"
+            fi
+        else
+            echo "Warning: Existing agents configuration is not valid JSON, replacing with default configuration"
+            cp "$agents_source_file" "$agents_target_file"
+        fi
+    else
+        cp "$agents_source_file" "$agents_target_file"
+        echo "Created new Amazon Q agents configuration file"
+    fi
+    
+    echo "Successfully migrated MCP configuration to Amazon Q agents"
+else
+    echo "Warning: Source configuration file not found at $agents_source_file"
+fi
+
 # Generate sagemaker pysdk intelligent default config
 nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 # Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab and domain is not in express mode
