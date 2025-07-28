@@ -13,8 +13,8 @@ ipython|8.37.0|8.37.0
 jupyter-lsp|2.2.6|2.2.6
 jupyterlab|4.4.5|4.4.5
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
-langchain|0.3.26|0.3.26
-jupyter-ai|2.31.5|2.31.5
+langchain|0.3.27|0.3.27
+jupyter-ai|2.31.6|2.31.6
 amazon-sagemaker-jupyter-ai-q-developer|1.2.7|1.2.7
 jupyter-scheduler|2.11.0|2.11.0
 amazon-sagemaker-jupyter-scheduler|3.1.15|3.1.15
@@ -60,8 +60,8 @@ sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.0.20|1.0.20
 sagemaker-studio-analytics-extension|0.2.0|0.2.0
 sagemaker-studio-cli|1.0.6|1.0.6
-sagemaker-studio-dataengineering-extensions|1.1.3|1.1.3
-sagemaker-studio-dataengineering-sessions|1.1.4|1.1.4
+sagemaker-studio-dataengineering-extensions|1.1.4|1.1.4
+sagemaker-studio-dataengineering-sessions|1.1.5|1.1.5
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
