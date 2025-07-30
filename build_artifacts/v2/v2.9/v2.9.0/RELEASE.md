@@ -6,7 +6,7 @@ python|3.11.11|3.11.11
 numpy|1.26.4|1.26.4
 jinja2|3.1.6|3.1.6
 pytorch|2.6.0|2.6.0
-pandas|2.2.3|2.2.3
+pandas|2.3.1|2.3.1
 altair|5.5.0|5.5.0
 boto3|1.39.8|1.39.8
 ipython|8.37.0|8.37.0
@@ -22,12 +22,12 @@ amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.18|0.1.18
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.4|1.0.4
-scipy|1.15.2|1.15.2
+scipy|1.16.0|1.16.0
 matplotlib-base|3.10.3|3.10.3
-scikit-learn|1.6.1|1.6.1
+scikit-learn|1.7.1|1.7.1
 pip|24.3.1|24.3.1
 torchvision|0.21.0|0.21.0
-autogluon|1.3.1|1.3.1
+autogluon|1.4.0|1.4.0
 ipywidgets|8.1.7|8.1.7
 notebook|7.4.4|7.4.4
 aws-glue-sessions|1.0.9|1.0.9
@@ -62,7 +62,7 @@ sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.0.20|1.0.20
 sagemaker-studio-analytics-extension|0.2.0|0.2.0
 sagemaker-studio-cli|1.0.6|1.0.6
-sagemaker-studio-dataengineering-extensions|1.2.1|1.2.1
+sagemaker-studio-dataengineering-extensions|1.2.2|1.2.2
 sagemaker-studio-dataengineering-sessions|1.2.1|1.2.1
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
