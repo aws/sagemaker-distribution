@@ -10,7 +10,8 @@ if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
 else
     # Activate conda environment 'base'
     micromamba activate base
-    jupyter labextension disable @amzn/sagemaker-data-explorer-jl-plugin sagemaker-data-explorer:plugin amzn/sagemaker-ui-theme-jlplugin @amzn/sagemaker-ui-doc-manager-jl-plugin @amzn/sagemaker-connection-magics-jlextension @amzn/sagemaker_gen_ai_jupyterlab_extension
+    # Disable SMUS-specific extensions
+    jupyter labextension disable @amzn/sagemaker-data-explorer-jl-plugin sagemaker-data-explorer:plugin amzn/sagemaker-ui-theme-jlplugin @amzn/sagemaker-ui-doc-manager-jl-plugin @amzn/sagemaker-connection-magics-jlextension @amzn/sagemaker_gen_ai_jupyterlab_extension @amzn/sagemaker-post-startup-notification-plugin:plugin @amzn/sagemaker-post-startup-notification-plugin:custom-terminal-launcher-plugin
 fi
 
 # Start Jupyter server in rtc mode for shared spaces
