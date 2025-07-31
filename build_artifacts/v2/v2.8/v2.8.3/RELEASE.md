@@ -53,7 +53,7 @@ s3fs|2024.12.0|2024.12.0
 sagemaker-code-editor|1.6.2|1.6.2
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.0|0.4.0
-sagemaker-jupyterlab-extension|0.5.0|0.5.0
+sagemaker-jupyterlab-extension|0.5.1|0.5.1
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
 sagemaker-python-sdk|2.245.0|2.245.0
