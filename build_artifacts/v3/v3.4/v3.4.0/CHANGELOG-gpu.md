@@ -10,6 +10,7 @@ jupyterlab|4.4.4|4.4.5
 langchain|0.3.26|0.3.27
 jupyter-ai|2.31.5|2.31.6
 scipy|1.15.2|1.16.0
+matplotlib-base|3.10.3|3.10.5
 scikit-learn|1.6.1|1.7.1
 pip|25.1.1|25.2
 autogluon|1.3.1|1.4.0
@@ -25,6 +26,5 @@ sagemaker-studio-dataengineering-sessions|1.1.2|1.2.1
 
 Package | Version 
 ---|---
-mcp|1.12.2
-sagemaker-gen-ai-jupyterlab-extension|1.0.4
+mcp|1.12.3
 uv|0.8.4
