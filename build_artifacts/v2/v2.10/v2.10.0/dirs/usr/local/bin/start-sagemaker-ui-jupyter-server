@@ -1,0 +1,55 @@
+#!/bin/bash
+set -e
+
+eval "$(micromamba shell hook --shell=bash)"
+
+# Activate conda environment depending on if we are in Recovery or Standard mode. 
+if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
+    # Activate conda environment `sagemaker-recovery-mode`
+    micromamba activate sagemaker-recovery-mode
+else
+    # Activate conda environment 'base' which is the default for Cosmos
+    micromamba activate base
+
+    # Disable jupyter-ai in favor of sagemaker_gen_ai_jupyterlab_extension
+    jupyter labextension disable @jupyter-ai/core
+fi
+
+sudo cp -r /etc/sagemaker-ui/kernels/. /opt/conda/share/jupyter/kernels/
+sudo cp /etc/sagemaker-ui/jupyter/server/jupyter_server_config.py /opt/conda/etc/jupyter/
+
+mkdir -p /opt/conda/share/jupyter/lab/settings
+cp -r /etc/sagemaker-ui/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings
+
+if [[ $(jupyter kernelspec list | grep pysparkkernel) ]]; then
+  jupyter-kernelspec remove -f -y pysparkkernel
+fi
+
+if [[ $(jupyter kernelspec list | grep sparkkernel) ]]; then
+  jupyter-kernelspec remove -f -y sparkkernel
+fi
+
+if [[ $(jupyter kernelspec list | grep glue_spark) ]]; then
+  jupyter-kernelspec remove -f -y glue_spark
+fi
+
+if [[ $(jupyter kernelspec list | grep glue_pyspark) ]]; then
+  jupyter-kernelspec remove -f -y glue_pyspark
+fi
+
+if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
+  # Disabling collaboration and identity_provider_class flags for recovery mode
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*' \
+    --SchedulerApp.db_url='sqlite:////tmp/.jupyter_scheduler_do_not_delete.sqlite'
+else 
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*' \
+    --SchedulerApp.db_url='sqlite:////tmp/.jupyter_scheduler_do_not_delete.sqlite' \
+    --collaborative \
+    --ServerApp.identity_provider_class='sagemaker_jupyter_server_extension.identity.SageMakerIdentityProvider' 
+fi 
