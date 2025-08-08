@@ -1,0 +1,6 @@
+FROM public.ecr.aws/sagemaker/sagemaker-distribution:3.2.2-gpu
+
+ARG IMAGE_VERSION
+ENV IMAGE_VERSION=$IMAGE_VERSION
+
+RUN sudo rm /etc/patches/smus/0003-fix-ipython-display.patch
