@@ -1,6 +1,6 @@
-FROM public.ecr.aws/sagemaker/sagemaker-distribution:3.2.2-gpu
+FROM public.ecr.aws/sagemaker/sagemaker-distribution:3.3.1-gpu
 
-ARG IMAGE_VERSION
-ENV IMAGE_VERSION=$IMAGE_VERSION
+ENV IMAGE_VERSION=3.3.2-gpu
+LABEL "org.amazon.sagemaker-distribution.image.version"=3.3.2-gpu
 
 RUN sudo rm /etc/patches/smus/0003-fix-ipython-display.patch
