@@ -111,6 +111,9 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     micromamba create -n sagemaker-recovery-mode && \
     micromamba install -n sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
+    rm -rf /opt/conda/etc/conda/test-files/ && \
+    find /opt/conda -path "*/site-packages/*/tests" -type d -exec rm -rf {} + 2>/dev/null || true && \
+    find /opt/conda -name "yarn.lock" -type f -delete && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
     # Update npm version
