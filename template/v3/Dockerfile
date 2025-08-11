@@ -64,7 +64,7 @@ RUN apt-get update && apt-get upgrade -y && \
     gpg --import /tmp/aws-cli-public-key.asc && \
     gpg --verify awscli-exe-linux-x86_64.zip.sig awscli-exe-linux-x86_64.zip && \
     unzip awscli-exe-linux-x86_64.zip && \
-    ./aws/install && \
+    sudo ./aws/install && \
     rm -rf aws awscli-exe-linux-x86_64.zip awscli-exe-linux-x86_64.zip.sig aws-cli-public-key.asc && \
     : && \
     echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
