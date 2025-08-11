@@ -84,10 +84,12 @@ aws profiles: "DomainExecutionRoleCreds, default"
 Again, include only required parameters. Any extra parameters may cause the API to fail. Stick strictly to the schema."""
 
 
-def write_log_entry(operation: str, tool_name: str, error_count: int = 0, domain_id: str = "", latency: float = 0) -> None:
+def write_log_entry(
+    operation: str, tool_name: str, error_count: int = 0, domain_id: str = "", latency: float = 0
+) -> None:
     """
     Write a log entry to the SageMaker GenAI Jupyter Lab extension log file.
-    
+
     Args:
         operation: The operation being performed
         tool_name: The name of the tool being used
@@ -104,29 +106,25 @@ def write_log_entry(operation: str, tool_name: str, error_count: int = 0, domain
             "Latency": latency,
             "_aws": {
                 "Timestamp": int(time.time() * 1000),
-                "CloudWatchMetrics": [{
-                    "Dimensions": [["Operation"], ["ToolName"]],
-                    "Metrics": [
-                        {
-                            "Name": "ErrorCount",
-                            "Unit": "Count"
-                        },
-                        {
-                            "Name": "Latency",
-                            "Unit": "Milliseconds"
-                        }
-                    ],
-                    "Namespace": "SagemakerGenAIJupyterLab"
-                }]
+                "CloudWatchMetrics": [
+                    {
+                        "Dimensions": [["Operation"], ["ToolName"]],
+                        "Metrics": [
+                            {"Name": "ErrorCount", "Unit": "Count"},
+                            {"Name": "Latency", "Unit": "Milliseconds"},
+                        ],
+                        "Namespace": "SagemakerGenAIJupyterLab",
+                    }
+                ],
             },
         }
-        
+
         # Write to log file
         log_file_path = "/var/log/studio/sagemaker_genai_jl_ext/sagemaker_genai_jl_extension.log"
         os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
         with open(log_file_path, "a") as log_file:
             log_file.write(json.dumps(log_entry) + "\n")
-            
+
     except Exception:
         # Fail quietly - logging failures shouldn't affect main functionality
         pass
@@ -159,10 +157,10 @@ async def aws_context_provider() -> Dict[str, Any]:
         project_id = safe_get_attr(ctx, "project_id", "")
         region = safe_get_attr(ctx, "region", "")
         identifiers_response = create_smus_context_identifiers_response(domain_id, project_id, region)
-        
+
         latency = (time.time() - start_time) * 1000
         write_log_entry("SMUS-Local-MCP", "aws_context_provider", 0, domain_id, latency)
-        
+
         return {"response": identifiers_response}
     except Exception as e:
         logger.error(f"Error providing SMUS context identifiers: {e}")
