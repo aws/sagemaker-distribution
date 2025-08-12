@@ -103,11 +103,23 @@ is_express_mode=$(echo "$cleaned_response" | jq -r '.preferences.DOMAIN_MODE == 
 
 if [ "$is_express_mode" = "true" ]; then
     echo "Domain is in express mode. Using default credentials"
+    if grep -q "^DOMAIN_MODE=" ~/.bashrc; then
+        echo "DOMAIN_MODE is defined in the env"
+    else
+        echo DOMAIN_MODE="EXPRESS" >> ~/.bashrc
+        echo readonly DOMAIN_MODE >> ~/.bashrc
+    fi
     # Use default credentials - no additional configuration needed
     aws configure set credential_source EcsContainer --profile DomainExecutionRoleCreds
     echo "Successfully configured DomainExecutionRoleCreds profile with default credentials"
 else
     echo "Domain is not in express mode"
+    if grep -q "^DOMAIN_MODE=" ~/.bashrc; then
+        echo "DOMAIN_MODE is defined in the env"
+    else
+        echo DOMAIN_MODE="NON_EXPRESS" >> ~/.bashrc
+        echo readonly DOMAIN_MODE >> ~/.bashrc
+    fi
     # Setting this to +x to not log credentials from the response of fetching credentials.
     set +x
     # Note: The $? check immediately follows the sagemaker-studio command to ensure we're checking its exit status.
@@ -251,6 +263,23 @@ if $AMAZON_Q_SIGV4; then
 else 
     # Remove from .bashrc if it exists
     sed -i '/^export AMAZON_Q_SIGV4=/d' ~/.bashrc
+fi
+
+# Setup Q CLI telemetry
+if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
+    q_cli_client_application="SMUS_JUPYTER_LAB"
+else
+    q_cli_client_application="SMUS_CODE_EDITOR"
+fi
+if [ "$is_express_mode" = "true" ]; then
+    q_cli_client_application="${q_cli_client_application}_EXPRESS"
+fi
+
+if grep -q "^export Q_CLI_CLIENT_APPLICATION=" ~/.bashrc; then
+    echo Q_CLI_CLIENT_APPLICATION is defined in the env
+else
+    echo export Q_CLI_CLIENT_APPLICATION=$q_cli_client_application >> ~/.bashrc
+    echo readonly Q_CLI_CLIENT_APPLICATION >> ~/.bashrc
 fi
 
 # Setup SageMaker MCP configuration
