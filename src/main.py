@@ -126,6 +126,11 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
         shutil.copy2(f, new_version_dir)
 
+    # Copy AWS CLI public key from assets
+    aws_cli_key_path = os.path.relpath(f"assets/aws-cli-public-key.asc")
+    if os.path.exists(aws_cli_key_path):
+        shutil.copy2(aws_cli_key_path, new_version_dir)
+
     if int(new_version_major) >= 1:
         # dirs directory doesn't exist for v0. It was introduced only for v1
         dirs_relative_path = os.path.relpath(f"{base_path}/dirs")
