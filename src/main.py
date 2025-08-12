@@ -259,14 +259,9 @@ def _build_local_images(
         config = _get_config_for_image(target_version_dir, image_generator_config, force)
         image_type = config["image_type"]
         config["build_args"]["IMAGE_VERSION"] = config["image_tag_generator"].format(image_version=str(target_version))
-        if glob.glob(os.path.join(target_version_dir, "*.patch")):
-            # Minimal patch build, use .patch Dockerfiles
-            dockerfile = f"./Dockerfile-{image_type}.patch"
-        else:
-            dockerfile="./Dockerfile"
         try:
             image, log_gen = _docker_client.images.build(
-                path=target_version_dir, dockerfile=dockerfile, rm=True, pull=True, buildargs=config["build_args"]
+                path=target_version_dir, rm=True, pull=True, buildargs=config["build_args"]
             )
         except BuildError as e:
             for line in e.build_log:
