@@ -1,0 +1,44 @@
+#!/bin/bash
+set -e
+
+eval "$(micromamba shell hook --shell=bash)"
+
+if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
+    export HOME=$SAGEMAKER_RECOVERY_MODE_HOME
+    # Activate conda environment `sagemaker-recovery-mode`
+    micromamba activate /opt/conda/envs/sagemaker-recovery-mode
+else
+    # Activate conda environment 'base'
+    micromamba activate base
+    # Disable SMUS-specific extensions
+    jupyter labextension disable @amzn/sagemaker-data-explorer-jl-plugin sagemaker-data-explorer:plugin amzn/sagemaker-ui-theme-jlplugin @amzn/sagemaker-ui-doc-manager-jl-plugin @amzn/sagemaker-connection-magics-jlextension @amzn/sagemaker-post-startup-notification-plugin:plugin @amzn/sagemaker-post-startup-notification-plugin:custom-terminal-launcher-plugin
+fi
+
+# Start Jupyter server in rtc mode for shared spaces
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ]; then
+  jupyter labextension enable @jupyter/collaboration-extension
+  # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
+  # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
+  # SAGEMAKER_SPACE_TYPE_LOWERCASE flag is used to determine if the server should start
+  # in real-time-collaboration mode for a given space.
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*' \
+    --collaborative \
+    --ServerApp.identity_provider_class=sagemaker_jupyterlab_extension_common.identity.SagemakerIdentityProvider \
+    --YDocExtension.ystore_class=sagemaker_jupyterlab_extension_common.ydoc_override.ydoc.MySQLiteYStore
+
+# Start Jupyter server
+elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+  # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
+  # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*'
+else
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*'
+fi
