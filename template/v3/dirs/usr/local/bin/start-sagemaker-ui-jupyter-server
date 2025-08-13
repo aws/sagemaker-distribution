@@ -10,6 +10,12 @@ if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
 else
     # Activate conda environment 'base' which is the default for Cosmos
     micromamba activate base
+
+    # Disable jupyter-ai in favor of sagemaker_gen_ai_jupyterlab_extension
+    jupyter labextension disable @jupyter-ai/core
+    
+    # Enable RTC to allow async Q file updates
+    jupyter labextension enable @jupyter/docprovider-extension
 fi
 
 sudo cp -r /etc/sagemaker-ui/kernels/. /opt/conda/share/jupyter/kernels/

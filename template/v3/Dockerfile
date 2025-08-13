@@ -63,7 +63,7 @@ RUN apt-get update && apt-get upgrade -y && \
     rm -rf aws awscliv2.zip && \
     : && \
     # Install Q CLI
-    curl --proto '=https' --tlsv1.2 -sSf "https://desktop-release.q.us-east-1.amazonaws.com/latest/q-x86_64-linux.zip" -o "q.zip" && \
+    curl --proto '=https' --tlsv1.2 -sSf "https://desktop-release.q.us-east-1.amazonaws.com/1.12.7/q-x86_64-linux.zip" -o "q.zip" && \
     unzip q.zip && \
     Q_INSTALL_GLOBAL=true ./q/install.sh --no-confirm && \
     rm -rf q q.zip && \
@@ -111,6 +111,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     micromamba create --prefix /opt/conda/envs/sagemaker-recovery-mode && \
     micromamba install --prefix /opt/conda/envs/sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
+    rm -rf /opt/conda/etc/conda/test-files/ && \
+    find /opt/conda -name "yarn.lock" -type f -delete && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
     # Update npm version

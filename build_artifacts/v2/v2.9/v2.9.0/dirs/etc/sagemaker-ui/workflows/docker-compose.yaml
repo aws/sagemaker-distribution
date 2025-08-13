@@ -1,0 +1,77 @@
+x-airflow-common: &airflow-common
+  image: 058264401727.dkr.ecr.${AWS_REGION}.amazonaws.com/mwaa_image:latest
+  network_mode: sagemaker
+  environment:
+    # AWS credentials
+    AWS_REGION: ${AWS_REGION}
+    AWS_DEFAULT_REGION: ${AWS_REGION}
+    AWS_CONTAINER_CREDENTIALS_RELATIVE_URI: ${AWS_CONTAINER_CREDENTIALS_RELATIVE_URI}
+
+    # Logging configuration.
+    MWAA__LOGGING__AIRFLOW_DAGPROCESSOR_LOGS_ENABLED: "true"
+    MWAA__LOGGING__AIRFLOW_DAGPROCESSOR_LOG_LEVEL: "INFO"
+    MWAA__LOGGING__AIRFLOW_SCHEDULER_LOGS_ENABLED: "true"
+    MWAA__LOGGING__AIRFLOW_SCHEDULER_LOG_LEVEL: "INFO"
+    MWAA__LOGGING__AIRFLOW_TRIGGERER_LOGS_ENABLED: "true"
+    MWAA__LOGGING__AIRFLOW_TRIGGERER_LOG_LEVEL: "INFO"
+    MWAA__LOGGING__AIRFLOW_WEBSERVER_LOGS_ENABLED: "true"
+    MWAA__LOGGING__AIRFLOW_WEBSERVER_LOG_LEVEL: "INFO"
+    MWAA__LOGGING__AIRFLOW_WORKER_LOGS_ENABLED: "true"
+    MWAA__LOGGING__AIRFLOW_WORKER_LOG_LEVEL: "INFO"
+    MWAA__LOGGING__AIRFLOW_TASK_LOGS_ENABLED: "true"
+    MWAA__LOGGING__AIRFLOW_TASK_LOG_LEVEL: "INFO"
+
+    MWAA__LOGGING__AIRFLOW_DAGPROCESSOR_LOG_GROUP_ARN: "arn:aws:logs:${AWS_REGION}:${ACCOUNT_ID}:log-group:/aws/sagemaker/studio"
+    MWAA__LOGGING__AIRFLOW_SCHEDULER_LOG_GROUP_ARN: "arn:aws:logs:${AWS_REGION}:${ACCOUNT_ID}:log-group:/aws/sagemaker/studio"
+    MWAA__LOGGING__AIRFLOW_TRIGGERER_LOG_GROUP_ARN: "arn:aws:logs:${AWS_REGION}:${ACCOUNT_ID}:log-group:/aws/sagemaker/studio"
+    MWAA__LOGGING__AIRFLOW_WEBSERVER_LOG_GROUP_ARN: "arn:aws:logs:${AWS_REGION}:${ACCOUNT_ID}:log-group:/aws/sagemaker/studio"
+    MWAA__LOGGING__AIRFLOW_WORKER_LOG_GROUP_ARN: "arn:aws:logs:${AWS_REGION}:${ACCOUNT_ID}:log-group:/aws/sagemaker/studio"
+    MWAA__LOGGING__AIRFLOW_TASK_LOG_GROUP_ARN: "arn:aws:logs:${AWS_REGION}:${ACCOUNT_ID}:log-group:/aws/sagemaker/studio"
+
+    # Airflow URL configuration
+    AIRFLOW__CLI__ENDPOINT_URL: "/jupyterlab/default/proxy/absolute/8080"
+    AIRFLOW__WEBSERVER__BASE_URL: "/jupyterlab/default/proxy/absolute/8080"
+    MWAA__CORE__REQUIREMENTS_PATH: "/usr/local/airflow/requirements/requirements.txt"
+    #Project configuration
+    DataZoneDomainId: ${DZ_DOMAIN_ID}
+    DataZoneProjectId: ${DZ_PROJECT_ID}
+    DataZoneEnvironmentId: ${DZ_ENV_ID}
+    DataZoneDomainRegion: ${DZ_DOMAIN_REGION}
+    ProjectS3Path: ${DZ_PROJECT_S3PATH}
+  volumes:
+    - /home/sagemaker-user/${PROJECT_DIR}/workflows/dags:/usr/local/airflow/dags
+    - /home/sagemaker-user/.workflows_setup/plugins:/usr/local/airflow/plugins
+    - /home/sagemaker-user/.workflows_setup/requirements:/usr/local/airflow/requirements
+    - /home/sagemaker-user/.workflows_setup/startup:/usr/local/airflow/startup
+    - ${MOUNT_DIR}:/home/sagemaker-user/src:rw
+    - /home/sagemaker-user/jobs:/home/sagemaker-user/jobs:rw
+  depends_on: &airflow-common-depends-on
+    postgres:
+      condition: service_healthy
+
+services:
+  postgres:
+    image: 058264401727.dkr.ecr.${AWS_REGION}.amazonaws.com/postgres:13
+    network_mode: sagemaker
+    container_name: mwaa-292-db
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    volumes:
+      - /home/sagemaker-user/.workflows_setup/db-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "airflow"]
+      interval: 10s
+      retries: 5
+      start_period: 5s
+
+  webserver:
+    <<: *airflow-common
+    command: webserver
+    container_name: mwaa-292-webserver
+
+  scheduler:
+    <<: *airflow-common
+    command: scheduler
+    container_name: mwaa-292-scheduler
