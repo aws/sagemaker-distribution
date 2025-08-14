@@ -52,7 +52,7 @@ python-gssapi|1.9.0|1.9.0
 python-lsp-server|1.13.0|1.13.0
 s3fs|2024.12.0|2024.12.0
 sagemaker-code-editor|1.7.1|1.7.1
-sagemaker-gen-ai-jupyterlab-extension|1.0.6|1.0.6
+sagemaker-gen-ai-jupyterlab-extension|1.0.7|1.0.7
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.0|0.4.0
 sagemaker-jupyterlab-extension|0.5.1|0.5.1
@@ -62,11 +62,11 @@ sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.0.21|1.0.21
 sagemaker-studio-analytics-extension|0.2.0|0.2.0
 sagemaker-studio-cli|1.0.7|1.0.7
-sagemaker-studio-dataengineering-extensions|1.2.4|1.2.4
-sagemaker-studio-dataengineering-sessions|1.2.1|1.2.1
+sagemaker-studio-dataengineering-extensions|1.2.5|1.2.5
+sagemaker-studio-dataengineering-sessions|1.2.2|1.2.2
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.8.9|0.8.9
+uv|0.8.10|0.8.10
 py-xgboost-cpu| |2.1.4
