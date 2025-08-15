@@ -7,7 +7,6 @@ import json
 import logging
 import os
 import re
-import time
 from typing import Any, Dict
 
 from mcp.server.fastmcp import FastMCP
@@ -84,52 +83,6 @@ aws profiles: "DomainExecutionRoleCreds, default"
 Again, include only required parameters. Any extra parameters may cause the API to fail. Stick strictly to the schema."""
 
 
-def write_log_entry(
-    operation: str, tool_name: str, error_count: int = 0, domain_id: str = "", latency: float = 0
-) -> None:
-    """
-    Write a log entry to the SageMaker GenAI Jupyter Lab extension log file.
-
-    Args:
-        operation: The operation being performed
-        tool_name: The name of the tool being used
-        error_count: Number of errors (0 for success, 1 for failure)
-        domain_id: The domain identifier (optional)
-        latency: Execution latency in milliseconds
-    """
-    try:
-        log_entry = {
-            "Operation": operation,
-            "ToolName": tool_name,
-            "ErrorCount": error_count,
-            "DomainId": domain_id,
-            "Latency": latency,
-            "_aws": {
-                "Timestamp": int(time.time() * 1000),
-                "CloudWatchMetrics": [
-                    {
-                        "Dimensions": [["Operation"], ["ToolName"]],
-                        "Metrics": [
-                            {"Name": "ErrorCount", "Unit": "Count"},
-                            {"Name": "Latency", "Unit": "Milliseconds"},
-                        ],
-                        "Namespace": "SagemakerGenAIJupyterLab",
-                    }
-                ],
-            },
-        }
-
-        # Write to log file
-        log_file_path = "/var/log/studio/sagemaker_genai_jl_ext/sagemaker_genai_jl_extension.log"
-        os.makedirs(os.path.dirname(log_file_path), exist_ok=True)
-        with open(log_file_path, "a") as log_file:
-            log_file.write(json.dumps(log_entry) + "\n")
-
-    except Exception:
-        # Fail quietly - logging failures shouldn't affect main functionality
-        pass
-
-
 async def aws_context_provider() -> Dict[str, Any]:
     """
     AWS Context Provider - MUST BE CALLED BEFORE ANY use_aws OPERATIONS
@@ -148,26 +101,16 @@ async def aws_context_provider() -> Dict[str, Any]:
     Returns:
         dict: Parameter context to be used with subsequent use_aws operations
     """
-    start_time = time.time()
     identifiers_response = ""
-    domain_id = ""
     try:
         ctx = ProjectContext()
         domain_id = safe_get_attr(ctx, "domain_id", "")
         project_id = safe_get_attr(ctx, "project_id", "")
         region = safe_get_attr(ctx, "region", "")
         identifiers_response = create_smus_context_identifiers_response(domain_id, project_id, region)
-
-        latency = (time.time() - start_time) * 1000
-        write_log_entry("SMUS-Local-MCP", "aws_context_provider", 0, domain_id, latency)
-
         return {"response": identifiers_response}
     except Exception as e:
         logger.error(f"Error providing SMUS context identifiers: {e}")
-        # Calculate latency and log error
-        latency = (time.time() - start_time) * 1000
-        error_domain_id = domain_id if domain_id else "unable to retrieve domain id"
-        write_log_entry("SMUS-Local-MCP", "aws_context_provider", 1, error_domain_id, latency)
         return {"response": identifiers_response, "error": "Error providing SMUS context identifiers"}
 
 

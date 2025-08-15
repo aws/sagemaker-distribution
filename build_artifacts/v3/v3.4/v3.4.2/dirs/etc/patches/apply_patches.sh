@@ -11,7 +11,6 @@ fi
 # Validate parameter
 case "$1" in
     "smus")
-        bash "/etc/patches/smus-script/replace-job-with-schedule.sh"
         PATCH_DIR="/etc/patches/smus"
         ;;
     "studio-ai")
