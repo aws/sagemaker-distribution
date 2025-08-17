@@ -11,7 +11,7 @@ altair|5.5.0|5.5.0
 boto3|1.39.11|1.39.11
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.2.6|2.2.6
-jupyterlab|4.4.5|4.4.5
+jupyterlab|4.4.6|4.4.6
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.6|2.31.6
@@ -54,7 +54,7 @@ s3fs|2024.12.0|2024.12.0
 sagemaker-code-editor|1.7.1|1.7.1
 sagemaker-gen-ai-jupyterlab-extension|1.0.7|1.0.7
 sagemaker-headless-execution-driver|0.0.13|0.0.13
-sagemaker-jupyterlab-emr-extension|0.4.0|0.4.0
+sagemaker-jupyterlab-emr-extension|0.4.2|0.4.2
 sagemaker-jupyterlab-extension|0.5.1|0.5.1
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
@@ -62,11 +62,11 @@ sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.0.21|1.0.21
 sagemaker-studio-analytics-extension|0.2.0|0.2.0
 sagemaker-studio-cli|1.0.7|1.0.7
-sagemaker-studio-dataengineering-extensions|1.2.5|1.2.5
-sagemaker-studio-dataengineering-sessions|1.2.2|1.2.2
+sagemaker-studio-dataengineering-extensions|1.2.6|1.2.6
+sagemaker-studio-dataengineering-sessions|1.2.4|1.2.4
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.8.10|0.8.10
+uv|0.8.11|0.8.11
 py-xgboost-cpu| |2.1.4
