@@ -43,7 +43,7 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.51.2|0.51.2
 keras|3.10.0|3.10.0
-langchain-aws|0.2.31|0.2.31
+langchain-aws|0.2.30|0.2.30
 mcp|1.12.4|1.12.4
 mlflow|2.22.0|2.22.0
 py-xgboost-gpu|2.1.4| 
@@ -52,15 +52,15 @@ python-gssapi|1.9.0|1.9.0
 python-lsp-server|1.13.0|1.13.0
 s3fs|2024.12.0|2024.12.0
 sagemaker-code-editor|1.7.1|1.7.1
-sagemaker-gen-ai-jupyterlab-extension|1.0.7|1.0.7
+sagemaker-gen-ai-jupyterlab-extension|1.0.8|1.0.8
 sagemaker-headless-execution-driver|0.0.13|0.0.13
-sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
+sagemaker-jupyterlab-emr-extension|0.4.2|0.4.2
 sagemaker-jupyterlab-extension|0.5.1|0.5.1
 sagemaker-kernel-wrapper|0.0.5|0.0.5
 sagemaker-mlflow|0.1.0|0.1.0
 sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.0.21|1.0.21
-sagemaker-studio-analytics-extension|0.2.2|0.2.2
+sagemaker-studio-analytics-extension|0.2.0|0.2.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.2.6|1.2.6
 sagemaker-studio-dataengineering-sessions|1.2.4|1.2.4
@@ -68,5 +68,5 @@ seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.8.12|0.8.12
+uv|0.8.11|0.8.11
 py-xgboost-cpu| |2.1.4
