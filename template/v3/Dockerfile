@@ -62,7 +62,8 @@ RUN apt-get update && apt-get upgrade -y && \
     curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
     curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig" && \
     gpg --import /tmp/aws-cli-public-key.asc && \
-    gpg --verify awscli-exe-linux-x86_64.zip.sig awscli-exe-linux-x86_64.zip && \
+    gpg --trust-model always --verify awscli-exe-linux-x86_64.zip.sig awscli-exe-linux-x86_64.zip || \
+       (echo "GPG verification failed" && exit 1) && \
     unzip awscli-exe-linux-x86_64.zip && \
     sudo ./aws/install && \
     rm -rf aws awscli-exe-linux-x86_64.zip awscli-exe-linux-x86_64.zip.sig aws-cli-public-key.asc && \
