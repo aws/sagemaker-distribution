@@ -48,6 +48,8 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
+COPY aws-cli-public-key.asc /tmp/
+
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc jq ca-certificates gnupg && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
@@ -57,10 +59,14 @@ RUN apt-get update && apt-get upgrade -y && \
     touch /etc/krb5.conf.lock && chown ${NB_USER}:${MAMBA_USER} /etc/krb5.conf* && \
     # Note that we do NOT run `rm -rf /var/lib/apt/lists/*` here. If we did, anyone building on top of our images will
     # not be able to run any `apt-get install` commands and that would hamper customizability of the images.
-    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
-    unzip awscliv2.zip && \
+    curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
+    curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig" && \
+    gpg --import /tmp/aws-cli-public-key.asc && \
+    gpg --trust-model always --verify awscli-exe-linux-x86_64.zip.sig awscli-exe-linux-x86_64.zip || \
+       (echo "GPG verification failed" && exit 1) && \
+    unzip awscli-exe-linux-x86_64.zip && \
     sudo ./aws/install && \
-    rm -rf aws awscliv2.zip && \
+    rm -rf aws awscli-exe-linux-x86_64.zip awscli-exe-linux-x86_64.zip.sig aws-cli-public-key.asc && \
     : && \
     # Install Q CLI
     curl --proto '=https' --tlsv1.2 -sSf "https://desktop-release.q.us-east-1.amazonaws.com/1.12.7/q-x86_64-linux.zip" -o "q.zip" && \
