@@ -4,4 +4,4 @@
 
 Package | Previous Version | Current Version
 ---|---|---
-sagemaker-gen-ai-jupyterlab-extension|1.0.7|1.0.8
+sagemaker-gen-ai-jupyterlab-extension|1.0.7|1.0.9

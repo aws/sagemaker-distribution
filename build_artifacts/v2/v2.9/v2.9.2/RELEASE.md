@@ -52,7 +52,7 @@ python-gssapi|1.9.0|1.9.0
 python-lsp-server|1.13.0|1.13.0
 s3fs|2024.12.0|2024.12.0
 sagemaker-code-editor|1.7.1|1.7.1
-sagemaker-gen-ai-jupyterlab-extension|1.0.8|1.0.8
+sagemaker-gen-ai-jupyterlab-extension|1.0.9|1.0.9
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.2|0.4.2
 sagemaker-jupyterlab-extension|0.5.1|0.5.1
