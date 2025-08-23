@@ -5,5 +5,5 @@ ENV IMAGE_VERSION=$IMAGE_VERSION
 ENV IMAGE_VERSION=2.9.2-gpu
 LABEL "org.amazon.sagemaker-distribution.image.version"=2.9.2-gpu
 
-RUN micromamba install 'sagemaker-gen-ai-jupyterlab-extension>=1.2.8' -y -n base
+RUN micromamba install 'sagemaker-gen-ai-jupyterlab-extension>=1.0.8' -y -n base
 RUN micromamba install 'sagemaker-studio-dataengineering-extensions>=1.2.8' -y -n base
