@@ -62,7 +62,7 @@ sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.0.21|1.0.21
 sagemaker-studio-analytics-extension|0.2.0|0.2.0
 sagemaker-studio-cli|1.0.7|1.0.7
-sagemaker-studio-dataengineering-extensions|1.2.6|1.2.6
+sagemaker-studio-dataengineering-extensions|1.2.8|1.2.8
 sagemaker-studio-dataengineering-sessions|1.2.4|1.2.4
 seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
