@@ -38,5 +38,6 @@ replace_string "No notebook jobs associated with this job definition" "No notebo
 replace_string "Create Job from Schedule Definition\"" "Create Schedule from Schedule Definition\""
 replace_string "Job definition ID\"" "Schedule definition ID\""
 replace_string "Create a notebook job" "Create a notebook schedule"
+replace_string "Stop Job\"" "Stop Schedule\""
 
 echo "All replacements completed!"
