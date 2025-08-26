@@ -6,6 +6,9 @@ set -e
 # micromamba commands (e.g. using `micromamba activate` to activate environments)
 eval "$(micromamba shell hook --shell=bash)"
 
+# apply patches for SMUS
+/etc/patches/apply_patches.sh smus-code-editor && sudo rm -rf /etc/patches
+
 # Activate conda environment 'base', where supervisord is installed
 micromamba activate base
 
