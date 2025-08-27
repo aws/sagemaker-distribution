@@ -1,0 +1,3 @@
+conda-forge::strands-agents
+conda-forge::strands-agents-tools
+conda-forge::strands-agents-mcp-server
