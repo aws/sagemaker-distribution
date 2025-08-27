@@ -263,7 +263,7 @@ def _build_local_images(
             # Minimal patch build, use .patch Dockerfiles
             dockerfile = f"./Dockerfile-{image_type}.patch"
         else:
-            dockerfile="./Dockerfile"
+            dockerfile = "./Dockerfile"
         try:
             image, log_gen = _docker_client.images.build(
                 path=target_version_dir, dockerfile=dockerfile, rm=True, pull=True, buildargs=config["build_args"]
