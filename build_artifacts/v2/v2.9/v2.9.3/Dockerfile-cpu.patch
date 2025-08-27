@@ -5,4 +5,4 @@ ENV IMAGE_VERSION=$IMAGE_VERSION
 ENV IMAGE_VERSION=2.9.3-cpu
 LABEL "org.amazon.sagemaker-distribution.image.version"=2.9.3-cpu
 
-RUN micromamba install 'sagemaker-studio-dataengineering-extensions>=1.2.9' -y -n base
+CMD micromamba install 'sagemaker-studio-dataengineering-extensions>=1.2.9' -y -n base
