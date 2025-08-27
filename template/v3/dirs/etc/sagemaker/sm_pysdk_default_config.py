@@ -6,7 +6,12 @@ import yaml
 
 
 def generate_intelligent_default_config(metadata: str) -> dict:
-    has_vpc = metadata["SecurityGroupIds"] and metadata["Subnets"] and metadata["SecurityGroupIds"] != [''] and metadata["Subnets"] != ['']
+    has_vpc = (
+        metadata["SecurityGroupIds"]
+        and metadata["Subnets"]
+        and metadata["SecurityGroupIds"] != [""]
+        and metadata["Subnets"] != [""]
+    )
     vpc_config = {"SecurityGroupIds": metadata["SecurityGroupIds"], "Subnets": metadata["Subnets"]} if has_vpc else None
 
     config = {
@@ -40,20 +45,10 @@ def generate_intelligent_default_config(metadata: str) -> dict:
         config["SageMaker"]["PythonSDK"]["Modules"]["RemoteFunction"]["VpcConfig"] = vpc_config
         config["SageMaker"]["PythonSDK"]["Modules"]["NotebookJob"]["VpcConfig"] = vpc_config
         config["SageMaker"]["MonitoringSchedule"] = {
-            "MonitoringScheduleConfig": {
-                "MonitoringJobDefinition": {
-                    "NetworkConfig": {"VpcConfig": vpc_config}
-                }
-            }
+            "MonitoringScheduleConfig": {"MonitoringJobDefinition": {"NetworkConfig": {"VpcConfig": vpc_config}}}
         }
-        config["SageMaker"]["AutoMLJob"] = {
-            "AutoMLJobConfig": {
-                "SecurityConfig": {"VpcConfig": vpc_config}
-            }
-        }
-        config["SageMaker"]["AutoMLJobV2"] = {
-            "SecurityConfig": {"VpcConfig": vpc_config}
-        }
+        config["SageMaker"]["AutoMLJob"] = {"AutoMLJobConfig": {"SecurityConfig": {"VpcConfig": vpc_config}}}
+        config["SageMaker"]["AutoMLJobV2"] = {"SecurityConfig": {"VpcConfig": vpc_config}}
         config["SageMaker"]["CompilationJob"] = {"VpcConfig": vpc_config}
         config["SageMaker"]["Model"]["VpcConfig"] = vpc_config
         config["SageMaker"]["ProcessingJob"]["NetworkConfig"] = {"VpcConfig": vpc_config}
@@ -93,7 +88,11 @@ if __name__ == "__main__":
             }
 
             # Not create config file when invalid value exists in metadata
-            empty_values = [key for key, value in metadata.items() if key not in ["SecurityGroupIds", "Subnets"] and (value == "" or value == [""])]
+            empty_values = [
+                key
+                for key, value in metadata.items()
+                if key not in ["SecurityGroupIds", "Subnets"] and (value == "" or value == [""])
+            ]
             if empty_values:
                 raise AttributeError(f"There are empty values in the metadata: {empty_values}")
 

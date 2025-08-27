@@ -88,6 +88,7 @@ _docker_client = docker.from_env()
             ["sagemaker-studio-dataengineering-extensions"],
         ),
         ("sagemaker_studio.integ.Dockerfile", ["sagemaker_studio"]),
+        ("strands.test.Dockerfile", ["strands-agents"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -179,6 +180,7 @@ def test_dockerfiles_for_cpu(
             ["sagemaker-studio-dataengineering-extensions"],
         ),
         ("sagemaker_studio.integ.Dockerfile", ["sagemaker_studio"]),
+        ("strands.test.Dockerfile", ["strands-agents"]),
     ],
 )
 def test_dockerfiles_for_gpu(

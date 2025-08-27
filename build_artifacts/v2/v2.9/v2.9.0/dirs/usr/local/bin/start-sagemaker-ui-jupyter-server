@@ -43,7 +43,9 @@ if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
     --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
     --ServerApp.token='' \
     --ServerApp.allow_origin='*' \
-    --SchedulerApp.db_url='sqlite:////tmp/.jupyter_scheduler_do_not_delete.sqlite'
+    --SchedulerApp.db_url='sqlite:////tmp/.jupyter_scheduler_do_not_delete.sqlite' \
+    --SQLiteYStore.db_path='/tmp/.ydoc_db_do_not_delete.sqlite' \
+    --ArbitraryFileIdManager.db_path='/tmp/.fileid_do_not_delete.sqlite'
 else 
   jupyter lab --ip 0.0.0.0 --port 8888 \
     --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
@@ -51,5 +53,7 @@ else
     --ServerApp.allow_origin='*' \
     --SchedulerApp.db_url='sqlite:////tmp/.jupyter_scheduler_do_not_delete.sqlite' \
     --collaborative \
-    --ServerApp.identity_provider_class='sagemaker_jupyter_server_extension.identity.SageMakerIdentityProvider' 
-fi 
+    --ServerApp.identity_provider_class='sagemaker_jupyter_server_extension.identity.SageMakerIdentityProvider' \
+    --SQLiteYStore.db_path='/tmp/.ydoc_db_do_not_delete.sqlite'  \
+    --ArbitraryFileIdManager.db_path='/tmp/.fileid_do_not_delete.sqlite'
+fi
