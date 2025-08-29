@@ -55,6 +55,10 @@ dataZoneDomainRegion=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $sourc
 
 set +e
 
+# Enable S3 Access Grant plugin by default
+export BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin
+echo BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin >> ~/.bashrc
+
 # Remove the ~/.aws/config file to start clean when space restart
 rm -f /home/sagemaker-user/.aws/config
 echo "Successfully removed the ~/.aws/config file"
@@ -212,7 +216,7 @@ mkdir -p "$HOME/.config"  # Create config directory if it doesn't exist
 jq -n \
   --arg smusProjectDirectory "$SMUS_PROJECT_DIR" \
   --arg isGitProject "$IS_GIT_PROJECT" \
-  '{ 
+  '{
     smusProjectDirectory: $smusProjectDirectory,
     isGitProject: ($isGitProject == "true")
   }' > "$HOME/.config/smus-storage-metadata.json"
@@ -247,7 +251,7 @@ if [ -f "$q_settings_file" ]; then
     q_auth_mode=$(jq -r '.auth_mode' < $q_settings_file)
     if [ "$q_auth_mode" == "IAM" ]; then
         export AMAZON_Q_SIGV4=true
-    else 
+    else
         export AMAZON_Q_SIGV4=false
     fi
 else
@@ -260,7 +264,7 @@ if $AMAZON_Q_SIGV4; then
     else
         echo export AMAZON_Q_SIGV4=$AMAZON_Q_SIGV4 >> ~/.bashrc
     fi
-else 
+else
     # Remove from .bashrc if it exists
     sed -i '/^export AMAZON_Q_SIGV4=/d' ~/.bashrc
 fi
@@ -293,7 +297,7 @@ if [ -f "$source_file" ]; then
     if [ -f "$target_file" ]; then
         # Target file exists - merge configurations
         echo "Existing MCP configuration found, merging configurations..."
-        
+
         # Check if it's valid JSON first
         if jq empty "$target_file" 2>/dev/null; then
             # Initialize mcpServers object if it doesn't exist
@@ -302,9 +306,9 @@ if [ -f "$source_file" ]; then
                 jq '. + {"mcpServers":{}}' "$target_file" > "$target_file.tmp"
                 mv "$target_file.tmp" "$target_file"
             fi
-            
+
             servers=$(jq '.mcpServers | keys[]' "$source_file" | tr -d '"')
-            
+
             # Add each server from source to target if it doesn't exist
             for server in $servers; do
                 if ! jq -e ".mcpServers.\"$server\"" "$target_file" >/dev/null 2>&1; then
@@ -326,7 +330,7 @@ if [ -f "$source_file" ]; then
         cp "$source_file" "$target_file"
         echo "Created new MCP configuration with default servers"
     fi
-    
+
     echo "Successfully configured MCP for SageMaker"
 else
     echo "Warning: MCP configuration file not found at $source_file"
@@ -339,10 +343,10 @@ agents_source_file="/etc/sagemaker-ui/sagemaker-mcp/default.json"
 
 if [ -f "$agents_source_file" ]; then
     mkdir -p "$HOME/.aws/amazonq/agents/"
-    
+
     if [ -f "$agents_target_file" ]; then
         echo "Existing Amazon Q agents configuration found, merging mcpServers..."
-        
+
         # Check if target file is valid JSON
         if jq empty "$agents_target_file" 2>/dev/null; then
             # Initialize mcpServers object if it doesn't exist in target
@@ -351,11 +355,11 @@ if [ -f "$agents_source_file" ]; then
                 jq '. + {"mcpServers":{}}' "$agents_target_file" > "$agents_target_file.tmp"
                 mv "$agents_target_file.tmp" "$agents_target_file"
             fi
-            
+
             # Add servers from source that don't exist in target and update tools
             if jq -e '.mcpServers' "$agents_source_file" >/dev/null 2>&1; then
                 source_server_names=$(jq -r '.mcpServers | keys[]' "$agents_source_file")
-                
+
                 for server_name in $source_server_names; do
                     if ! jq -e ".mcpServers.\"$server_name\"" "$agents_target_file" >/dev/null 2>&1; then
                         # Server doesn't exist in target - add it
@@ -364,7 +368,7 @@ if [ -f "$agents_source_file" ]; then
                             '.mcpServers[$name] = $config' "$agents_target_file" > "$agents_target_file.tmp"
                         mv "$agents_target_file.tmp" "$agents_target_file"
                         echo "Added server '$server_name' to agents configuration"
-                        
+
                         # Check if source has tools that reference this server and add them
                         server_tool_ref="@$server_name"
                         if jq -e --arg tool "$server_tool_ref" '.tools | index($tool)' "$agents_source_file" >/dev/null 2>&1; then
@@ -373,7 +377,7 @@ if [ -f "$agents_source_file" ]; then
                                 jq '. + {"tools":[]}' "$agents_target_file" > "$agents_target_file.tmp"
                                 mv "$agents_target_file.tmp" "$agents_target_file"
                             fi
-                            
+
                             # Add tool reference if it doesn't exist
                             if ! jq -e --arg tool "$server_tool_ref" '.tools | index($tool)' "$agents_target_file" >/dev/null 2>&1; then
                                 jq --arg tool "$server_tool_ref" '.tools += [$tool]' "$agents_target_file" > "$agents_target_file.tmp"
@@ -385,7 +389,7 @@ if [ -f "$agents_source_file" ]; then
                         echo "Server '$server_name' already exists in configuration, skipping"
                     fi
                 done
-                
+
                 echo "Successfully added missing mcpServers and tools from default.json to agents configuration"
             else
                 echo "No mcpServers found in source configuration"
@@ -398,7 +402,7 @@ if [ -f "$agents_source_file" ]; then
         cp "$agents_source_file" "$agents_target_file"
         echo "Created new Amazon Q agents configuration file"
     fi
-    
+
     echo "Successfully migrated MCP configuration to Amazon Q agents"
 else
     echo "Warning: Source configuration file not found at $agents_source_file"
@@ -420,7 +424,7 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" 
 
     # write unexpected error to file if any of the remaining scripts fail.
     trap 'write_status_to_file "error" "An unexpected error occurred. Please stop and restart your space to retry."' ERR
-    
+
     # Install conda and pip dependencies if lib mgmt config existing
     bash /etc/sagemaker-ui/libmgmt/install-lib.sh
 

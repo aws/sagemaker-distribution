@@ -15,6 +15,12 @@ else
     micromamba activate base
 fi
 
+# Enable S3AG plugin if TIP is enabled
+if [ -n "$TRUSTED_IDENTITY_PROPOGATION_ENABLED" ]; then
+    export BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin
+    echo BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin >> ~/.bashrc
+fi
+
 # Set up SAGEMAKER_APP_TYPE_LOWERCASE based on SAGEMAKER_APP_TYPE
 export SAGEMAKER_APP_TYPE_LOWERCASE=$(echo $SAGEMAKER_APP_TYPE | tr '[:upper:]' '[:lower:]')
 
