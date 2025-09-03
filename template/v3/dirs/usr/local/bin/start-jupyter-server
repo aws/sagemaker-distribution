@@ -14,6 +14,12 @@ else
     jupyter labextension disable @amzn/sagemaker-data-explorer-jl-plugin sagemaker-data-explorer:plugin amzn/sagemaker-ui-theme-jlplugin @amzn/sagemaker-ui-doc-manager-jl-plugin @amzn/sagemaker-connection-magics-jlextension @amzn/sagemaker_gen_ai_jupyterlab_extension @amzn/sagemaker-post-startup-notification-plugin:plugin @amzn/sagemaker-post-startup-notification-plugin:custom-terminal-launcher-plugin @amzn/sagemaker-studio-scheduler:scheduler @amzn/sagemaker-studio-scheduler:schedulerTelemetry
 fi
 
+# Enable S3AG plugin if TIP is enabled
+if [ -n "$TRUSTED_IDENTITY_PROPOGATION_ENABLED" ]; then
+    export BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin
+    echo BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin >> ~/.bashrc
+fi
+
 # Start Jupyter server in rtc mode for shared spaces
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ]; then
   jupyter labextension enable @jupyter/collaboration-extension
