@@ -55,10 +55,6 @@ dataZoneDomainRegion=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $sourc
 
 set +e
 
-# Enable S3 Access Grant plugin by default
-export BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin
-echo BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin >> ~/.bashrc
-
 # Remove the ~/.aws/config file to start clean when space restart
 rm -f /home/sagemaker-user/.aws/config
 echo "Successfully removed the ~/.aws/config file"

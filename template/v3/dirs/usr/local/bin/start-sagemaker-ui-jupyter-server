@@ -3,7 +3,7 @@ set -e
 
 eval "$(micromamba shell hook --shell=bash)"
 
-# Activate conda environment depending on if we are in Recovery or Standard mode. 
+# Activate conda environment depending on if we are in Recovery or Standard mode.
 if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
     # Activate conda environment `sagemaker-recovery-mode`
     micromamba activate sagemaker-recovery-mode
@@ -13,7 +13,7 @@ else
 
     # Disable jupyter-ai in favor of sagemaker_gen_ai_jupyterlab_extension
     jupyter labextension disable @jupyter-ai/core
-    
+
     # Enable RTC to allow async Q file updates
     jupyter labextension enable @jupyter/docprovider-extension
 fi
@@ -40,6 +40,10 @@ if [[ $(jupyter kernelspec list | grep glue_pyspark) ]]; then
   jupyter-kernelspec remove -f -y glue_pyspark
 fi
 
+# Enable S3 Access Grant plugin by default
+export BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin
+echo BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin >> ~/.bashrc
+
 if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
   # Disabling collaboration and identity_provider_class flags for recovery mode
   jupyter lab --ip 0.0.0.0 --port 8888 \
@@ -48,8 +52,8 @@ if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
     --ServerApp.allow_origin='*' \
     --SchedulerApp.db_url='sqlite:////tmp/.jupyter_scheduler_do_not_delete.sqlite' \
     --SQLiteYStore.db_path='/tmp/.ydoc_db_do_not_delete.sqlite' \
-    --ArbitraryFileIdManager.db_path='/tmp/.fileid_do_not_delete.sqlite' 
-else 
+    --ArbitraryFileIdManager.db_path='/tmp/.fileid_do_not_delete.sqlite'
+else
   jupyter lab --ip 0.0.0.0 --port 8888 \
     --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
     --ServerApp.token='' \
@@ -58,5 +62,5 @@ else
     --collaborative \
     --ServerApp.identity_provider_class='sagemaker_jupyter_server_extension.identity.SageMakerIdentityProvider' \
     --SQLiteYStore.db_path='/tmp/.ydoc_db_do_not_delete.sqlite' \
-    --ArbitraryFileIdManager.db_path='/tmp/.fileid_do_not_delete.sqlite' 
-fi 
+    --ArbitraryFileIdManager.db_path='/tmp/.fileid_do_not_delete.sqlite'
+fi
