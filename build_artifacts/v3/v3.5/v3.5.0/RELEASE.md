@@ -12,7 +12,7 @@ aioboto3|14.3.0|14.3.0
 altair|5.5.0|5.5.0
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
-jupyterlab|4.4.6|4.4.6
+jupyterlab|4.4.7|4.4.7
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 pip|25.2|25.2
 langchain|0.3.27|0.3.27
@@ -25,7 +25,7 @@ jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.18|0.1.18
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.4|1.0.4
 scipy|1.16.1|1.16.1
-matplotlib-base|3.10.5|3.10.5
+matplotlib-base|3.10.6|3.10.6
 scikit-learn|1.7.1|1.7.1
 torchvision|0.21.0|0.21.0
 autogluon|1.4.0|1.4.0
@@ -39,7 +39,7 @@ uvicorn|0.35.0|0.35.0
 fastapi|0.116.1|0.116.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
-jupyter-collaboration|3.1.0|3.1.0
+jupyter-collaboration|4.1.1|4.1.1
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.51.2|0.51.2
@@ -53,6 +53,7 @@ python-gssapi|1.9.0|1.9.0
 python-lsp-server|1.13.1|1.13.1
 s3fs|2024.12.0|2024.12.0
 sagemaker-code-editor|1.7.1|1.7.1
+sagemaker-gen-ai-jupyterlab-extension|1.0.9|1.0.9
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
 sagemaker-jupyterlab-extension|0.5.1|0.5.1
@@ -71,5 +72,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.8.13|0.8.13
+uv|0.8.14|0.8.14
 py-xgboost-cpu| |2.1.4
