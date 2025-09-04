@@ -48,7 +48,7 @@ mcp|1.13.1|1.13.1
 mlflow|2.22.0|2.22.0
 py-xgboost-gpu|2.1.4| 
 pyhive|0.7.0|0.7.0
-python-gssapi|1.9.0|1.9.0
+python-gssapi|1.10.0|1.10.0
 python-lsp-server|1.13.1|1.13.1
 s3fs|2024.12.0|2024.12.0
 sagemaker-code-editor|1.7.1|1.7.1
@@ -71,5 +71,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.8.14|0.8.14
+uv|0.8.15|0.8.15
 py-xgboost-cpu| |2.1.4
