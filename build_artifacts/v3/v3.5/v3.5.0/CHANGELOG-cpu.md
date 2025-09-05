@@ -14,11 +14,12 @@ conda|25.5.1|25.7.0
 jupyter-collaboration|3.1.0|4.1.1
 keras|3.10.0|3.11.2
 mcp|1.12.4|1.13.1
+python-gssapi|1.9.0|1.10.0
 python-lsp-server|1.13.0|1.13.1
 sagemaker-jupyterlab-emr-extension|0.4.2|0.4.3
 sagemaker-studio-analytics-extension|0.2.0|0.2.2
 sagemaker-studio-dataengineering-extensions|1.2.6|1.2.9
-uv|0.8.11|0.8.14
+uv|0.8.11|0.8.15
 
 ## What's new: 
 
