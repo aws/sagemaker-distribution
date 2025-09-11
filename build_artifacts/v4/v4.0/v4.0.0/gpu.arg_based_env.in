@@ -1,0 +1,6 @@
+conda-forge::cuda-compiler=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::cuda-libraries=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::cuda-libraries-dev=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::cuda-nvml-dev=12.9.79.*
+conda-forge::cuda-command-line-tools=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::gds-tools=1.14.1.1.*
