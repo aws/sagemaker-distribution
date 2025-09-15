@@ -22,7 +22,7 @@ amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.18|0.1.18
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.4|1.0.4
-scipy|1.16.1|1.16.1
+scipy|1.16.2|1.16.2
 matplotlib-base|3.10.6|3.10.6
 scikit-learn|1.7.2|1.7.2
 pip|24.3.1|24.3.1
@@ -43,7 +43,7 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.51.2|0.51.2
 keras|3.10.0|3.10.0
-langchain-aws|0.2.31|0.2.31
+langchain-aws|0.2.32|0.2.32
 mcp|1.12.4|1.12.4
 mlflow|2.22.0|2.22.0
 py-xgboost-gpu|2.1.4| 
@@ -51,7 +51,7 @@ pyhive|0.7.0|0.7.0
 python-gssapi|1.9.0|1.9.0
 python-lsp-server|1.13.1|1.13.1
 s3fs|2024.12.0|2024.12.0
-sagemaker-code-editor|1.8.0b5|1.8.0b5
+sagemaker-code-editor|1.7.1|1.7.1
 sagemaker-gen-ai-jupyterlab-extension|1.0.9|1.0.9
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
