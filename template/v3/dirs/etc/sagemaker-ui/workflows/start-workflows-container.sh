@@ -3,7 +3,11 @@ set -eu
 
 # Get project directory based on storage type
 PROJECT_DIR=${SMUS_PROJECT_DIR:-"$HOME/src"}
-MOUNT_DIR=$(readlink -f "$PROJECT_DIR")  # get the symlink source if it's symlink
+if [ -z "${SMUS_PROJECT_DIR:-}" ]; then
+    MOUNT_DIR=$PROJECT_DIR
+else
+    MOUNT_DIR=$(readlink -f "$PROJECT_DIR")  # get the symlink source
+fi
 
 # Datazone project metadata
 RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json
@@ -75,7 +79,7 @@ if [ ! -f "${WORKFLOW_HEALTH_PATH}/status.json" ]; then
 fi
 
 # Only start local runner if Workflows blueprint is enabled
-if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint --region "$DZ_DOMAIN_REGION" --domain-id "$DZ_DOMAIN_ID" --endpoint "$DZ_ENDPOINT")" = "False" ]; then
+if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint --region "$DZ_DOMAIN_REGION" --domain-id "$DZ_DOMAIN_ID" --endpoint "$DZ_ENDPOINT" --project-id "$DZ_PROJECT_ID")" = "False" ]; then
     echo "Workflows blueprint is not enabled. Workflows will not start."
     handle_workflows_startup_error 0
 fi
