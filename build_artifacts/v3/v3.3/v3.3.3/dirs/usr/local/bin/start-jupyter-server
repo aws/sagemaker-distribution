@@ -11,7 +11,7 @@ else
     # Activate conda environment 'base'
     micromamba activate base
     # Uninstall SMUS-specific extensions
-    micromamba remove -y --no-prune sagemaker-studio-dataengineering-sessions sagemaker-studio-dataengineering-extensions
+    micromamba remove -y sagemaker-studio-dataengineering-sessions sagemaker-studio-dataengineering-extensions
     # Disable SMUS-specific extensions
     jupyter labextension disable sagemaker-data-explorer:plugin
 fi
