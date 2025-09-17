@@ -39,8 +39,8 @@ RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
         echo "Micromamba is already at version $CURRENT_MICROMAMBA_VERSION (outside $PINNED_MICROMAMBA_MINOR_VERSION). No upgrade performed."; \
     fi
 
-RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "ubuntu" && \
-    groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "ubuntu" && \
+RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
+    groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "${MAMBA_USER}" && \
     # Update the expected value of MAMBA_USER for the
     # _entrypoint.sh consistency check.
     echo "${NB_USER}" > "/etc/arg_mamba_user" && \
