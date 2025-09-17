@@ -36,7 +36,12 @@ def generate_intelligent_default_config(metadata: str) -> dict:
             "Model": {"ExecutionRoleArn": metadata["UserRoleArn"]},
             "ModelPackage": {"ValidationSpecification": {"ValidationRole": metadata["UserRoleArn"]}},
             "ProcessingJob": {"RoleArn": metadata["UserRoleArn"]},
-            "TrainingJob": {"RoleArn": metadata["UserRoleArn"]},
+            "TrainingJob": {
+                "RoleArn": metadata["UserRoleArn"],
+                "Environment": {
+                    "BOTOCORE_EXPERIMENTAL__PLUGINS": "S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin"
+                },
+            },
         },
     }
 
