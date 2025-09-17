@@ -99,13 +99,23 @@ class NightlyBuildHelper:
             self.current_schedule["active_nightly_builds"].extend(next_versions)
             self.current_schedule["patch_base_versions"].append(version)
             self.current_schedule["minor_base_versions"].append(version)
+            prev_version = str(version_obj.replace(minor=version_obj.minor - 1))
+            # If 2.2.0 is released, and 2.1.0 was the base for 3.0.0, now set 2.2.0 as base
+            if prev_version in self.current_schedule["major_base_versions"]:
+                self.current_schedule["major_base_versions"].remove(prev_version)
+                self.current_schedule["major_base_versions"].append(version)
         else:  # Handling patch version
             self.current_schedule["active_nightly_builds"].extend(next_versions)
             self.current_schedule["patch_base_versions"].append(version)
             prev_version = str(version_obj.replace(patch=version_obj.patch - 1))
+            # If 2.2.1 is released, and 2.2.0 was the base for 2.3.0, now set 2.2.1 as base
             if prev_version in self.current_schedule["minor_base_versions"]:
                 self.current_schedule["minor_base_versions"].remove(prev_version)
                 self.current_schedule["minor_base_versions"].append(version)
+            # If 2.2.1 is released, and 2.2.0 was the base for 3.0.0, now set 2.2.1 as base
+            if prev_version in self.current_schedule["major_base_versions"]:
+                self.current_schedule["major_base_versions"].remove(prev_version)
+                self.current_schedule["major_base_versions"].append(version)
 
         self._sort_lists()
         self._save_schedule()
