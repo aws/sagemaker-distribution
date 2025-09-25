@@ -3,6 +3,16 @@
     "smus-local-mcp": {
       "command": "python",  
       "args": ["/etc/sagemaker-ui/sagemaker-mcp/smus-mcp.py"]
+    },
+    "aws-dp-remote-mcp": {
+      "command": "aws-data-processing-mcp-proxy",
+      "args": [],
+      "env": {
+        "AWS_PROFILE_NAME": "remote_mcp_profile",
+        "SELECTED_SERVERS": "*"
+      },
+      "disabled": false,
+      "timeout": 60000
     }
   }
 }
