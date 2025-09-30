@@ -425,7 +425,7 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" 
     bash /etc/sagemaker-ui/libmgmt/install-lib.sh
 
     # Install sm-spark-cli
-    bash /etc/sagemaker-ui/workflows/sm-spark-cli-install.sh
+    bash /etc/sagemaker-ui/workflows/sm-spark-cli-install.sh || echo "Warning: sm-spark-cli installation failed, continuing..."
 fi
 
 # Execute network validation script, to check if any required AWS Services are unreachable
