@@ -1,7 +1,0 @@
-FROM public.ecr.aws/sagemaker/sagemaker-distribution:3.4.3-cpu
-
-ARG IMAGE_VERSION
-ENV IMAGE_VERSION=3.4.4-cpu
-LABEL "org.amazon.sagemaker-distribution.image.version"=3.4.4-cpu
-
-RUN micromamba install -y -n base 'sagemaker-studio-dataengineering-sessions>=1.2.5' 'sagemaker-studio-dataengineering-extensions>=1.2.10'
