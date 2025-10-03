@@ -76,8 +76,8 @@ RUN apt-get update && apt-get upgrade -y && \
     : && \
     echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
 # CodeEditor - create server, user data dirs
-    mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
-    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
+    mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
+    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
 # create dir to store user data files
     mkdir -p /opt/amazon/sagemaker/user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/user-data && \
@@ -87,11 +87,15 @@ COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
 RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     rm -rf ${DIRECTORY_TREE_STAGE_DIR} && \
 # CodeEditor - download the extensions
-    mkdir -p /etc/code-editor/extensions && \
+    mkdir -p /etc/code-editor/extensions /etc/code-editor/extensions-sagemaker-ui && \
     while IFS= read -r url || [ -n "$url" ]; do \
         echo "Downloading extension from ${url}..." && \
         wget --no-check-certificate -P /etc/code-editor/extensions "${url}"; \
-    done < /etc/code-editor/extensions.txt
+    done < /etc/code-editor/extensions.txt && \
+    while IFS= read -r url || [ -n "$url" ]; do \
+        echo "Downloading sagemaker-ui extension from ${url}..." && \
+        wget --no-check-certificate -P /etc/code-editor/extensions-sagemaker-ui "${url}"; \
+    done < /etc/code-editor/extensions-sagemaker-ui.txt
 
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
@@ -133,9 +137,17 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
         echo "Installing extension ${ext}..."; \
         sagemaker-code-editor --install-extension "${ext}" --extensions-dir "${extensionloc}" --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data; \
        done \
+    # Install sagemaker-ui extensions
+    && extensionloc_ui=/opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data/extensions && mkdir -p "${extensionloc_ui}" \
+    && for ext in /etc/code-editor/extensions-sagemaker-ui/*.vsix; do \
+        echo "Installing sagemaker-ui extension ${ext}..."; \
+        sagemaker-code-editor --install-extension "${ext}" --extensions-dir "${extensionloc_ui}" --server-data-dir /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data; \
+       done \
     # Copy the settings
     && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json && \
     cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/User/settings.json && \
+    cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data/data/Machine/settings.json && \
+    cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data/data/User/settings.json && \
     # Install glue kernels, and move to shared directory
     # Also patching base kernel so Studio background code doesn't start session silently
     install-glue-kernels && \
