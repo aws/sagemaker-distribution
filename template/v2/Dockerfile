@@ -6,6 +6,7 @@ ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
+ARG FLARE_SERVER_VERSION=1.25.0
 LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
@@ -49,6 +50,7 @@ ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
 COPY aws-cli-public-key.asc /tmp/
+COPY get_amazon_q_agentic_chat_artifacts.py /tmp/
 
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc jq ca-certificates gnupg && \
@@ -73,7 +75,6 @@ RUN apt-get update && apt-get upgrade -y && \
     unzip q.zip && \
     Q_INSTALL_GLOBAL=true ./q/install.sh --no-confirm && \
     rm -rf q q.zip && \
-    : && \
     echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
 # CodeEditor - create server, user data dirs
     mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
@@ -121,6 +122,28 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     find /opt/conda -name "yarn.lock" -type f -delete && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
+    # Download Amazon Q artifacts for JupyterLab extension
+    sudo mkdir -p /etc/amazon-q/artifacts/agentic-chat && \
+    # Download JSZip library with retry and error handling
+    sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/amazon-q/artifacts/agentic-chat/jszip.min.js" || (echo "Failed to download JSZip library" && exit 1) && \
+    # Download and extract Amazon Q server and client artifacts
+    MANIFEST_URL="https://aws-toolkit-language-servers.amazonaws.com/qAgenticChatServer/0/manifest.json" && \
+    FLARE_SERVER_VERSION="$FLARE_SERVER_VERSION" && \
+    curl -L --retry 3 --retry-delay 5 --fail "$MANIFEST_URL" -o "/tmp/manifest.json" || (echo "Failed to download manifest" && exit 1) && \
+    # Extract artifact URLs using helper script
+    ARTIFACT_URLS=$(python3 /tmp/get_amazon_q_agentic_chat_artifacts.py /tmp/manifest.json $FLARE_SERVER_VERSION) && \
+    if [ $? -ne 0 ] || [ -z "$ARTIFACT_URLS" ]; then echo "Failed to extract Amazon Q artifact URLs" && exit 1; fi && \
+    eval $ARTIFACT_URLS && \
+    # Download and extract servers.zip with error handling
+    curl -L --retry 3 --retry-delay 5 --fail "$SERVERS_URL" -o "/tmp/servers.zip" || (echo "Failed to download servers.zip" && exit 1) && \
+    sudo unzip "/tmp/servers.zip" -d "/etc/amazon-q/artifacts/agentic-chat/servers" || (echo "Failed to extract servers.zip" && exit 1) && \
+    # Download and extract clients.zip with error handling
+    curl -L --retry 3 --retry-delay 5 --fail "$CLIENTS_URL" -o "/tmp/clients.zip" || (echo "Failed to download clients.zip" && exit 1) && \
+    sudo unzip "/tmp/clients.zip" -d "/etc/amazon-q/artifacts/agentic-chat/clients" || (echo "Failed to extract clients.zip" && exit 1) && \
+    # Clean up temporary files
+    rm -f /tmp/manifest.json /tmp/servers.zip /tmp/clients.zip && \
+    # Fix ownership for JupyterLab access
+    sudo chown -R $MAMBA_USER:$MAMBA_USER /etc/amazon-q/artifacts/ && \
     # Update npm version
     npm i -g npm && \
     # Enforce to use `conda-forge` as only channel, by removing `defaults`
