@@ -1,7 +1,7 @@
 import json
 import os
+import subprocess
 
-import conda.cli.python_api
 from conda.env.specs import RequirementsSpec
 from conda.exceptions import PackagesNotFoundError
 from conda.models.match_spec import MatchSpec
@@ -106,9 +106,14 @@ def pull_conda_package_metadata(image_config, image_artifact_dir):
         if str(match_spec_out).startswith("conda-forge"):
             # Pull package metadata from conda-forge and dump into json file
             try:
-                search_result = conda.cli.python_api.run_command("search", str(match_spec_out), "--json")
-                package_metadata = json.loads(search_result[0])[package][0]
+                search_result = subprocess.run(["conda", "search", str(match_spec_out), "--json"], 
+                                             capture_output=True, text=True, check=True)
+                package_metadata = json.loads(search_result.stdout)[package][0]
                 results[package] = {"version": package_metadata["version"], "size": package_metadata["size"]}
+            except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError, IndexError) as e:
+                print(
+                    f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Error: {str(e)}"
+                )
             except PackagesNotFoundError:
                 print(
                     f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Potentially this package is broken."

@@ -131,6 +131,11 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
     if os.path.exists(aws_cli_key_path):
         shutil.copy2(aws_cli_key_path, new_version_dir)
 
+    # Copy Amazon Q artifacts script from assets
+    q_artifacts_script_path = os.path.relpath(f"assets/get_amazon_q_agentic_chat_artifacts.py")
+    if os.path.exists(q_artifacts_script_path):
+        shutil.copy2(q_artifacts_script_path, new_version_dir)
+
     if int(new_version_major) >= 1:
         # dirs directory doesn't exist for v0. It was introduced only for v1
         dirs_relative_path = os.path.relpath(f"{base_path}/dirs")
