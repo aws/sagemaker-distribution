@@ -6,6 +6,7 @@ ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
+ARG FLARE_SERVER_VERSION=1.25.0
 LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
@@ -127,7 +128,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sudo curl -L "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/amazon-q/artifacts/agentic-chat/jszip.min.js" && \
     # Download and extract Amazon Q server and client artifacts
     MANIFEST_URL="https://aws-toolkit-language-servers.amazonaws.com/qAgenticChatServer/0/manifest.json" && \
-    FLARE_SERVER_VERSION="1.25.0" && \
+    FLARE_SERVER_VERSION="$FLARE_SERVER_VERSION" && \
     curl -L "$MANIFEST_URL" -o "/tmp/manifest.json" && \
     # Extract artifact URLs using helper script
     ARTIFACT_URLS=$(python3 /tmp/get_amazon_q_agentic_chat_artifacts.py /tmp/manifest.json $FLARE_SERVER_VERSION) && \
