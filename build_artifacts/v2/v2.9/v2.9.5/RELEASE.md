@@ -43,7 +43,7 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.51.2|0.51.2
 keras|3.10.0|3.10.0
-langchain-aws|0.2.34|0.2.34
+langchain-aws|0.2.35|0.2.35
 mcp|1.12.4|1.12.4
 mlflow|2.22.0|2.22.0
 py-xgboost-gpu|2.1.4| 
@@ -68,5 +68,5 @@ seaborn|0.13.2|0.13.2
 supervisor|4.2.5|4.2.5
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.8.22|0.8.22
+uv|0.8.23|0.8.23
 py-xgboost-cpu| |2.1.4
