@@ -4,11 +4,35 @@ import os
 import pytest
 import tempfile
 from unittest.mock import patch, MagicMock
+import sys
 
 pytestmark = pytest.mark.unit
 
-from main import _copy_static_files
-from utils import get_semver
+# Mock the heavy dependencies before importing main
+mock_docker = MagicMock()
+mock_docker.errors = MagicMock()
+mock_docker.errors.BuildError = Exception
+mock_docker.errors.ContainerError = Exception
+
+mock_semver = MagicMock()
+mock_semver.Version = MagicMock()
+
+with patch.dict('sys.modules', {
+    'docker': mock_docker,
+    'docker.errors': mock_docker.errors,
+    'boto3': MagicMock(),
+    'conda.models.match_spec': MagicMock(),
+    'semver': mock_semver,
+    'changelog_generator': MagicMock(),
+    'config': MagicMock(),
+    'dependency_upgrader': MagicMock(),
+    'package_report': MagicMock(),
+    'release_notes_generator': MagicMock(),
+    'utils': MagicMock(),
+    'version_release_note_generator': MagicMock(),
+}):
+    sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'src'))
+    from main import _copy_static_files
 
 
 class TestMainAmazonQIntegration:
@@ -22,7 +46,7 @@ class TestMainAmazonQIntegration:
         def exists_side_effect(path):
             if path.endswith('aws-cli-public-key.asc'):
                 return True
-            elif path.endswith('get_amazon_q_agentic_chat_artifacts.py'):
+            elif path.endswith('download_amazon_q_agentic_chat_artifacts.sh'):
                 return True
             elif path.endswith('dirs'):
                 return True
@@ -41,9 +65,9 @@ class TestMainAmazonQIntegration:
             
             # Verify that copy2 was called for Amazon Q script
             copy_calls = [call[0][0] for call in mock_copy.call_args_list]
-            amazon_q_calls = [call for call in copy_calls if 'get_amazon_q_agentic_chat_artifacts.py' in call]
+            amazon_q_calls = [call for call in copy_calls if 'download_amazon_q_agentic_chat_artifacts.sh' in call]
             assert len(amazon_q_calls) == 1
-            assert amazon_q_calls[0] == "assets/get_amazon_q_agentic_chat_artifacts.py"
+            assert amazon_q_calls[0] == "assets/download_amazon_q_agentic_chat_artifacts.sh"
 
     @patch('shutil.copy2')
     @patch('os.path.exists')
@@ -53,7 +77,7 @@ class TestMainAmazonQIntegration:
         def exists_side_effect(path):
             if path.endswith('aws-cli-public-key.asc'):
                 return True
-            elif path.endswith('get_amazon_q_agentic_chat_artifacts.py'):
+            elif path.endswith('download_amazon_q_agentic_chat_artifacts.sh'):
                 return False  # Script doesn't exist
             elif path.endswith('dirs'):
                 return True
@@ -72,7 +96,7 @@ class TestMainAmazonQIntegration:
             
             # Verify that copy2 was not called for Amazon Q script
             copy_calls = [call[0][0] for call in mock_copy.call_args_list]
-            amazon_q_calls = [call for call in copy_calls if 'get_amazon_q_agentic_chat_artifacts.py' in call]
+            amazon_q_calls = [call for call in copy_calls if 'download_amazon_q_agentic_chat_artifacts.sh' in call]
             assert len(amazon_q_calls) == 0
 
     @patch('shutil.copy2')
@@ -84,7 +108,7 @@ class TestMainAmazonQIntegration:
         def exists_side_effect(path):
             if path.endswith('aws-cli-public-key.asc'):
                 return True
-            elif path.endswith('get_amazon_q_agentic_chat_artifacts.py'):
+            elif path.endswith('download_amazon_q_agentic_chat_artifacts.sh'):
                 return True
             elif path.endswith('dirs'):
                 return True
@@ -116,7 +140,7 @@ class TestMainAmazonQIntegration:
         def exists_side_effect(path):
             if path.endswith('aws-cli-public-key.asc'):
                 return True
-            elif path.endswith('get_amazon_q_agentic_chat_artifacts.py'):
+            elif path.endswith('download_amazon_q_agentic_chat_artifacts.sh'):
                 return True
             elif path.endswith('dirs'):
                 return True
@@ -164,5 +188,5 @@ class TestMainAmazonQIntegration:
             
             # Verify relpath was called for the Amazon Q script
             relpath_calls = [call[0][0] for call in mock_relpath.call_args_list]
-            amazon_q_calls = [call for call in relpath_calls if 'get_amazon_q_agentic_chat_artifacts.py' in call]
+            amazon_q_calls = [call for call in relpath_calls if 'download_amazon_q_agentic_chat_artifacts.sh' in call]
             assert len(amazon_q_calls) == 1

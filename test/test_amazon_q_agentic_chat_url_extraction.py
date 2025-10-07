@@ -129,9 +129,8 @@ class TestAmazonQArtifacts:
             manifest_file = f.name
         
         try:
-            servers_url, clients_url = extract_urls(manifest_file, "1.0.0")
-            assert servers_url is None
-            assert clients_url is None
+            with pytest.raises(ValueError, match=r"Required files \(servers.zip/clients.zip\) not found"):
+                extract_urls(manifest_file, "1.0.0")
         finally:
             os.unlink(manifest_file)
 
@@ -179,7 +178,7 @@ class TestAmazonQArtifacts:
             manifest_file = f.name
         
         try:
-            with pytest.raises(json.JSONDecodeError):
+            with pytest.raises(ValueError, match="Invalid JSON in manifest file"):
                 extract_urls(manifest_file, "1.0.0")
         finally:
             os.unlink(manifest_file)
