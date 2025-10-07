@@ -18,18 +18,6 @@ echo "Downloading Amazon Q artifacts for $IDE_TYPE (version: $VERSION)"
 
 # Create target directories
 sudo mkdir -p "$TARGET_DIR"
-sudo mkdir -p "/etc/web-client/libs"
-
-# Download JSZip library (shared across all web applications)
-if [ ! -f "/etc/web-client/libs/jszip.min.js" ]; then
-    echo "Downloading JSZip library for web clients..."
-    sudo curl -L --retry 3 --retry-delay 5 --fail \
-        "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" \
-        -o "/etc/web-client/libs/jszip.min.js" || {
-        echo "Failed to download JSZip library"
-        exit 1
-    }
-fi
 
 # Download manifest and extract artifact URLs
 MANIFEST_URL="https://aws-toolkit-language-servers.amazonaws.com/qAgenticChatServer/0/manifest.json"
