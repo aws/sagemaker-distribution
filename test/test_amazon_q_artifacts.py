@@ -11,7 +11,7 @@ pytestmark = pytest.mark.unit
 # Import the module under test
 import sys
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'assets'))
-from get_amazon_q_agentic_chat_artifacts import extract_urls
+from extract_amazon_q_agentic_chat_urls import extract_urls
 
 
 class TestAmazonQArtifacts:

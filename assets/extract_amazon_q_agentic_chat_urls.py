@@ -6,8 +6,13 @@ import sys
 
 def extract_urls(manifest_file, version, platform='linux', arch='x64'):
     """Extract servers.zip and clients.zip URLs for specified platform/arch."""
-    with open(manifest_file) as f:
-        manifest = json.load(f)
+    try:
+        with open(manifest_file) as f:
+            manifest = json.load(f)
+    except FileNotFoundError:
+        raise FileNotFoundError(f"Manifest file not found: {manifest_file}")
+    except json.JSONDecodeError as e:
+        raise ValueError(f"Invalid JSON in manifest file {manifest_file}: {str(e)}")
     
     for ver in manifest['versions']:
         if ver['serverVersion'] == version:
@@ -22,13 +27,16 @@ def extract_urls(manifest_file, version, platform='linux', arch='x64'):
                         elif content['filename'] == 'clients.zip':
                             clients_url = content['url']
                     
+                    if servers_url is None or clients_url is None:
+                        raise ValueError(f"Required files (servers.zip/clients.zip) not found for version {version} {platform} {arch}")
+                    
                     return servers_url, clients_url
     
     raise ValueError(f"Version {version} not found for {platform} {arch}")
 
 if __name__ == '__main__':
     if len(sys.argv) != 3:
-        print("Usage: get_amazon_q_agentic_chat_artifacts.py <manifest_file> <version>")
+        print("Usage: extract_amazon_q_agentic_chat_urls.py <manifest_file> <version>")
         sys.exit(1)
     
     manifest_file, version = sys.argv[1], sys.argv[2]
