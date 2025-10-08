@@ -1,11 +1,11 @@
 import json
 import os
+import subprocess
 import warnings
 from datetime import datetime
 from itertools import islice
 
 import boto3
-import conda.cli.python_api
 from conda.models.match_spec import MatchSpec
 from condastats.cli import overall
 from dateutil.relativedelta import relativedelta
@@ -39,11 +39,14 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
             continue
         channel = match_spec_out.get("channel").channel_name
         subdir_filter = "[subdir=" + match_spec_out.get("subdir") + "]"
-        search_result = conda.cli.python_api.run_command(
-            "search", channel + "::" + package + ">=" + str(package_version) + subdir_filter, "--json"
-        )
-        # Load the first result as json. The API sends a json string inside an array
-        package_metadata = json.loads(search_result[0])[package]
+        try:
+            search_result = subprocess.run(["conda", "search", channel + "::" + package + ">=" + str(package_version) + subdir_filter, "--json"], 
+                                         capture_output=True, text=True, check=True)
+            # Load the result as json
+            package_metadata = json.loads(search_result.stdout)[package]
+        except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError) as e:
+            print(f"Error searching for package {package}: {str(e)}")
+            continue
         # Response is of the structure
         # { 'package_name': [{'url':<someurl>, 'dependencies': <List of dependencies>, 'version':
         # <version number>}, ..., {'url':<someurl>, 'dependencies': <List of dependencies>, 'version':
@@ -90,7 +93,7 @@ def _generate_staleness_report_per_image(
         package_string = (
             package
             if version_in_sagemaker_distribution == package_versions_in_upstream[package]
-            else "${\color{red}" + package + "}$"
+            else "${\\color{red}" + package + "}$"
         )
 
         if download_stats:
@@ -170,7 +173,7 @@ def _validate_new_package_size(new_package_total_size, target_total_size, image_
             + str(new_package_total_size_percent)
             + "%)"
         )
-        new_package_total_size_percent_string = "${\color{red}" + str(new_package_total_size_percent) + "}$"
+        new_package_total_size_percent_string = "${\\color{red}" + str(new_package_total_size_percent) + "}$"
 
     print(
         "The total size of newly introduced Python packages is "
@@ -276,10 +279,9 @@ def _generate_python_package_dependency_report(image_config, base_version_dir, t
     for package, version in new_packages.items():
         try:
             # Pull package metadata from conda-forge and dump into json file
-            search_result = conda.cli.python_api.run_command(
-                "search", "-c", "conda-forge", f"{package}=={version}", "--json"
-            )
-            package_metadata = json.loads(search_result[0])[package][0]
+            search_result = subprocess.run(["conda", "search", "-c", "conda-forge", f"{package}=={version}", "--json"], 
+                                         capture_output=True, text=True, check=True)
+            package_metadata = json.loads(search_result.stdout)[package][0]
             results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
         except Exception as e:
             print(f"Error in report generation: {str(e)}")
