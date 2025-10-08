@@ -15,8 +15,6 @@ The images include pre-configured Amazon Q artifacts and shared web client libra
 - `/etc/web-client/libs/` - Shared JavaScript libraries (JSZip) for all web applications
 - `/etc/amazon-q-agentic-chat/artifacts/jupyterlab/` - Amazon Q server and client artifacts for JupyterLab
 
-For detailed directory structure information, see [docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md).
-
 This project follows semver (more on that below) and comes with a helper tool to automate new releases of the
 distribution.
 
