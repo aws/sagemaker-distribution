@@ -13,7 +13,7 @@ write_status_to_file() {
             echo "Failed to create $file" >&2
             return 0
         }
-
+    fi
     # Ensure the file is writable
     if [ ! -w "$file" ]; then
         echo "Error: $file is not writable" >&2
