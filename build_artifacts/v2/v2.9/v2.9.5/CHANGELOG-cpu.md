@@ -11,5 +11,7 @@ notebook|7.4.5|7.4.7
 fastapi|0.116.1|0.116.2
 langchain-aws|0.2.32|0.2.35
 sagemaker-studio-dataengineering-extensions|1.2.9|1.2.11
+sagemaker-code-editor|1.7.1|1.8.0b6
+sagemaker-studio-dataengineering-extensions|1.2.9|1.2.10
 sagemaker-studio-dataengineering-sessions|1.2.4|1.2.5
 uv|0.8.17|0.8.24
