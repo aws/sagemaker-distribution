@@ -405,6 +405,11 @@ else
     echo "Warning: Source configuration file not found at $agents_source_file"
 fi
 
+# Install AWS Data Processing MCP proxy wheel file
+echo "Installing AWS Data Processing MCP proxy..."
+pip install /etc/sagemaker-ui/sagemaker-mcp/aws_data_processing_remote_mcp_local_proxy-0.1.0-py3-none-any.whl
+echo "Successfully installed AWS Data Processing MCP proxy"
+
 # Generate sagemaker pysdk intelligent default config
 nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 # Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab and domain is not in express mode
