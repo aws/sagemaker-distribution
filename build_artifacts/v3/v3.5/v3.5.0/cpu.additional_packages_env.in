@@ -2,3 +2,4 @@ conda-forge::strands-agents
 conda-forge::strands-agents-tools
 conda-forge::strands-agents-mcp-server
 conda-forge::sagemaker-gen-ai-jupyterlab-extension[version='>=0.1.0,<2.0.0']
+conda-forge::fastmcp[version='>=2.12.4']
