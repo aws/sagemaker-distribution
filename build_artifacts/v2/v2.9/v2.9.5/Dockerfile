@@ -6,12 +6,6 @@ ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
-
-# Amazon Q Agentic Chat version - update this default value when needed
-ARG FLARE_SERVER_VERSION_JL=1.25.0
-# IDE type for Amazon Q integration
-ARG AMAZON_Q_IDE_TYPE=jupyterlab
-
 LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
@@ -54,10 +48,6 @@ RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_
 ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
-COPY aws-cli-public-key.asc /tmp/
-COPY extract_amazon_q_agentic_chat_urls.py /tmp/
-COPY download_amazon_q_agentic_chat_artifacts.sh /tmp/
-
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc jq ca-certificates gnupg && \
     # We just install tzdata below but leave default time zone as UTC. This helps packages like Pandas to function correctly.
@@ -67,20 +57,17 @@ RUN apt-get update && apt-get upgrade -y && \
     touch /etc/krb5.conf.lock && chown ${NB_USER}:${MAMBA_USER} /etc/krb5.conf* && \
     # Note that we do NOT run `rm -rf /var/lib/apt/lists/*` here. If we did, anyone building on top of our images will
     # not be able to run any `apt-get install` commands and that would hamper customizability of the images.
-    curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" && \
-    curl -O "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig" && \
-    gpg --import /tmp/aws-cli-public-key.asc && \
-    gpg --trust-model always --verify awscli-exe-linux-x86_64.zip.sig awscli-exe-linux-x86_64.zip || \
-       (echo "GPG verification failed" && exit 1) && \
-    unzip awscli-exe-linux-x86_64.zip && \
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip" && \
+    unzip awscliv2.zip && \
     sudo ./aws/install && \
-    rm -rf aws awscli-exe-linux-x86_64.zip awscli-exe-linux-x86_64.zip.sig aws-cli-public-key.asc && \
+    rm -rf aws awscliv2.zip && \
     : && \
     # Install Q CLI
-    curl --proto '=https' --tlsv1.2 -sSf "https://desktop-release.q.us-east-1.amazonaws.com/latest/q-x86_64-linux.zip" -o "q.zip" && \
+    curl --proto '=https' --tlsv1.2 -sSf "https://desktop-release.q.us-east-1.amazonaws.com/1.12.7/q-x86_64-linux.zip" -o "q.zip" && \
     unzip q.zip && \
     Q_INSTALL_GLOBAL=true ./q/install.sh --no-confirm && \
     rm -rf q q.zip && \
+    : && \
     echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
 # CodeEditor - create server, user data dirs
     mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
@@ -124,17 +111,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     micromamba create -n sagemaker-recovery-mode && \
     micromamba install -n sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
-    rm -rf /opt/conda/etc/conda/test-files/ && \
-    find /opt/conda -name "yarn.lock" -type f -delete && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
-    # Download shared web client libraries
-    sudo mkdir -p /etc/web-client/libs && \
-    sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/web-client/libs/jszip.min.js" || (echo "Failed to download JSZip library" && exit 1) && \
-    # Download Amazon Q Agentic Chat artifacts for JupyterLab integration
-    bash /tmp/download_amazon_q_agentic_chat_artifacts.sh $FLARE_SERVER_VERSION_JL /etc/amazon-q-agentic-chat/artifacts/$AMAZON_Q_IDE_TYPE $AMAZON_Q_IDE_TYPE && \
-    # Fix ownership for JupyterLab access
-    sudo chown -R $MAMBA_USER:$MAMBA_USER /etc/amazon-q-agentic-chat/ /etc/web-client/ && \
     # Update npm version
     npm i -g npm && \
     # Enforce to use `conda-forge` as only channel, by removing `defaults`
@@ -200,7 +178,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
-    jupyter labextension disable @jupyter/collaboration-extension
+    jupyter labextension disable @jupyter/collaboration-extension && \
+    sudo curl -o /opt/apache-maven-3.9.9-bin.tar.gz https://archive.apache.org/dist/maven/maven-3/3.9.9/binaries/apache-maven-3.9.9-bin.tar.gz
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
