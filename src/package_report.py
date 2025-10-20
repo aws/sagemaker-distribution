@@ -40,8 +40,12 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
         channel = match_spec_out.get("channel").channel_name
         subdir_filter = "[subdir=" + match_spec_out.get("subdir") + "]"
         try:
-            search_result = subprocess.run(["conda", "search", channel + "::" + package + ">=" + str(package_version) + subdir_filter, "--json"], 
-                                         capture_output=True, text=True, check=True)
+            search_result = subprocess.run(
+                ["conda", "search", channel + "::" + package + ">=" + str(package_version) + subdir_filter, "--json"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
             # Load the result as json
             package_metadata = json.loads(search_result.stdout)[package]
         except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError) as e:
@@ -279,8 +283,12 @@ def _generate_python_package_dependency_report(image_config, base_version_dir, t
     for package, version in new_packages.items():
         try:
             # Pull package metadata from conda-forge and dump into json file
-            search_result = subprocess.run(["conda", "search", "-c", "conda-forge", f"{package}=={version}", "--json"], 
-                                         capture_output=True, text=True, check=True)
+            search_result = subprocess.run(
+                ["conda", "search", "-c", "conda-forge", f"{package}=={version}", "--json"],
+                capture_output=True,
+                text=True,
+                check=True,
+            )
             package_metadata = json.loads(search_result.stdout)[package][0]
             results[package] = {"version": package_metadata["version"], "depends": package_metadata["depends"]}
         except Exception as e:
