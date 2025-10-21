@@ -7,7 +7,7 @@ sagemaker-code-editor --version
 echo "Verified that sagemaker-code-editor is installed"
 
 # Verify that data dirs are created and have correct ownership
-data_dirs=("/opt/amazon/sagemaker/sagemaker-code-editor-server-data" "/opt/amazon/sagemaker/sagemaker-code-editor-user-data")
+data_dirs=("/opt/amazon/sagemaker/sagemaker-code-editor-server-data" "/opt/amazon/sagemaker/sagemaker-code-editor-user-data" "opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data")
 data_dirs_owner="sagemaker-user"
 
 for dir in "${data_dirs[@]}"; do
@@ -27,6 +27,32 @@ done
 
 # Check that extensions are installed correctly
 extensions_base_dir="/opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions"
+if [[ ! -d $extensions_base_dir ]]; then
+    echo "Extension base directory $extensions_base_dir does not exist."
+    exit 1
+fi
+
+installed_extensions=("ms-python.python" "ms-toolsai.jupyter" "amazonwebservices.aws-toolkit-vscode")
+for extension in "${installed_extensions[@]}"; do
+    # In this pattern, we're looking for versioning to follow immediately after the extension name
+    # For ex - ms-toolsai.jupyter-2023.9.100
+    pattern="${extension}-[0-9]*"
+
+    # Use the find command to search for directories matching the current pattern
+    found_dirs=$(find "$extensions_base_dir" -maxdepth 1 -type d -name "$pattern")
+
+    if [[ -z $found_dirs ]]; then
+        echo "Directory matching pattern '$pattern' does not exist in $extensions_base_dir."
+        exit 1
+    else
+        echo "Directory exists for pattern '$pattern':"
+        echo "$found_dirs"
+    fi
+done
+echo "Verified that all extension folders are present in $extensions_base_dir."
+
+# Check that extensions are installed correctly for SMUS
+extensions_base_dir="/opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data/extensions"
 if [[ ! -d $extensions_base_dir ]]; then
     echo "Extension base directory $extensions_base_dir does not exist."
     exit 1
