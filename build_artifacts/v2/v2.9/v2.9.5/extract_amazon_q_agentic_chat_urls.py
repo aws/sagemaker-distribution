@@ -6,13 +6,8 @@ import sys
 
 def extract_urls(manifest_file, version, platform='linux', arch='x64'):
     """Extract servers.zip and clients.zip URLs for specified platform/arch."""
-    try:
-        with open(manifest_file) as f:
-            manifest = json.load(f)
-    except FileNotFoundError:
-        raise FileNotFoundError(f"Manifest file not found: {manifest_file}")
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Invalid JSON in manifest file {manifest_file}: {str(e)}")
+    with open(manifest_file) as f:
+        manifest = json.load(f)
     
     for ver in manifest['versions']:
         if ver['serverVersion'] == version:
