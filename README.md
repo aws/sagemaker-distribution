@@ -7,7 +7,7 @@ These images come in two variants, CPU and GPU, and include deep learning framew
 Keras; popular Python packages like numpy, scikit-learn and pandas; and IDEs like Jupyter Lab. The distribution contains
 the _latest_ versions of all these packages _such that_ they are _mutually compatible_.
 
-Starting with v2.9.5+, the images include Amazon Q Agentic Chat integration for enhanced AI-powered development assistance in JupyterLab.
+Starting with v2.9.5+ and new v3.5+, the images include Amazon Q Agentic Chat integration for enhanced AI-powered development assistance in JupyterLab.
 
 ### Amazon Q Agentic Chat Integration
 

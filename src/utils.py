@@ -107,8 +107,9 @@ def pull_conda_package_metadata(image_config, image_artifact_dir):
         if str(match_spec_out).startswith("conda-forge"):
             # Pull package metadata from conda-forge and dump into json file
             try:
-                search_result = subprocess.run(["conda", "search", str(match_spec_out), "--json"], 
-                                             capture_output=True, text=True, check=True)
+                search_result = subprocess.run(
+                    ["conda", "search", str(match_spec_out), "--json"], capture_output=True, text=True, check=True
+                )
                 package_metadata = json.loads(search_result.stdout)[package][0]
                 results[package] = {"version": package_metadata["version"], "size": package_metadata["size"]}
             except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError, IndexError) as e:
