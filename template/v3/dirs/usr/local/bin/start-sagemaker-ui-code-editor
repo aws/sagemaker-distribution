@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+export PERSISTENT_VOLUME_EXTENSIONS_DIR="/home/sagemaker-user/sagemaker-code-editor-server-data/extensions"
+export IMAGE_EXTENSIONS_DIR="/opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data/extensions"
+
 CONTAINER_SAGEMAKER_METADATA_PATH="/opt/amazon/sagemaker"
 EBS_MOUNT_PATH="/home/sagemaker-user"
 
