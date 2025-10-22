@@ -6,6 +6,12 @@ ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
+
+# Amazon Q Agentic Chat version - update this default value when needed
+ARG FLARE_SERVER_VERSION_JL=1.25.0
+# IDE type for Amazon Q integration
+ARG AMAZON_Q_IDE_TYPE=jupyterlab
+
 LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
@@ -49,6 +55,8 @@ ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
 COPY aws-cli-public-key.asc /tmp/
+COPY extract_amazon_q_agentic_chat_urls.py /tmp/
+COPY download_amazon_q_agentic_chat_artifacts.sh /tmp/
 
 RUN apt-get update && apt-get upgrade -y && \
     apt-get install -y --no-install-recommends sudo gettext-base wget curl unzip git rsync build-essential openssh-client nano cron less mandoc jq ca-certificates gnupg && \
@@ -73,11 +81,10 @@ RUN apt-get update && apt-get upgrade -y && \
     unzip q.zip && \
     Q_INSTALL_GLOBAL=true ./q/install.sh --no-confirm && \
     rm -rf q q.zip && \
-    : && \
     echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
 # CodeEditor - create server, user data dirs
-    mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
-    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
+    mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
+    && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
 # create dir to store user data files
     mkdir -p /opt/amazon/sagemaker/user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/user-data && \
@@ -87,11 +94,15 @@ COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
 RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     rm -rf ${DIRECTORY_TREE_STAGE_DIR} && \
 # CodeEditor - download the extensions
-    mkdir -p /etc/code-editor/extensions && \
+    mkdir -p /etc/code-editor/extensions /etc/code-editor/extensions-sagemaker-ui && \
     while IFS= read -r url || [ -n "$url" ]; do \
         echo "Downloading extension from ${url}..." && \
         wget --no-check-certificate -P /etc/code-editor/extensions "${url}"; \
     done < /etc/code-editor/extensions.txt
+    while IFS= read -r url || [ -n "$url" ]; do \
+        echo "Downloading sagemaker-ui extension from ${url}..." && \
+        wget --no-check-certificate -P /etc/code-editor/extensions-sagemaker-ui "${url}"; \
+    done < /etc/code-editor/extensions-sagemaker-ui.txt
 
 USER $MAMBA_USER
 COPY --chown=$MAMBA_USER:$MAMBA_USER $ENV_IN_FILENAME *.in /tmp/
@@ -121,6 +132,13 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     find /opt/conda -name "yarn.lock" -type f -delete && \
     rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
+    # Download shared web client libraries
+    sudo mkdir -p /etc/web-client/libs && \
+    sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/web-client/libs/jszip.min.js" || (echo "Failed to download JSZip library" && exit 1) && \
+    # Download Amazon Q Agentic Chat artifacts for JupyterLab integration
+    bash /tmp/download_amazon_q_agentic_chat_artifacts.sh $FLARE_SERVER_VERSION_JL /etc/amazon-q-agentic-chat/artifacts/$AMAZON_Q_IDE_TYPE $AMAZON_Q_IDE_TYPE && \
+    # Fix ownership for JupyterLab access
+    sudo chown -R $MAMBA_USER:$MAMBA_USER /etc/amazon-q-agentic-chat/ /etc/web-client/ && \
     # Update npm version
     npm i -g npm && \
     # Enforce to use `conda-forge` as only channel, by removing `defaults`
@@ -133,9 +151,17 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
         echo "Installing extension ${ext}..."; \
         sagemaker-code-editor --install-extension "${ext}" --extensions-dir "${extensionloc}" --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data; \
        done \
+    # Install sagemaker-ui extensions
+    && extensionloc_ui=/opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data/extensions && mkdir -p "${extensionloc_ui}" \
+    && for ext in /etc/code-editor/extensions-sagemaker-ui/*.vsix; do \
+        echo "Installing sagemaker-ui extension ${ext}..."; \
+        sagemaker-code-editor --install-extension "${ext}" --extensions-dir "${extensionloc_ui}" --server-data-dir /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data; \
+        done \
     # Copy the settings
     && cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/Machine/settings.json && \
     cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-code-editor-server-data/data/User/settings.json && \
+    cp /etc/code-editor/code_editor_machine_settings.json /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data/data/Machine/settings.json && \
+    cp /etc/code-editor/code_editor_user_settings.json /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data/data/User/settings.json && \
     # Install glue kernels, and move to shared directory
     # Also patching base kernel so Studio background code doesn't start session silently
     install-glue-kernels && \
