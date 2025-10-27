@@ -98,7 +98,7 @@ RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     while IFS= read -r url || [ -n "$url" ]; do \
         echo "Downloading extension from ${url}..." && \
         wget --no-check-certificate -P /etc/code-editor/extensions "${url}"; \
-    done < /etc/code-editor/extensions.txt
+    done < /etc/code-editor/extensions.txt && \
     while IFS= read -r url || [ -n "$url" ]; do \
         echo "Downloading sagemaker-ui extension from ${url}..." && \
         wget --no-check-certificate -P /etc/code-editor/extensions-sagemaker-ui "${url}"; \
