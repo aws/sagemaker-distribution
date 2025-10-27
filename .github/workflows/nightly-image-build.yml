@@ -15,6 +15,7 @@ jobs:
         matrix: ${{ steps.set-matrix.outputs.matrix }}
         patch-versions: ${{ steps.set-matrix.outputs.patch-versions }}
         minor-versions: ${{ steps.set-matrix.outputs.minor-versions }}
+        major-versions: ${{ steps.set-matrix.outputs.major-versions }}
     steps:
       - uses: actions/checkout@v4
       - name: Get versions from schedule
@@ -27,8 +28,9 @@ jobs:
           echo "matrix=$(echo $SCHEDULE | jq -c)" >> $GITHUB_OUTPUT
           echo "patch-versions=$(echo $SCHEDULE | jq -c '.patch_base_versions')" >> $GITHUB_OUTPUT
           echo "minor-versions=$(echo $SCHEDULE | jq -c '.minor_base_versions')" >> $GITHUB_OUTPUT
+          echo "major-versions=$(echo $SCHEDULE | jq -c '.major_base_versions')" >> $GITHUB_OUTPUT
   start-minor-build:
-    name: Start nightly minor build
+    name: Start nightly minor version build
     needs: generate-version-matrix
     permissions:
       pull-requests: write
@@ -44,7 +46,7 @@ jobs:
       release-type: "minor"
       base-version: ${{ matrix.version }}
   start-patch-build:
-    name: Start nightly patch build
+    name: Start nightly patch version build
     needs: generate-version-matrix
     permissions:
         pull-requests: write
@@ -58,4 +60,20 @@ jobs:
     secrets: inherit
     with:
         release-type: "patch"
+        base-version: ${{ matrix.version }}
+  start-major-build:
+    name: Start nightly major version build
+    needs: generate-version-matrix
+    permissions:
+        pull-requests: write
+        contents: write
+        id-token: write
+    strategy:
+        matrix:
+            version: ${{ fromJson(needs.generate-version-matrix.outputs.major-versions) }}
+        fail-fast: false
+    uses: aws/sagemaker-distribution/.github/workflows/build-image.yml@main
+    secrets: inherit
+    with:
+        release-type: "major"
         base-version: ${{ matrix.version }}

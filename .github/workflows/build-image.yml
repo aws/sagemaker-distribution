@@ -89,7 +89,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # Create PR if it doesn't exist; fetch existing PR number if it does
         run: |
-          if gh pr list --head release-${{ steps.calc_target.outputs.target_version }} --state open --json number | grep -q '"number":'; then
+          if gh pr list --head release-${{ steps.calc_target.outputs.target_version }} --author "app/github-actions" \
+            --state open --json number | grep -q '"number":'; then
             echo "PR exists already, just fetching ID"
             PR_ID=$(gh pr view release-${{ steps.calc_target.outputs.target_version }} --json number | jq -r .number)
             echo "pr_id=$PR_ID" >> $GITHUB_OUTPUT
