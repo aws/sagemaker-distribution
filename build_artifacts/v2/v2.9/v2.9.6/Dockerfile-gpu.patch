@@ -1,4 +1,4 @@
-FROM public.ecr.aws/sagemaker/sagemaker-distribution:2.9.6-gpu
+FROM public.ecr.aws/sagemaker/sagemaker-distribution:2.9.5-gpu
 
 ARG IMAGE_VERSION
 ENV IMAGE_VERSION=2.9.6-gpu
