@@ -22,7 +22,7 @@ amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.19|0.1.19
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.4|1.0.4
-scipy|1.16.3|1.16.3
+scipy|1.16.2|1.16.2
 matplotlib-base|3.10.7|3.10.7
 scikit-learn|1.7.2|1.7.2
 pip|24.3.1|24.3.1
