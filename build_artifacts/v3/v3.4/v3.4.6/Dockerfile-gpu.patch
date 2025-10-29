@@ -4,4 +4,4 @@ ARG IMAGE_VERSION
 ENV IMAGE_VERSION=3.4.6-gpu
 LABEL "org.amazon.sagemaker-distribution.image.version"=3.4.6-gpu
 
-RUN micromamba install -y -n base 'sagemaker-studio-dataengineering-extensions==1.2.13' 
+RUN micromamba install -y -n base 'sagemaker-studio-dataengineering-extensions==1.2.13' 'ipykernel<7' 
