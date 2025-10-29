@@ -24,7 +24,7 @@ amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.19|0.1.19
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.4|1.0.4
-scipy|1.16.2|1.16.2
+scipy|1.16.3|1.16.3
 matplotlib-base|3.10.7|3.10.7
 scikit-learn|1.7.2|1.7.2
 torchvision|0.21.0|0.21.0
@@ -36,14 +36,14 @@ aws-s3-access-grants-boto3-plugin|1.2.0|1.2.0
 conda|25.9.1|25.9.1
 docker-cli|27.5.1|27.5.1
 uvicorn|0.38.0|0.38.0
-fastapi|0.119.1|0.119.1
+fastapi|0.120.1|0.120.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|3.1.0|3.1.0
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.51.2|0.51.2
-keras|3.11.2|3.11.2
+keras|3.12.0|3.12.0
 langchain-aws|0.2.19|0.2.19
 mcp|1.19.0|1.19.0
 mlflow|2.22.0|2.22.0
