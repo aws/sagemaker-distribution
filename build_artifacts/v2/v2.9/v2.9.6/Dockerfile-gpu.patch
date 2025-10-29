@@ -1,0 +1,7 @@
+FROM public.ecr.aws/sagemaker/sagemaker-distribution:2.9.5-gpu
+
+ARG IMAGE_VERSION
+ENV IMAGE_VERSION=2.9.6-gpu
+LABEL "org.amazon.sagemaker-distribution.image.version"=2.9.6-gpu
+
+RUN micromamba install -y -n base 'sagemaker-studio-dataengineering-extensions==1.2.13' 
