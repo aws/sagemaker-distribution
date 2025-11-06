@@ -1,3 +1,0 @@
-FROM 700843992353.dkr.ecr.us-east-1.amazonaws.com/sagemaker-distribution-staging-repository:3.5.1-cpu
-
-COPY ./dirs/etc/patches/smus/0002-sparkmagic-override-info-table.patch /etc/patches/smus/0002-sparkmagic-override-info-table.patch
