@@ -1,0 +1,24 @@
+--- /opt/conda/lib/python3.12/site-packages/sparkmagic/utils/utils.py 
++++ /opt/conda/lib/python3.12/site-packages/sparkmagic/utils/utils.py
+@@ -94,15 +94,12 @@
+ 
+ 
+ def get_sessions_info_html(info_sessions, current_session_id):
+-    html = (
+-        """<table>
+-<tr><th>ID</th><th>YARN Application ID</th><th>Kind</th><th>State</th><th>Spark UI</th><th>Driver log</th><th>User</th><th>Current session?</th></tr>"""
+-        + "".join(
+-            [session.get_row_html(current_session_id) for session in info_sessions]
+-        )
+-        + "</table>"
+-    )
+-
++    current_session = next((session for session in info_sessions if session.id == current_session_id), None)
++    spark_ui_url = current_session.get_spark_ui_url()
++    driver_log_url = current_session.get_driver_log_url()
++    
++    from sagemaker_studio_dataengineering_sessions.sagemaker_base_session_manager.common.debugging_utils import get_sessions_info_html
++    html = get_sessions_info_html(current_session.get_app_id(), spark_ui_url, driver_log_url)
+     return html
+ 
+ 
