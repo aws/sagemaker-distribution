@@ -9,5 +9,5 @@ fastapi|0.120.4|0.121.1
 jupyter-collaboration|3.1.0|3.1.2
 mcp|1.19.0|1.21.0
 sagemaker-code-editor|1.7.5|1.7.6
-sagemaker-studio|1.0.22|1.1.0
+sagemaker-studio|1.0.22|1.1.1
 uv|0.9.7|0.9.8
