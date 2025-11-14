@@ -1,0 +1,7 @@
+FROM public.ecr.aws/sagemaker/sagemaker-distribution:2.10.2-gpu
+
+ARG IMAGE_VERSION
+ENV IMAGE_VERSION=2.10.3-gpu
+LABEL "org.amazon.sagemaker-distribution.image.version"=2.10.3-gpu
+RUN micromamba install -y -n base sagemaker-jupyterlab-extension-common==0.2.14
+
