@@ -1,0 +1,107 @@
+#!/bin/bash
+set -e
+
+EFS_MOUNT_POINT="/opt/amazon/sagemaker"
+EBS_MOUNT_POINT="/home/sagemaker-user"
+
+persistent_settings_folder="${EBS_MOUNT_POINT}/sagemaker-code-editor-server-data"
+default_settings_folder="${EFS_MOUNT_POINT}/sagemaker-code-editor-server-data"
+
+override_machine_settings() {
+  # create a new settings file with preset defaults or merge the defaults into the existing settings file
+  local settings_relative_path="data/Machine"
+  local settings_file_path_suffix="${settings_relative_path}/settings.json"
+  local persistent_machine_settings_file="${persistent_settings_folder}/${settings_file_path_suffix}"
+  local default_machine_settings_file="${default_settings_folder}/${settings_file_path_suffix}"
+
+  if [ ! -f "$persistent_machine_settings_file" ]; then
+    # copy settings file to EBS if it doesn't exist in EBS
+    mkdir -p "${persistent_settings_folder}/${settings_relative_path}"
+    cp "$default_machine_settings_file" "$persistent_machine_settings_file"
+    echo "Created persistent settings file with default settings at $persistent_machine_settings_file"
+  else
+    # if it does exist then merge settings
+    echo "File already exists: ${persistent_machine_settings_file}. Merging default settings with existing settings."
+    python3 /usr/local/bin/merge-settings-util.py "$persistent_machine_settings_file" "$default_machine_settings_file"
+  fi
+}
+
+copy_user_settings() {
+  local settings_relative_path="data/User"
+  local settings_file_path_suffix="${settings_relative_path}/settings.json"
+  local persistent_user_settings_file="${persistent_settings_folder}/${settings_file_path_suffix}"
+  local default_user_settings_file="${default_settings_folder}/${settings_file_path_suffix}"
+  if [ ! -f "$persistent_user_settings_file" ]; then
+      # copy user settings file to EBS if it doesn't exist in EBS
+      mkdir -p "${persistent_settings_folder}/${settings_relative_path}"
+      cp "$default_user_settings_file" "$persistent_user_settings_file"
+      echo "Created persistent settings file with default settings at $persistent_user_settings_file"
+  fi
+}
+
+install_prepackaged_extensions() {
+  local prepackaged_extensions_dir="${default_settings_folder}/extensions"
+  local persistent_extensions_dir="${persistent_settings_folder}/extensions"
+
+  # if extensions directory doesn't exist then this is the first time opening the app
+  if [ ! -d "${persistent_extensions_dir}" ]; then
+    mkdir -p $persistent_extensions_dir
+
+    # find all pre-packaged extensions folders, symlink them to the persistent volume
+    find "$prepackaged_extensions_dir" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+        dir_name=$(basename "$dir")
+
+        ln -s "$dir" "${persistent_extensions_dir}/${dir_name}"
+        echo "Added extension: $dir"
+    done
+  fi
+}
+
+set_code_editor_theme() {
+  echo "Setting code editor theme"
+  bash /etc/sagemaker-ui/set_code_editor_theme.sh
+}
+
+disableJupyterKernels() {
+  local kernel_list
+  kernel_list=$(jupyter kernelspec list)
+
+  for kernel in "$@"; do
+    if echo "$kernel_list" | grep -q "$kernel"; then
+      echo "Removing kernel: $kernel"
+      jupyter kernelspec remove -f -y "$kernel"
+    else
+      echo "Kernel not found: $kernel"
+    fi
+  done
+}
+
+eval "$(micromamba shell hook --shell=bash)"
+
+# Activate conda environment 'base', which is the default environment for sagemaker-distribution
+micromamba activate base
+
+# Disable Jupyter Kernels
+disableJupyterKernels pysparkkernel sparkkernel glue_spark glue_pyspark
+
+# Start code-editor server
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+  # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker app.
+  override_machine_settings
+  copy_user_settings
+  install_prepackaged_extensions
+  set_code_editor_theme
+  # Configure the base url to be `/<app-type-in-lower-case>/default`.
+  sagemaker-code-editor --host 0.0.0.0 --port 8888 \
+    --without-connection-token \
+    --base-path "/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
+    --server-data-dir $persistent_settings_folder \
+    --extensions-dir ${persistent_settings_folder}/extensions \
+    --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
+else
+  sagemaker-code-editor --host 0.0.0.0 --port 8888 \
+    --without-connection-token \
+    --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data \
+    --extension-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions \
+    --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
+fi
