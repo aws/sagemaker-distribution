@@ -9,6 +9,16 @@
           "/etc/sagemaker-ui/sagemaker-mcp/smus-mcp.py"
         ],
         "env": {}
+      },
+      "aws-dp-remote-mcp": {
+        "command": "aws-data-processing-mcp-proxy",
+        "args": [],
+        "env": {
+          "AWS_PROFILE_NAME": "remote_mcp_profile",
+          "SELECTED_SERVERS": "*"
+        },
+        "disabled": false,
+        "timeout": 60000
       }
     },
     "tools": [
@@ -18,7 +28,8 @@
       "listDirectory",
       "fileSearch",
       "executeBash",
-      "@smus-local-mcp"
+      "@smus-local-mcp",
+      "@aws-dp-remote-mcp"
     ],
     "allowedTools": [
       "fsRead",
