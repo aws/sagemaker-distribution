@@ -394,13 +394,13 @@ if [ -f "$agents_source_file" ]; then
         else
             echo "Warning: Existing agents configuration is not valid JSON, replacing with default configuration"
             echo "Setting up AWS Region in MCP agent configuration"
-            # Replace REGION_NAME placeholder with actual region name
-            sed "s/REGION_NAME/$REGION_NAME/g" "$agents_source_file" > "$agents_target_file"
+            # Replace AWS_REGION_NAME placeholder with actual region name
+            sed "s/AWS_REGION_NAME/$REGION_NAME/g" "$agents_source_file" > "$agents_target_file"
         fi
     else
-        # Replace REGION_NAME placeholder with actual region name
+        # Replace AWS_REGION_NAME placeholder with actual region name
         echo "Setting up AWS Region in MCP agent configuration"
-        sed "s/REGION_NAME/$REGION_NAME/g" "$agents_source_file" > "$agents_target_file"
+        sed "s/AWS_REGION_NAME/$REGION_NAME/g" "$agents_source_file" > "$agents_target_file"
         echo "Created new Amazon Q agents configuration file"
     fi
 

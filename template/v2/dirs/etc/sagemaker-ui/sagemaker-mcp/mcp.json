@@ -13,12 +13,11 @@
         "--service",
         "sagemaker-unified-studio-mcp",
         "--region",
-        "us-east-1",
+        "AWS_REGION_NAME",
         "--read-timeout",
         "180"
       ],
-      "timeout": 180000,
-      "disabled": false
+      "timeout": 180000
     }
   }
 }
