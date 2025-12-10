@@ -3,7 +3,6 @@
     "smus-local-mcp": {
       "command": "python",
       "args": ["/etc/sagemaker-ui/sagemaker-mcp/smus-mcp.py"]
-    }
   },
   "smus-spark-upgrade": {
       "type": "stdio",
@@ -20,4 +19,5 @@
       ],
       "timeout": 180000
     }
+  }
 }
