@@ -326,7 +326,10 @@ if [ -f "$source_file" ]; then
         cp "$source_file" "$target_file"
         echo "Created new MCP configuration with default servers"
     fi
-
+    # Replace AWS_REGION_NAME placeholder with actual region name
+    echo "Updating MCP configuration with AWS Region $REGION_NAME..."
+    sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$target_file"
+    echo "Successfully added AWS Region $REGION_NAME to $target_file"
     echo "Successfully configured MCP for SageMaker"
 else
     echo "Warning: MCP configuration file not found at $source_file"
@@ -385,21 +388,17 @@ if [ -f "$agents_source_file" ]; then
                         echo "Server '$server_name' already exists in configuration, skipping"
                     fi
                 done
-
-                echo "Successfully added missing mcpServers and tools from default.json to agents configuration"
+                # Replace AWS_REGION_NAME placeholder with actual region name
+                echo "Updating MCP configuration with AWS Region $REGION_NAME..."
+                sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$agents_target_file"
+                echo "Successfully added AWS Region $REGION_NAME to $agents_target_file"
             else
                 echo "No mcpServers found in source configuration"
             fi
         else
             echo "Warning: Existing agents configuration is not valid JSON, replacing with default configuration"
-            # Replace AWS_REGION_NAME placeholder with actual region name
-            echo "Setting up AWS Region in MCP agent configuration"
-            sed "s/AWS_REGION_NAME/$REGION_NAME/g" "$agents_source_file" > "$agents_target_file"
         fi
     else
-        # Replace AWS_REGION_NAME placeholder with actual region name
-        echo "Setting up AWS Region in MCP agent configuration"
-        sed "s/AWS_REGION_NAME/$REGION_NAME/g" "$agents_source_file" > "$agents_target_file"
         echo "Created new Amazon Q agents configuration file"
     fi
 

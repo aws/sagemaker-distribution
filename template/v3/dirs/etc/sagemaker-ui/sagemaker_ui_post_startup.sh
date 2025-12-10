@@ -327,7 +327,10 @@ if [ -f "$source_file" ]; then
         cp "$source_file" "$target_file"
         echo "Created new MCP configuration with default servers"
     fi
-
+    # Replace AWS_REGION_NAME placeholder with actual region name
+    echo "Updating MCP configuration with AWS Region $REGION_NAME..."
+    sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$target_file"
+    echo "Successfully added AWS Region $REGION_NAME to $target_file"
     echo "Successfully configured MCP for SageMaker"
 else
     echo "Warning: MCP configuration file not found at $source_file"
@@ -386,7 +389,10 @@ if [ -f "$agents_source_file" ]; then
                         echo "Server '$server_name' already exists in configuration, skipping"
                     fi
                 done
-
+                # Replace AWS_REGION_NAME placeholder with actual region name
+                echo "Updating MCP configuration with AWS Region $REGION_NAME..."
+                sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$target_file"
+                echo "Successfully added AWS Region $REGION_NAME to $target_file"
                 echo "Successfully added missing mcpServers and tools from default.json to agents configuration"
             else
                 echo "No mcpServers found in source configuration"

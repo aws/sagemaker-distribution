@@ -3,8 +3,8 @@
     "smus-local-mcp": {
       "command": "python",
       "args": ["/etc/sagemaker-ui/sagemaker-mcp/smus-mcp.py"]
-  },
-  "smus-spark-upgrade": {
+    },
+    "smus-spark-upgrade": {
       "type": "stdio",
       "command": "uvx",
       "args": [
