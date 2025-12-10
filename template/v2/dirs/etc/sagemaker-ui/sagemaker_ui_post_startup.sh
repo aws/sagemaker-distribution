@@ -392,13 +392,16 @@ if [ -f "$agents_source_file" ]; then
                 echo "Updating MCP configuration with AWS Region $REGION_NAME..."
                 sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$agents_target_file"
                 echo "Successfully added AWS Region $REGION_NAME to $agents_target_file"
+                echo "Successfully added missing mcpServers and tools from default.json to agents configuration"
             else
                 echo "No mcpServers found in source configuration"
             fi
         else
             echo "Warning: Existing agents configuration is not valid JSON, replacing with default configuration"
+            cp "$agents_source_file" "$agents_target_file"
         fi
     else
+        cp "$agents_source_file" "$agents_target_file"
         echo "Created new Amazon Q agents configuration file"
     fi
 

@@ -9,7 +9,7 @@
       "command": "uvx",
       "args": [
         "mcp-proxy-for-aws@latest",
-        "https://sagemaker-unified-studio-mcp.REGION_NAME.api.aws/spark-upgrade/mcp",
+        "https://sagemaker-unified-studio-mcp.AWS_REGION_NAME.api.aws/spark-upgrade/mcp",
         "--service",
         "sagemaker-unified-studio-mcp",
         "--region",
