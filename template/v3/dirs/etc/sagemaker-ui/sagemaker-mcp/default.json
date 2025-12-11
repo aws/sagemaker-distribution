@@ -18,7 +18,8 @@
     "listDirectory",
     "fileSearch",
     "executeBash",
-    "@smus-local-mcp"
+    "@smus-local-mcp",
+    "@smus-spark-upgrade"
   ],
   "allowedTools": [
     "fsRead",
