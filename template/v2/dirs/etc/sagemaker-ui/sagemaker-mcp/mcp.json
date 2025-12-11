@@ -1,8 +1,23 @@
 {
   "mcpServers": {
     "smus-local-mcp": {
-      "command": "python",  
+      "command": "python",
       "args": ["/etc/sagemaker-ui/sagemaker-mcp/smus-mcp.py"]
+    },
+    "smus-spark-upgrade": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-proxy-for-aws@latest",
+        "https://sagemaker-unified-studio-mcp.AWS_REGION_NAME.api.aws/spark-upgrade/mcp",
+        "--service",
+        "sagemaker-unified-studio-mcp",
+        "--region",
+        "AWS_REGION_NAME",
+        "--read-timeout",
+        "180"
+      ],
+      "timeout": 180000
     }
   }
 }
