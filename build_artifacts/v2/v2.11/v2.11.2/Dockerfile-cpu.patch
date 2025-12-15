@@ -1,0 +1,3 @@
+FROM 700843992353.dkr.ecr.us-east-1.amazonaws.com/sagemaker-distribution-staging-repository:2.11.2-cpu
+
+RUN micromamba install sagemaker-studio-dataengineering-sessions==1.3.11
