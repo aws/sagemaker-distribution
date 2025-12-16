@@ -63,7 +63,7 @@ sagemaker-studio|1.0.23|1.0.23
 sagemaker-studio-analytics-extension|0.2.2|0.2.2
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.3|1.3.3
-sagemaker-studio-dataengineering-sessions|1.3.9|1.3.9
+sagemaker-studio-dataengineering-sessions|1.3.11|1.3.11
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
