@@ -11,7 +11,7 @@ altair|5.5.0|5.5.0
 boto3|1.40.70|1.40.70
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
-jupyterlab|4.5.0|4.5.0
+jupyterlab|4.4.10|4.4.10
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
@@ -29,7 +29,7 @@ pip|24.3.1|24.3.1
 torchvision|0.21.0|0.21.0
 autogluon|1.4.0|1.4.0
 ipywidgets|8.1.8|8.1.8
-notebook|7.5.0|7.5.0
+notebook|7.4.7|7.4.7
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|24.11.3|24.11.3
@@ -63,7 +63,7 @@ sagemaker-studio|1.1.4|1.1.4
 sagemaker-studio-analytics-extension|0.2.2|0.2.2
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.3|1.3.3
-sagemaker-studio-dataengineering-sessions|1.3.9|1.3.9
+sagemaker-studio-dataengineering-sessions|1.3.11|1.3.11
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2

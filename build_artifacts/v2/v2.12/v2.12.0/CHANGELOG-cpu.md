@@ -4,10 +4,8 @@
 
 Package | Previous Version | Current Version
 ---|---|---
-jupyterlab|4.4.10|4.5.0
 jupyter-ai|2.31.6|2.31.7
 matplotlib-base|3.10.7|3.10.8
-notebook|7.4.7|7.5.0
 fastapi|0.121.1|0.124.4
 jupyterlab-git|0.51.2|0.51.3
 mcp|1.21.0|1.23.3
@@ -16,5 +14,5 @@ sagemaker-code-editor|1.7.6|1.8.0
 sagemaker-mlflow|0.1.0|0.2.0
 sagemaker-studio|1.1.1|1.1.4
 sagemaker-studio-dataengineering-extensions|1.3.2|1.3.3
-sagemaker-studio-dataengineering-sessions|1.3.7|1.3.9
+sagemaker-studio-dataengineering-sessions|1.3.7|1.3.11
 uv|0.9.8|0.9.17
