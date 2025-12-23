@@ -128,9 +128,6 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     micromamba create -n sagemaker-recovery-mode && \
     micromamba install -n sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
-    rm -rf /opt/conda/etc/conda/test-files/ && \
-    find /opt/conda -name "yarn.lock" -type f -delete && \
-    rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
     # Download shared web client libraries
     sudo mkdir -p /etc/web-client/libs && \
@@ -245,7 +242,12 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && chmod +x /usr/local/bin/testOSSCompliance \
     && chmod +x ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
-    && rm -rf ${HOME_DIR}/oss_compliance*
+    && rm -rf ${HOME_DIR}/oss_compliance* \
+    # Remove all temp data generated during image build process
+    # This process must be done at the end of image build
+    && rm -rf /opt/conda/etc/conda/test-files/ \
+    && find /opt/conda -name "yarn.lock" -type f -delete \
+    && rm -rf /tmp/*.in
 
 # Explicitly disable BuildKit for SM Studio Docker functionality
 ENV DOCKER_BUILDKIT=0
