@@ -88,11 +88,39 @@ def check_blueprint(region: str, domain_id: str, endpoint: str, project_id: str,
             print("False")
 
 
+def check_config_v2_enabled(domain_id: str, endpoint: str, project_id: str, **kwargs):
+    DZ_CLIENT = boto3.client("datazone")
+    # add correct endpoint for gamma env
+    if endpoint != "":
+        DZ_CLIENT = boto3.client("datazone", endpoint_url=endpoint)
+    try:
+        # get workflows blueprint environment resources
+        blueprint_id = DZ_CLIENT.list_environment_blueprints(
+            managed=True, domainIdentifier=domain_id, name="Tooling"
+        )["items"][0]["id"]
+        environment_id = DZ_CLIENT.list_environments(
+            domainIdentifier=domain_id, projectIdentifier=project_id, environmentBlueprintIdentifier=blueprint_id
+        )["items"][0]["id"]
+        environment_resources = DZ_CLIENT.get_environment(
+            domainIdentifier=domain_id, identifier=environment_id
+        )["provisionedResources"]
+
+        for resource in environment_resources:
+            if resource['name'] == "enableWorkflowsConfigV2":
+                print(resource['value'] == "true")
+                return
+
+        print("False")
+    except Exception:
+        print("False")
+
+
 COMMAND_REGISTRY = {
     "update-local-runner-status": update_local_runner_status,
     "start-local-runner": start_local_runner,
     "stop-local-runner": stop_local_runner,
     "check-blueprint": check_blueprint,
+    "check-config-v2-enabled": check_config_v2_enabled,
 }
 
 
@@ -118,6 +146,17 @@ def main():
     )
     check_blueprint_parser.add_argument(
         "--project-id", type=str, required=True, help="Datazone Project ID for blueprint check"
+    )
+
+    check_config_v2_enabled_parser = subparsers.add_parser("check-config-v2-enabled", help="Check if config v2 enabled")
+    check_config_v2_enabled_parser.add_argument(
+        "--domain-id", type=str, required=True, help="Datazone Domain ID"
+    )
+    check_config_v2_enabled_parser.add_argument(
+        "--endpoint", type=str, required=True, help="Datazone endpoint"
+    )
+    check_config_v2_enabled_parser.add_argument(
+        "--project-id", type=str, required=True, help="Datazone Project ID"
     )
 
     args = parser.parse_args()
