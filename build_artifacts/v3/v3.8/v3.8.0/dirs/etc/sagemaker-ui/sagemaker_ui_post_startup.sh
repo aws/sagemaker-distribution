@@ -415,6 +415,8 @@ fi
 nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 # Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab and domain is not in express mode
 if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" != "true" ]; then
+    # clean up gen ai debugging file
+    rm -rf /home/sagemaker-user/src/.temp_sagemaker_unified_studio_debugging_info
     # do not fail immediately for non-zero exit code returned
     # by start-workflows-container. An expected non-zero exit
     # code will be returned if there is not a minimum of 2
