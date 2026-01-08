@@ -8,7 +8,7 @@ ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
 
 # Amazon Q Agentic Chat version - update this default value when needed
-ARG FLARE_SERVER_VERSION_JL=1.52.0
+ARG FLARE_SERVER_VERSION_JL=1.25.0
 # IDE type for Amazon Q integration
 ARG AMAZON_Q_IDE_TYPE=jupyterlab
 
