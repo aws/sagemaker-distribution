@@ -99,7 +99,7 @@ fi
 response_body=$(echo "$domain_response" | grep -A1 "Response body:" | tail -n1 | sed 's/^b'\''//;s/'\''$//')
 # Remove leading/trailing whitespace and the 'b' prefix
 cleaned_response=$(echo "$response_body" | sed 's/\\n//g')
-is_express_mode=$(echo "$cleaned_response" | jq -r '.preferences.DOMAIN_MODE == "EXPRESS"')
+is_express_mode=$(echo "$cleaned_response" | jq -r '((.preferences.DOMAIN_MODE // null) == "EXPRESS") or ((.domainVersion // null) == "V2" and ((.iamSignIns // []) | contains(["IAM_ROLE"]) and contains(["IAM_USER"])))')
 
 if [ "$is_express_mode" = "true" ]; then
     echo "Domain is in express mode. Using default credentials"
