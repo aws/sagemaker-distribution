@@ -1,0 +1,2 @@
+conda-forge::jupyter_server_documents[version='>=0.1.0,<0.2.0']
+conda-forge::jupyter-collaboration[version='>=4.1.2,<4.2.0']
