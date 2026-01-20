@@ -45,7 +45,14 @@ RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
         echo "Micromamba is already at version $CURRENT_MICROMAMBA_VERSION (outside $PINNED_MICROMAMBA_MINOR_VERSION). No upgrade performed."; \
     fi
 
-RUN usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
+RUN EXISTING_USER=$(getent passwd 1000 | cut -d: -f1) && \
+    if [ -n "$EXISTING_USER" ]; then \
+        echo "Removing existing user: $EXISTING_USER" && \
+        userdel -r "$EXISTING_USER"; \
+    else \
+        echo "No existing user with UID 1000 found, skipping user deletion"; \
+    fi && \
+    usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
     groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "${MAMBA_USER}" && \
     # Update the expected value of MAMBA_USER for the
     # _entrypoint.sh consistency check.
