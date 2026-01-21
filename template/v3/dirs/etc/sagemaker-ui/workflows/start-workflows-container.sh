@@ -37,6 +37,12 @@ USER_REQUIREMENTS_FILE="${WORKFLOW_CONFIG_PATH}/requirements.txt"
 USER_PLUGINS_FOLDER="${WORKFLOW_CONFIG_PATH}/plugins"
 USER_STARTUP_FILE="${WORKFLOW_CONFIG_PATH}/startup.sh"
 
+DZ_PROJECT_SYS_S3PATH=$(sed 's|/dev$|/sys|' <<< "$DZ_PROJECT_S3PATH")
+WORKFLOWS_ARTIFACTS_SOURCE_S3PATH="${DZ_PROJECT_SYS_S3PATH}/workflows"
+WORKFLOW_PLUGINS_SOURCE_S3PATH="${WORKFLOWS_ARTIFACTS_SOURCE_S3PATH}/plugins"
+WORKFLOW_REQUIREMENTS_SOURCE_S3PATH="${WORKFLOWS_ARTIFACTS_SOURCE_S3PATH}/requirements.txt"
+WORKFLOW_STARTUP_SOURCE_S3PATH="${WORKFLOWS_ARTIFACTS_SOURCE_S3PATH}/startup.sh"
+
 
 handle_workflows_startup_error() {
     local step=$1
@@ -134,17 +140,30 @@ cat >>"$WORKFLOW_DAG_PATH/.airflowignore" <<'END'
 .ipynb_checkpoints
 END
 
-#copy plugins from conda
-cp $WORKFLOW_PLUGINS_SOURCE_PATH $WORKFLOW_PLUGINS_PATH
-#copy requirements from conda
-cp $WORKFLOW_REQUIREMENTS_SOURCE_PATH $WORKFLOW_REQUIREMENTS_PATH
+V2_CONFIG_ENABLED=$(python /etc/sagemaker-ui/workflows/workflow_client.py check-config-v2-enabled --domain-id "$DZ_DOMAIN_ID" --endpoint "$DZ_ENDPOINT" --project-id "$DZ_PROJECT_ID")
 
-# Copy system startup
-cp /etc/sagemaker-ui/workflows/startup/startup.sh $WORKFLOW_STARTUP_PATH
+if [ $V2_CONFIG_ENABLED = "True" ]; then
+    # copy config files from project bucket
+    aws s3 sync $WORKFLOW_PLUGINS_SOURCE_S3PATH $WORKFLOW_PLUGINS_PATH --delete
+    aws s3 cp $WORKFLOW_REQUIREMENTS_SOURCE_S3PATH $WORKFLOW_REQUIREMENTS_PATH
+    aws s3 cp $WORKFLOW_STARTUP_SOURCE_S3PATH $WORKFLOW_STARTUP_PATH
+else
+    #copy plugins from conda
+    cp $WORKFLOW_PLUGINS_SOURCE_PATH $WORKFLOW_PLUGINS_PATH
+    #copy requirements from conda
+    cp $WORKFLOW_REQUIREMENTS_SOURCE_PATH $WORKFLOW_REQUIREMENTS_PATH
+    
+    # Copy system startup
+    cp /etc/sagemaker-ui/workflows/startup/startup.sh $WORKFLOW_STARTUP_PATH
+fi
 
-# Append user's custom startup script, if exists
+# Add user's custom startup script, if exists
 if [ -f $USER_STARTUP_FILE ]; then
-    tail -n +2 $USER_STARTUP_FILE >> "${WORKFLOW_STARTUP_PATH}startup.sh"
+    if [ $V2_CONFIG_ENABLED = "True" ]; then
+        cp $USER_STARTUP_FILE "${WORKFLOW_PLUGINS_PATH}/user-startup.sh"
+    else
+        tail -n +2 $USER_STARTUP_FILE >> "${WORKFLOW_STARTUP_PATH}startup.sh"
+    fi
 else
     # Give the user a template startup script
     echo "#!/bin/bash" > "${USER_STARTUP_FILE}"
@@ -154,9 +173,13 @@ else
     echo "# pip install dbt-core" >> "${USER_STARTUP_FILE}"
 fi
 
-# Append user's custom requirements, if exists
+# Add user's custom requirements, if exists
 if [ -f $USER_REQUIREMENTS_FILE ]; then
-    cat $USER_REQUIREMENTS_FILE >> "${WORKFLOW_REQUIREMENTS_PATH}requirements.txt"
+    if [ $V2_CONFIG_ENABLED = "True" ]; then
+        cp $USER_REQUIREMENTS_FILE "${WORKFLOW_PLUGINS_PATH}/user-requirements.txt"
+    else
+        cat $USER_REQUIREMENTS_FILE >> "${WORKFLOW_REQUIREMENTS_PATH}requirements.txt"
+    fi
 else
     # Give the user a template requirements.txt file
     echo "# Place any requirements you'd like included in your workflows environment here" > "${USER_REQUIREMENTS_FILE}"
