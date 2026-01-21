@@ -18,6 +18,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v4
+        with:
+            fetch-depth: 0
       - uses: mamba-org/setup-micromamba@v2
         with:
           environment-file: ./environment.yml
@@ -28,9 +30,40 @@ jobs:
       - name: Run sagemaker-distribution unit tests to check for regressions
         run: pytest -m unit
       - name: Commit changes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
+          BRANCH_NAME=environment-lock-bot
+          # Check if branch exists remotely
+          if git ls-remote --heads origin $BRANCH_NAME | grep -q $BRANCH_NAME; then
+            echo "Branch exists, checking out and updating"
+            git checkout $BRANCH_NAME
+            git pull origin $BRANCH_NAME
+            # Merge main to get latest changes
+            git merge origin/main --no-edit
+          else
+            echo "Creating new branch"
+            git checkout -b $BRANCH_NAME
+          fi
+          # Check if there are changes to commit
+          if git diff --quiet environment.lock; then
+            echo "No changes to environment.lock file"
+            exit 0
+          fi
           git add environment.lock
           git commit -m 'Update environment.lock'
-          git push
+          git push origin $BRANCH_NAME
+
+          # Create PR if it doesn't exist
+          if ! gh pr list --head $BRANCH_NAME --json number | grep -q "number"; then
+            gh pr create \
+              --title "Update environment.lock" \
+              --body "Automated update of environment.lock file" \
+              --base main \
+              --head $BRANCH_NAME \
+              --label "dependencies"
+          else
+            echo "PR already exists, skipping creation"
+          fi
