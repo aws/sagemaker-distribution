@@ -115,8 +115,8 @@ jobs:
         with:
           role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
           aws-region: us-east-1
-          # CodeBuild timeout of 8 hours
-          role-duration-seconds: 28800
+          # CodeBuild timeout of 12 hours
+          role-duration-seconds: 43200
           audience: https://sts.us-east-1.amazonaws.com
       - name: Run CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
