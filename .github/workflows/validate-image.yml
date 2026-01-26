@@ -84,7 +84,7 @@ jobs:
       - name: Run CodeBuild
         uses: aws-actions/aws-codebuild-run-build@v1
         with:
-          project-name: ${{ secrets.CODEBUILD_JOB_NAME }}
+          project-name: ${{ secrets.CODEBUILD_VALIDATION_JOB_NAME }}
           image-override: "aws/codebuild/standard:7.0"
           image-pull-credentials-type-override: "CODEBUILD"
           source-version-override: "pr/${{ needs.validate-pr.outputs.pr_id }}"
