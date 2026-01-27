@@ -4,6 +4,7 @@ import copy
 import glob
 import os
 import shutil
+from concurrent.futures import ThreadPoolExecutor, as_completed
 
 import boto3
 import docker
@@ -258,6 +259,68 @@ def _get_config_for_image(target_version_dir: str, image_generator_config, force
     return config_for_image
 
 
+def _build_single_image(
+    image_generator_config: dict,
+    target_version: Version,
+    target_version_dir: str,
+    target_ecr_repo_list: list[str],
+    force: bool,
+):
+    """Build a single image type and generate reports."""
+    config = _get_config_for_image(target_version_dir, image_generator_config, force)
+    image_type = config["image_type"]
+    config["build_args"]["IMAGE_VERSION"] = config["image_tag_generator"].format(image_version=str(target_version))
+    
+    if glob.glob(os.path.join(target_version_dir, "*.patch")):
+        dockerfile = f"./Dockerfile-{image_type}.patch"
+    else:
+        dockerfile = "./Dockerfile"
+    
+    try:
+        image, log_gen = _docker_client.images.build(
+            path=target_version_dir, dockerfile=dockerfile, rm=True, pull=True, buildargs=config["build_args"]
+        )
+    except BuildError as e:
+        for line in e.build_log:
+            if "stream" in line:
+                print(line["stream"].strip())
+        raise
+    
+    print(f"Successfully built an image {image} with id: {image.id}, image type: {image_type}")
+    
+    try:
+        container_logs = _docker_client.containers.run(
+            image=image.id, detach=False, auto_remove=True, command="micromamba env export --explicit"
+        )
+        container_logs = post_handle_container_log(container_logs)
+    except ContainerError as e:
+        print(e.container.logs().decode("utf-8"))
+        raise
+    
+    with open(f'{target_version_dir}/{config["env_out_filename"]}', "wb") as f:
+        f.write(container_logs)
+    print(f"Write env.out file successfully for image {image.id}, image type: {image_type}")
+    
+    generate_change_log(target_version, image_generator_config)
+    print(f"Generated CHANGELOG-{image_type} file successfully for image {image.id}")
+    
+    version_tags_to_apply = _get_version_tags(target_version, config["env_out_filename"])
+    image_tags_to_apply = [config["image_tag_generator"].format(image_version=i) for i in version_tags_to_apply]
+    
+    image_versions = []
+    if target_ecr_repo_list is not None:
+        for target_ecr_repo in target_ecr_repo_list:
+            for t in image_tags_to_apply:
+                image.tag(target_ecr_repo, tag=t)
+                image_versions.append({"repository": target_ecr_repo, "tag": t})
+    
+    image.tag(
+        "localhost/sagemaker-distribution", config["image_tag_generator"].format(image_version=str(target_version))
+    )
+    
+    return image.id, image_versions
+
+
 # Returns a tuple of: 1/ list of actual images generated; 2/ list of tagged images. A given image can be tagged by
 # multiple different strings - for e.g., a CPU image can be tagged as '1.3.2-cpu', '1.3-cpu', '1-cpu' and/or
 # 'latest-cpu'. Therefore, (1) is strictly a subset of (2).
@@ -265,64 +328,29 @@ def _build_local_images(
     target_version: Version, target_ecr_repo_list: list[str], force: bool, skip_tests=False
 ) -> (list[str], list[dict[str, str]]):
     target_version_dir = get_dir_for_version(target_version)
-
     generated_image_ids = []
     generated_image_versions = []
-
-    for image_generator_config in _image_generator_configs[target_version.major]:
-        config = _get_config_for_image(target_version_dir, image_generator_config, force)
-        image_type = config["image_type"]
-        config["build_args"]["IMAGE_VERSION"] = config["image_tag_generator"].format(image_version=str(target_version))
-        if glob.glob(os.path.join(target_version_dir, "*.patch")):
-            # Minimal patch build, use .patch Dockerfiles
-            dockerfile = f"./Dockerfile-{image_type}.patch"
-        else:
-            dockerfile = "./Dockerfile"
-        try:
-            image, log_gen = _docker_client.images.build(
-                path=target_version_dir, dockerfile=dockerfile, rm=True, pull=True, buildargs=config["build_args"]
-            )
-        except BuildError as e:
-            for line in e.build_log:
-                if "stream" in line:
-                    print(line["stream"].strip())
-            # After printing the logs, raise the exception (which is the old behavior)
-            raise
-        print(f"Successfully built an image {image} with id: {image.id}, image type: {image_type}")
-        generated_image_ids.append(image.id)
-        try:
-            container_logs = _docker_client.containers.run(
-                image=image.id, detach=False, auto_remove=True, command="micromamba env export --explicit"
-            )
-            container_logs = post_handle_container_log(container_logs)
-        except ContainerError as e:
-            print(e.container.logs().decode("utf-8"))
-            # After printing the logs, raise the exception (which is the old behavior)
-            raise e
-
-        with open(f'{target_version_dir}/{config["env_out_filename"]}', "wb") as f:
-            f.write(container_logs)
-        print(f"Write env.out file successfully for image {image.id}, image type: {image_type}")
-
-        # Generate change logs. Use the original image generator config which contains the name
-        # of the actual env.in file instead of the 'config'.
-        generate_change_log(target_version, image_generator_config)
-        print(f"Generated CHANGELOG-{image_type} file successfully for image {image.id}")
-
-        version_tags_to_apply = _get_version_tags(target_version, config["env_out_filename"])
-        image_tags_to_apply = [config["image_tag_generator"].format(image_version=i) for i in version_tags_to_apply]
-
-        if target_ecr_repo_list is not None:
-            for target_ecr_repo in target_ecr_repo_list:
-                for t in image_tags_to_apply:
-                    image.tag(target_ecr_repo, tag=t)
-                    generated_image_versions.append({"repository": target_ecr_repo, "tag": t})
-
-        # Tag the image for testing
-        image.tag(
-            "localhost/sagemaker-distribution", config["image_tag_generator"].format(image_version=str(target_version))
-        )
-
+    
+    configs = _image_generator_configs[target_version.major]
+    
+    with ThreadPoolExecutor(max_workers=len(configs)) as executor:
+        wait_for_single_image_build = {
+            executor.submit(
+                _build_single_image, config, target_version, target_version_dir, target_ecr_repo_list, force
+            ): config["image_type"]
+            for config in configs
+        }
+        
+        for future in as_completed(wait_for_single_image_build):
+            image_type = wait_for_single_image_build[future]
+            try:
+                image_id, image_versions = future.result()
+                generated_image_ids.append(image_id)
+                generated_image_versions.extend(image_versions)
+            except Exception as exc:
+                print(f"Image build for {image_type} generated an exception: {exc}")
+                raise
+    
     return generated_image_ids, generated_image_versions
 
 
