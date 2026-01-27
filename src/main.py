@@ -270,12 +270,12 @@ def _build_single_image(
     config = _get_config_for_image(target_version_dir, image_generator_config, force)
     image_type = config["image_type"]
     config["build_args"]["IMAGE_VERSION"] = config["image_tag_generator"].format(image_version=str(target_version))
-    
+
     if glob.glob(os.path.join(target_version_dir, "*.patch")):
         dockerfile = f"./Dockerfile-{image_type}.patch"
     else:
         dockerfile = "./Dockerfile"
-    
+
     try:
         image, log_gen = _docker_client.images.build(
             path=target_version_dir, dockerfile=dockerfile, rm=True, pull=True, buildargs=config["build_args"]
@@ -285,9 +285,9 @@ def _build_single_image(
             if "stream" in line:
                 print(line["stream"].strip())
         raise
-    
+
     print(f"Successfully built an image {image} with id: {image.id}, image type: {image_type}")
-    
+
     try:
         container_logs = _docker_client.containers.run(
             image=image.id, detach=False, auto_remove=True, command="micromamba env export --explicit"
@@ -296,28 +296,28 @@ def _build_single_image(
     except ContainerError as e:
         print(e.container.logs().decode("utf-8"))
         raise
-    
+
     with open(f'{target_version_dir}/{config["env_out_filename"]}', "wb") as f:
         f.write(container_logs)
     print(f"Write env.out file successfully for image {image.id}, image type: {image_type}")
-    
+
     generate_change_log(target_version, image_generator_config)
     print(f"Generated CHANGELOG-{image_type} file successfully for image {image.id}")
-    
+
     version_tags_to_apply = _get_version_tags(target_version, config["env_out_filename"])
     image_tags_to_apply = [config["image_tag_generator"].format(image_version=i) for i in version_tags_to_apply]
-    
+
     image_versions = []
     if target_ecr_repo_list is not None:
         for target_ecr_repo in target_ecr_repo_list:
             for t in image_tags_to_apply:
                 image.tag(target_ecr_repo, tag=t)
                 image_versions.append({"repository": target_ecr_repo, "tag": t})
-    
+
     image.tag(
         "localhost/sagemaker-distribution", config["image_tag_generator"].format(image_version=str(target_version))
     )
-    
+
     return image.id, image_versions
 
 
@@ -330,9 +330,9 @@ def _build_local_images(
     target_version_dir = get_dir_for_version(target_version)
     generated_image_ids = []
     generated_image_versions = []
-    
+
     configs = _image_generator_configs[target_version.major]
-    
+
     with ThreadPoolExecutor(max_workers=len(configs)) as executor:
         wait_for_single_image_build = {
             executor.submit(
@@ -340,7 +340,7 @@ def _build_local_images(
             ): config["image_type"]
             for config in configs
         }
-        
+
         for future in as_completed(wait_for_single_image_build):
             image_type = wait_for_single_image_build[future]
             try:
@@ -350,7 +350,7 @@ def _build_local_images(
             except Exception as exc:
                 print(f"Image build for {image_type} generated an exception: {exc}")
                 raise
-    
+
     return generated_image_ids, generated_image_versions
 
 
