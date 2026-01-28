@@ -99,7 +99,7 @@ fi
 response_body=$(echo "$domain_response" | grep -A1 "Response body:" | tail -n1 | sed 's/^b'\''//;s/'\''$//')
 # Remove leading/trailing whitespace and the 'b' prefix
 cleaned_response=$(echo "$response_body" | sed 's/\\n//g')
-is_express_mode=$(echo "$cleaned_response" | jq -r '.preferences.DOMAIN_MODE == "EXPRESS"')
+is_express_mode=$(echo "$cleaned_response" | jq -r '((.preferences.DOMAIN_MODE // null) == "EXPRESS") or ((.domainVersion // null) == "V2" and ((.iamSignIns // []) | contains(["IAM_ROLE"]) and contains(["IAM_USER"])))')
 
 if [ "$is_express_mode" = "true" ]; then
     echo "Domain is in express mode. Using default credentials"
@@ -415,7 +415,7 @@ nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 # Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab and domain is not in express mode
 if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" != "true" ]; then
     # clean up gen ai debugging file
-    rm -rf /home/sagemaker-user/src/.temp_sagemaker_unified_studio_debugging_info
+    rm -rf "$SMUS_PROJECT_DIR/.temp_sagemaker_unified_studio_debugging_info"
     # do not fail immediately for non-zero exit code returned
     # by start-workflows-container. An expected non-zero exit
     # code will be returned if there is not a minimum of 2
