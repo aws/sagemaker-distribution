@@ -109,4 +109,32 @@ _image_generator_configs = {
             "image_type": "cpu",
         },
     ],
+    4: [
+        {
+            "build_args": {
+                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "cuda12.9.1-ubuntu24.04",
+                "CUDA_MAJOR_MINOR_VERSION": "12.9",
+                "ENV_IN_FILENAME": "gpu.env.in",
+                "PINNED_ENV_IN_FILENAME": "gpu.pinned_env.in",
+                "ARG_BASED_ENV_IN_FILENAME": "gpu.arg_based_env.in",
+            },
+            "additional_packages_env_in_file": "gpu.additional_packages_env.in",
+            "image_tag_generator": "{image_version}-gpu",
+            "env_out_filename": "gpu.env.out",
+            "pytest_flags": ["--use-gpu"],
+            "image_type": "gpu",
+        },
+        {
+            "build_args": {
+                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "ubuntu24.04",
+                "ENV_IN_FILENAME": "cpu.env.in",
+                "PINNED_ENV_IN_FILENAME": "cpu.pinned_env.in",
+            },
+            "additional_packages_env_in_file": "cpu.additional_packages_env.in",
+            "image_tag_generator": "{image_version}-cpu",
+            "env_out_filename": "cpu.env.out",
+            "pytest_flags": [],
+            "image_type": "cpu",
+        },
+    ],
 }
