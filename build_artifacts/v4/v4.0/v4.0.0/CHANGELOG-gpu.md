@@ -7,14 +7,15 @@ Package | Previous Version | Current Version
 python|3.12.9|3.12.12
 altair|5.5.0|6.0.0
 boto3|1.37.3|1.40.70
-jupyterlab|4.4.10|4.5.2
+jupyterlab|4.4.10|4.5.3
 amazon-sagemaker-jupyter-ai-q-developer|1.2.8|1.2.9
 amazon-sagemaker-jupyter-scheduler|3.1.15|3.1.16
 amazon_sagemaker_sql_editor|0.1.19|0.1.20
-notebook|7.4.7|7.5.2
+autogluon|1.4.0|1.5.0
+notebook|7.4.7|7.5.3
 aws-s3-access-grants-boto3-plugin|1.2.0|1.3.0
 conda|25.11.0|25.11.1
-docker-cli|27.5.1|29.1.4
+docker-cli|27.5.1|29.2.0
 uvicorn|0.38.0|0.40.0
 fastapi|0.124.4|0.128.0
 jupyter-collaboration|3.1.2|4.2.0
@@ -31,4 +32,4 @@ sagemaker-studio-analytics-extension|0.2.2|0.2.4
 sagemaker-studio-dataengineering-extensions|1.3.3|1.3.4
 sagemaker-studio-dataengineering-sessions|1.3.11|1.3.12
 supervisor|4.2.5|4.3.0
-uv|0.9.17|0.9.26
+uv|0.9.17|0.9.27
