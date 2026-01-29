@@ -1,4 +1,4 @@
-# Change log: 4.0.0(cpu)
+# Change log: 4.0.0(gpu)
 
 ## Upgrades: 
 
