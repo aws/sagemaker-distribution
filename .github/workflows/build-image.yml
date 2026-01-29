@@ -127,7 +127,7 @@ jobs:
           source-version-override: "pr/${{ needs.open-pr.outputs.pr_id }}"
   call-reports-generate-codebuild-project:
     runs-on: ubuntu-latest
-    needs: call-codebuild-project
+    needs: [call-codebuild-project, open-pr]
     permissions:
       pull-requests: write
       contents: write
@@ -150,7 +150,7 @@ jobs:
           source-version-override: "pr/${{ needs.open-pr.outputs.pr_id }}"
   call-cpu-test-codebuild-project:
     runs-on: ubuntu-latest
-    needs: call-codebuild-project
+    needs: [call-codebuild-project, open-pr]
     permissions:
       pull-requests: write
       contents: write
@@ -173,7 +173,7 @@ jobs:
           source-version-override: "pr/${{ needs.open-pr.outputs.pr_id }}"
   call-gpu-test-codebuild-project:
     runs-on: ubuntu-latest
-    needs: call-codebuild-project
+    needs: [call-codebuild-project, open-pr]
     permissions:
       pull-requests: write
       contents: write
@@ -194,4 +194,3 @@ jobs:
           image-override: "aws/codebuild/standard:7.0"
           image-pull-credentials-type-override: "CODEBUILD"
           source-version-override: "pr/${{ needs.open-pr.outputs.pr_id }}"
-
