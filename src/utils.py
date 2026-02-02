@@ -105,25 +105,19 @@ def conda_search_with_retry(command, package, max_retries=5, base_delay=1):
     """
     for attempt in range(max_retries):
         try:
-            search_result = subprocess.run(
-                command,
-                capture_output=True,
-                text=True,
-                check=True,
-                timeout=60
-            )
+            search_result = subprocess.run(command, capture_output=True, text=True, check=True, timeout=60)
             return search_result
         except subprocess.TimeoutExpired:
             if attempt == max_retries - 1:
                 print(f"Timeout searching for package {package} after {max_retries} attempts, ignore.")
                 return None
-            delay = base_delay * (2 ** attempt)
+            delay = base_delay * (2**attempt)
             time.sleep(delay)
         except subprocess.CalledProcessError as e:
             if attempt == max_retries - 1:
                 print(f"Error searching for package {package} after {max_retries} attempts: {str(e)}")
                 return None
-            delay = base_delay * (2 ** attempt)
+            delay = base_delay * (2**attempt)
             time.sleep(delay)
     return None
 
@@ -134,13 +128,13 @@ def _search_single_package(package: str, match_spec_out) -> Tuple[str, Optional[
     """
     package_version = str(match_spec_out.get("version")).removeprefix("==")
     channel = match_spec_out.get("channel").channel_name
-    
+
     command = ["conda", "search", "-c", channel, f"{package}=={package_version}", "--json"]
-    
+
     search_result = conda_search_with_retry(command, package)
     if search_result is None:
         return package, None
-    
+
     try:
         package_metadata = json.loads(search_result.stdout)[package][0]
         result = {"version": package_metadata["version"], "size": package_metadata["size"]}
@@ -161,24 +155,25 @@ def pull_conda_package_metadata(image_config, image_artifact_dir, max_workers: i
     target_packages_match_spec_out = {k: v for k, v in match_spec_out.items()}
 
     conda_forge_packages = [
-        (package, match_spec_out) for package, match_spec_out in target_packages_match_spec_out.items()
+        (package, match_spec_out)
+        for package, match_spec_out in target_packages_match_spec_out.items()
         if str(match_spec_out).startswith("conda-forge")
     ]
-    
+
     if not conda_forge_packages:
         print("No conda-forge packages found")
         return results
-    
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_package = {
             executor.submit(_search_single_package, package, match_spec): package
             for package, match_spec in conda_forge_packages
         }
-        
+
         completed = 0
         for future in as_completed(future_to_package):
             completed += 1
-            
+
             try:
                 package_name, package_metadata = future.result()
                 if package_metadata:
@@ -186,7 +181,7 @@ def pull_conda_package_metadata(image_config, image_artifact_dir, max_workers: i
 
             except Exception as e:
                 print(f"Unexpected error processing package: {e}")
-    
+
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1]["size"], reverse=True)}
 
     return results
