@@ -32,30 +32,30 @@ def _search_package_upstream_version(package, match_spec_out, target_version):
     """
     is_major_version_release = target_version.minor == 0 and target_version.patch == 0
     is_minor_version_release = target_version.patch == 0 and not is_major_version_release
-    
+
     package_version = str(match_spec_out.get("version")).removeprefix("==")
     try:
         package_version = get_semver(package_version)
     except ValueError:
         print(f"Skipping package {package} with non-semver version: {package_version}")
         return package, None
-        
+
     channel = match_spec_out.get("channel").channel_name
     subdir_filter = "[subdir=" + match_spec_out.get("subdir") + "]"
-    
+
     search_query = f"{channel}::{package}>={str(package_version)}{subdir_filter}"
     command = ["conda", "search", search_query, "--json"]
-    
+
     search_result = conda_search_with_retry(command, package)
     if search_result is None:
         return package, None
-    
+
     try:
         package_metadata = json.loads(search_result.stdout)[package]
     except (json.JSONDecodeError, KeyError) as e:
         print(f"Error parsing search result for package {package}: {str(e)}")
         return package, None
-    
+
     # Response is of the structure
     # { 'package_name': [{'url':<someurl>, 'dependencies': <List of dependencies>, 'version':
     # <version number>}, ..., {'url':<someurl>, 'dependencies': <List of dependencies>, 'version':
@@ -82,11 +82,11 @@ def _search_package_dependency(package, version):
     Search for a single package's dependency information using conda search with retry logic
     """
     command = ["conda", "search", "-c", "conda-forge", f"{package}=={version}", "--json"]
-    
+
     search_result = conda_search_with_retry(command, package, max_retries=3, base_delay=0.5)
     if search_result is None:
         return package, "N/A - search failed after retries"
-    
+
     try:
         package_metadata = json.loads(search_result.stdout)[package][0]
         return package, {"version": package_metadata["version"], "depends": package_metadata["depends"]}
@@ -95,33 +95,34 @@ def _search_package_dependency(package, version):
         return package, "N/A - parse error"
 
 
-def _get_package_versions_in_upstream(target_packages_match_spec_out, target_version, max_workers: int = 20) -> dict[str, str]:
+def _get_package_versions_in_upstream(
+    target_packages_match_spec_out, target_version, max_workers: int = 20
+) -> dict[str, str]:
     """
     Get package versions in upstream using parallel conda search calls for improved performance.
-    This function preserves the original logic for determining latest relevant versions based on 
+    This function preserves the original logic for determining latest relevant versions based on
     major/minor/patch release types.
     """
     package_to_version_mapping = {}
-    
+
     tasks = [
-        (package, match_spec_out, target_version)
-        for package, match_spec_out in target_packages_match_spec_out.items()
+        (package, match_spec_out, target_version) for package, match_spec_out in target_packages_match_spec_out.items()
     ]
-    
+
     if not tasks:
         print("No packages to search")
         return package_to_version_mapping
-        
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_package = {
             executor.submit(_search_package_upstream_version, package, match_spec_out, target_version): package
             for package, match_spec_out, target_version in tasks
         }
-        
+
         completed = 0
         for future in as_completed(future_to_package):
             completed += 1
-            
+
             try:
                 package_name, package_version = future.result()
                 if package_version:
@@ -129,7 +130,7 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
 
             except Exception as e:
                 print(f"Unexpected error processing package upstream version: {e}")
-    
+
     return package_to_version_mapping
 
 
@@ -330,7 +331,9 @@ def _generate_python_package_size_report_per_image(
     return validate_result
 
 
-def _generate_python_package_dependency_report(image_config, base_version_dir, target_version_dir, max_workers: int = 20):
+def _generate_python_package_dependency_report(
+    image_config, base_version_dir, target_version_dir, max_workers: int = 20
+):
     """
     Generate dependency report for newly introduced packages using parallel conda search calls for improved performance.
     """
@@ -338,30 +341,30 @@ def _generate_python_package_dependency_report(image_config, base_version_dir, t
     _, new_packages = derive_changeset(target_version_dir, base_version_dir, image_config)
 
     results = dict()
-    
+
     if not new_packages:
         print("No new packages found for dependency report")
         return
-    
+
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
         future_to_package = {
             executor.submit(_search_package_dependency, package, version): package
             for package, version in new_packages.items()
         }
-        
+
         completed = 0
         for future in as_completed(future_to_package):
             completed += 1
-            
+
             try:
                 package_name, package_info = future.result()
                 results[package_name] = package_info
 
             except Exception as e:
                 print(f"Unexpected error processing package dependency: {e}")
-    
+
     valid_results = {k: v for k, v in results.items() if isinstance(v, dict) and "version" in v and "depends" in v}
-    
+
     print(
         create_markdown_table(
             ["Package", "Version in the Target Image", "Dependencies"],
