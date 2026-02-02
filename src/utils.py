@@ -1,6 +1,8 @@
 import json
 import os
 import subprocess
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict, Optional, Tuple
 
 from conda.env.specs.requirements import RequirementsSpec
 from conda.exceptions import PackagesNotFoundError
@@ -96,31 +98,73 @@ def create_markdown_table(headers, rows):
     return markdowntable
 
 
-def pull_conda_package_metadata(image_config, image_artifact_dir):
+def _search_single_package(package: str, match_spec_out) -> Tuple[str, Optional[Dict]]:
+    """
+    Search for a single package metadata using conda search
+    """
+    try:
+        # Use a simpler search approach that works better with subprocess
+        package_version = str(match_spec_out.get("version")).removeprefix("==")
+        channel = match_spec_out.get("channel").channel_name
+        
+        # Search for exact version match for metadata
+        search_result = subprocess.run(
+            ["conda", "search", "-c", channel, f"{package}=={package_version}", "--json"],
+            capture_output=True, 
+            text=True, 
+            check=True,
+            timeout=60  # Increased timeout for stability
+        )
+        package_metadata = json.loads(search_result.stdout)[package][0]
+        result = {"version": package_metadata["version"], "size": package_metadata["size"]}
+        return package, result
+    except Exception as e:
+        print(f"Error searching for package {package}: {str(e)}")
+        return package, None
+
+
+def pull_conda_package_metadata(image_config, image_artifact_dir, max_workers: int = 20):
+    """
+    Pull conda package metadata using parallel conda search calls for improved performance
+    """
     results = dict()
     env_out_file_name = image_config["env_out_filename"]
     match_spec_out = get_match_specs(image_artifact_dir + "/" + env_out_file_name)
 
     target_packages_match_spec_out = {k: v for k, v in match_spec_out.items()}
 
-    for package, match_spec_out in target_packages_match_spec_out.items():
-        if str(match_spec_out).startswith("conda-forge"):
-            # Pull package metadata from conda-forge and dump into json file
+    # Filter for conda-forge packages only
+    conda_forge_packages = [
+        (package, match_spec_out) for package, match_spec_out in target_packages_match_spec_out.items()
+        if str(match_spec_out).startswith("conda-forge")
+    ]
+    
+    if not conda_forge_packages:
+        print("No conda-forge packages found")
+        return results
+    
+    # Use ThreadPoolExecutor for parallel conda search calls
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit all search tasks
+        future_to_package = {
+            executor.submit(_search_single_package, package, match_spec): package
+            for package, match_spec in conda_forge_packages
+        }
+        
+        # Collect results as they complete
+        completed = 0
+        for future in as_completed(future_to_package):
+            completed += 1
+            
             try:
-                search_result = subprocess.run(
-                    ["conda", "search", str(match_spec_out), "--json"], capture_output=True, text=True, check=True
-                )
-                package_metadata = json.loads(search_result.stdout)[package][0]
-                results[package] = {"version": package_metadata["version"], "size": package_metadata["size"]}
-            except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError, IndexError) as e:
-                print(
-                    f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Error: {str(e)}"
-                )
-            except PackagesNotFoundError:
-                print(
-                    f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Potentially this package is broken."
-                )
-    # Sort the pakcage sizes in decreasing order
+                package_name, package_metadata = future.result()
+                if package_metadata:
+                    results[package_name] = package_metadata
+
+            except Exception as e:
+                print(f"Unexpected error processing package: {e}")
+    
+    # Sort the package sizes in decreasing order
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1]["size"], reverse=True)}
 
     return results
