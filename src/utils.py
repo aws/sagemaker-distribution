@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, Optional, Tuple
 
@@ -98,28 +99,57 @@ def create_markdown_table(headers, rows):
     return markdowntable
 
 
+def conda_search_with_retry(command, package, max_retries=5, base_delay=1):
+    """
+    Retry conda search command with exponential backoff for utils
+    """
+    for attempt in range(max_retries):
+        try:
+            search_result = subprocess.run(
+                command,
+                capture_output=True,
+                text=True,
+                check=True,
+                timeout=60
+            )
+            return search_result
+        except subprocess.TimeoutExpired:
+            if attempt == max_retries - 1:
+                print(f"Timeout searching for package {package} after {max_retries} attempts, ignore.")
+                return None
+            delay = base_delay * (2 ** attempt)
+            time.sleep(delay)
+        except subprocess.CalledProcessError as e:
+            if attempt == max_retries - 1:
+                print(f"Error searching for package {package} after {max_retries} attempts: {str(e)}")
+                return None
+            delay = base_delay * (2 ** attempt)
+            time.sleep(delay)
+    return None
+
+
 def _search_single_package(package: str, match_spec_out) -> Tuple[str, Optional[Dict]]:
     """
-    Search for a single package metadata using conda search
+    Search for a single package metadata using conda search with retry logic
     """
+    # Use a simpler search approach that works better with subprocess
+    package_version = str(match_spec_out.get("version")).removeprefix("==")
+    channel = match_spec_out.get("channel").channel_name
+    
+    # Search for exact version match for metadata
+    command = ["conda", "search", "-c", channel, f"{package}=={package_version}", "--json"]
+    
+    # Use retry logic for robustness
+    search_result = conda_search_with_retry(command, package)
+    if search_result is None:
+        return package, None
+    
     try:
-        # Use a simpler search approach that works better with subprocess
-        package_version = str(match_spec_out.get("version")).removeprefix("==")
-        channel = match_spec_out.get("channel").channel_name
-        
-        # Search for exact version match for metadata
-        search_result = subprocess.run(
-            ["conda", "search", "-c", channel, f"{package}=={package_version}", "--json"],
-            capture_output=True, 
-            text=True, 
-            check=True,
-            timeout=60  # Increased timeout for stability
-        )
         package_metadata = json.loads(search_result.stdout)[package][0]
         result = {"version": package_metadata["version"], "size": package_metadata["size"]}
         return package, result
-    except Exception as e:
-        print(f"Error searching for package {package}: {str(e)}")
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        print(f"Error parsing search result for package {package}: {str(e)}")
         return package, None
 
 

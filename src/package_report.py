@@ -1,6 +1,7 @@
 import json
 import os
 import subprocess
+import time
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
@@ -14,6 +15,7 @@ from dateutil.relativedelta import relativedelta
 from config import _image_generator_configs
 from dependency_upgrader import _dependency_metadata
 from utils import (
+    conda_search_with_retry,
     create_markdown_table,
     derive_changeset,
     get_dir_for_version,
@@ -26,7 +28,7 @@ from utils import (
 
 def _search_package_upstream_version(package, match_spec_out, target_version):
     """
-    Search for a single package's upstream version using conda search
+    Search for a single package's upstream version using conda search with retry logic
     """
     is_major_version_release = target_version.minor == 0 and target_version.patch == 0
     is_minor_version_release = target_version.patch == 0 and not is_major_version_release
@@ -41,23 +43,20 @@ def _search_package_upstream_version(package, match_spec_out, target_version):
     channel = match_spec_out.get("channel").channel_name
     subdir_filter = "[subdir=" + match_spec_out.get("subdir") + "]"
     
+    # Construct the search query without shell=True to avoid quoting issues
+    search_query = f"{channel}::{package}>={str(package_version)}{subdir_filter}"
+    command = ["conda", "search", search_query, "--json"]
+    
+    # Use retry logic for robustness
+    search_result = conda_search_with_retry(command, package)
+    if search_result is None:
+        return package, None
+    
     try:
-        # Construct the search query without shell=True to avoid quoting issues
-        search_query = f"{channel}::{package}>={str(package_version)}{subdir_filter}"
-        search_result = subprocess.run(
-            ["conda", "search", search_query, "--json"],
-            capture_output=True,
-            text=True,
-            check=True,
-            timeout=60  # Increased timeout for stability
-        )
         # Load the result as json
         package_metadata = json.loads(search_result.stdout)[package]
-    except subprocess.TimeoutExpired:
-        print(f"Timeout searching for upstream version of {package}, ignore.")
-        return package, None
-    except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError) as e:
-        print(f"Error searching for package {package}: {str(e)}")
+    except (json.JSONDecodeError, KeyError) as e:
+        print(f"Error parsing search result for package {package}: {str(e)}")
         return package, None
     
     # Response is of the structure
@@ -83,25 +82,21 @@ def _search_package_upstream_version(package, match_spec_out, target_version):
 
 def _search_package_dependency(package, version):
     """
-    Search for a single package's dependency information using conda search
+    Search for a single package's dependency information using conda search with retry logic
     """
+    command = ["conda", "search", "-c", "conda-forge", f"{package}=={version}", "--json"]
+    
+    # Use retry logic for robustness
+    search_result = conda_search_with_retry(command, package, max_retries=3, base_delay=0.5)
+    if search_result is None:
+        return package, "N/A - search failed after retries"
+    
     try:
-        # Pull package metadata from conda-forge and dump into json file
-        search_result = subprocess.run(
-            ["conda", "search", "-c", "conda-forge", f"{package}=={version}", "--json"],
-            capture_output=True,
-            text=True,
-            check=True,
-            timeout=30  # Add timeout to prevent hanging
-        )
         package_metadata = json.loads(search_result.stdout)[package][0]
         return package, {"version": package_metadata["version"], "depends": package_metadata["depends"]}
-    except subprocess.TimeoutExpired:
-        print(f"Timeout searching for dependencies of {package}=={version}, ignore.")
-        return package, "N/A - timeout"
-    except Exception as e:
-        print(f"Error in dependency search for {package}=={version}: {str(e)}")
-        return package, "N/A - see logs"
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        print(f"Error parsing dependency search result for {package}=={version}: {str(e)}")
+        return package, "N/A - parse error"
 
 
 def _get_package_versions_in_upstream(target_packages_match_spec_out, target_version, max_workers: int = 20) -> dict[str, str]:
