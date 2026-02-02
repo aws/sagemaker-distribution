@@ -132,14 +132,11 @@ def _search_single_package(package: str, match_spec_out) -> Tuple[str, Optional[
     """
     Search for a single package metadata using conda search with retry logic
     """
-    # Use a simpler search approach that works better with subprocess
     package_version = str(match_spec_out.get("version")).removeprefix("==")
     channel = match_spec_out.get("channel").channel_name
     
-    # Search for exact version match for metadata
     command = ["conda", "search", "-c", channel, f"{package}=={package_version}", "--json"]
     
-    # Use retry logic for robustness
     search_result = conda_search_with_retry(command, package)
     if search_result is None:
         return package, None
@@ -163,7 +160,6 @@ def pull_conda_package_metadata(image_config, image_artifact_dir, max_workers: i
 
     target_packages_match_spec_out = {k: v for k, v in match_spec_out.items()}
 
-    # Filter for conda-forge packages only
     conda_forge_packages = [
         (package, match_spec_out) for package, match_spec_out in target_packages_match_spec_out.items()
         if str(match_spec_out).startswith("conda-forge")
@@ -173,15 +169,12 @@ def pull_conda_package_metadata(image_config, image_artifact_dir, max_workers: i
         print("No conda-forge packages found")
         return results
     
-    # Use ThreadPoolExecutor for parallel conda search calls
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit all search tasks
         future_to_package = {
             executor.submit(_search_single_package, package, match_spec): package
             for package, match_spec in conda_forge_packages
         }
         
-        # Collect results as they complete
         completed = 0
         for future in as_completed(future_to_package):
             completed += 1
@@ -194,7 +187,6 @@ def pull_conda_package_metadata(image_config, image_artifact_dir, max_workers: i
             except Exception as e:
                 print(f"Unexpected error processing package: {e}")
     
-    # Sort the package sizes in decreasing order
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1]["size"], reverse=True)}
 
     return results

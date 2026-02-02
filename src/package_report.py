@@ -43,17 +43,14 @@ def _search_package_upstream_version(package, match_spec_out, target_version):
     channel = match_spec_out.get("channel").channel_name
     subdir_filter = "[subdir=" + match_spec_out.get("subdir") + "]"
     
-    # Construct the search query without shell=True to avoid quoting issues
     search_query = f"{channel}::{package}>={str(package_version)}{subdir_filter}"
     command = ["conda", "search", search_query, "--json"]
     
-    # Use retry logic for robustness
     search_result = conda_search_with_retry(command, package)
     if search_result is None:
         return package, None
     
     try:
-        # Load the result as json
         package_metadata = json.loads(search_result.stdout)[package]
     except (json.JSONDecodeError, KeyError) as e:
         print(f"Error parsing search result for package {package}: {str(e)}")
@@ -86,7 +83,6 @@ def _search_package_dependency(package, version):
     """
     command = ["conda", "search", "-c", "conda-forge", f"{package}=={version}", "--json"]
     
-    # Use retry logic for robustness
     search_result = conda_search_with_retry(command, package, max_retries=3, base_delay=0.5)
     if search_result is None:
         return package, "N/A - search failed after retries"
@@ -107,7 +103,6 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
     """
     package_to_version_mapping = {}
     
-    # Prepare tasks for parallel execution
     tasks = [
         (package, match_spec_out, target_version)
         for package, match_spec_out in target_packages_match_spec_out.items()
@@ -117,15 +112,12 @@ def _get_package_versions_in_upstream(target_packages_match_spec_out, target_ver
         print("No packages to search")
         return package_to_version_mapping
         
-    # Use ThreadPoolExecutor for parallel conda search calls
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit all search tasks
         future_to_package = {
             executor.submit(_search_package_upstream_version, package, match_spec_out, target_version): package
             for package, match_spec_out, target_version in tasks
         }
         
-        # Collect results as they complete
         completed = 0
         for future in as_completed(future_to_package):
             completed += 1
@@ -148,11 +140,8 @@ def _generate_staleness_report_per_image(
     staleness_report_rows = []
 
     if download_stats:
-        # Get conda download statistics for all installed packages
-        # Use the month before last to get full month of data
         previous_month = (datetime.now() - relativedelta(months=2)).strftime("%Y-%m")
         pkg_list = list(package_versions_in_upstream.keys())
-        # Suppress FutureWarning from pandas so it doesn't show in report
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=FutureWarning)
             conda_download_stats = overall(pkg_list, month=previous_month)
@@ -168,7 +157,6 @@ def _generate_staleness_report_per_image(
         )
 
         if download_stats:
-            # Get download count with error handling
             try:
                 download_count = conda_download_stats[package]
             except (KeyError, TypeError):
@@ -355,15 +343,12 @@ def _generate_python_package_dependency_report(image_config, base_version_dir, t
         print("No new packages found for dependency report")
         return
     
-    # Use ThreadPoolExecutor for parallel conda search calls
     with ThreadPoolExecutor(max_workers=max_workers) as executor:
-        # Submit all search tasks
         future_to_package = {
             executor.submit(_search_package_dependency, package, version): package
             for package, version in new_packages.items()
         }
         
-        # Collect results as they complete
         completed = 0
         for future in as_completed(future_to_package):
             completed += 1
@@ -375,7 +360,6 @@ def _generate_python_package_dependency_report(image_config, base_version_dir, t
             except Exception as e:
                 print(f"Unexpected error processing package dependency: {e}")
     
-    # Filter out packages with valid results for display
     valid_results = {k: v for k, v in results.items() if isinstance(v, dict) and "version" in v and "depends" in v}
     
     print(
@@ -418,7 +402,6 @@ def generate_package_size_report(args):
         base_version = get_semver(source_patch_version)
     base_version_dir = get_dir_for_version(base_version) if base_version else None
 
-    # Generate the report for Total Image Size changed from Base Version
     _generate_image_size_report(target_version, base_version, args.staging_repo_name, args.staging_account)
 
     validate_results = []
