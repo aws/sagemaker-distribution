@@ -1,6 +1,9 @@
 import json
 import os
 import subprocess
+import time
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from typing import Dict, Optional, Tuple
 
 from conda.env.specs.requirements import RequirementsSpec
 from conda.exceptions import PackagesNotFoundError
@@ -96,31 +99,89 @@ def create_markdown_table(headers, rows):
     return markdowntable
 
 
-def pull_conda_package_metadata(image_config, image_artifact_dir):
+def conda_search_with_retry(command, package, max_retries=5, base_delay=1):
+    """
+    Retry conda search command with exponential backoff for utils
+    """
+    for attempt in range(max_retries):
+        try:
+            search_result = subprocess.run(command, capture_output=True, text=True, check=True, timeout=60)
+            return search_result
+        except subprocess.TimeoutExpired:
+            if attempt == max_retries - 1:
+                print(f"Timeout searching for package {package} after {max_retries} attempts, ignore.")
+                return None
+            delay = base_delay * (2**attempt)
+            time.sleep(delay)
+        except subprocess.CalledProcessError as e:
+            if attempt == max_retries - 1:
+                print(f"Error searching for package {package} after {max_retries} attempts: {str(e)}")
+                return None
+            delay = base_delay * (2**attempt)
+            time.sleep(delay)
+    return None
+
+
+def _search_single_package(package: str, match_spec_out) -> Tuple[str, Optional[Dict]]:
+    """
+    Search for a single package metadata using conda search with retry logic
+    """
+    package_version = str(match_spec_out.get("version")).removeprefix("==")
+    channel = match_spec_out.get("channel").channel_name
+
+    command = ["conda", "search", "-c", channel, f"{package}=={package_version}", "--json"]
+
+    search_result = conda_search_with_retry(command, package)
+    if search_result is None:
+        return package, None
+
+    try:
+        package_metadata = json.loads(search_result.stdout)[package][0]
+        result = {"version": package_metadata["version"], "size": package_metadata["size"]}
+        return package, result
+    except (json.JSONDecodeError, KeyError, IndexError) as e:
+        print(f"Error parsing search result for package {package}: {str(e)}")
+        return package, None
+
+
+def pull_conda_package_metadata(image_config, image_artifact_dir, max_workers: int = 20):
+    """
+    Pull conda package metadata using parallel conda search calls for improved performance
+    """
     results = dict()
     env_out_file_name = image_config["env_out_filename"]
     match_spec_out = get_match_specs(image_artifact_dir + "/" + env_out_file_name)
 
     target_packages_match_spec_out = {k: v for k, v in match_spec_out.items()}
 
-    for package, match_spec_out in target_packages_match_spec_out.items():
-        if str(match_spec_out).startswith("conda-forge"):
-            # Pull package metadata from conda-forge and dump into json file
+    conda_forge_packages = [
+        (package, match_spec_out)
+        for package, match_spec_out in target_packages_match_spec_out.items()
+        if str(match_spec_out).startswith("conda-forge")
+    ]
+
+    if not conda_forge_packages:
+        print("No conda-forge packages found")
+        return results
+
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        future_to_package = {
+            executor.submit(_search_single_package, package, match_spec): package
+            for package, match_spec in conda_forge_packages
+        }
+
+        completed = 0
+        for future in as_completed(future_to_package):
+            completed += 1
+
             try:
-                search_result = subprocess.run(
-                    ["conda", "search", str(match_spec_out), "--json"], capture_output=True, text=True, check=True
-                )
-                package_metadata = json.loads(search_result.stdout)[package][0]
-                results[package] = {"version": package_metadata["version"], "size": package_metadata["size"]}
-            except (subprocess.CalledProcessError, json.JSONDecodeError, KeyError, IndexError) as e:
-                print(
-                    f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Error: {str(e)}"
-                )
-            except PackagesNotFoundError:
-                print(
-                    f"Failed to pull package metadata for {package}, {match_spec_out} from conda-forge, ignore. Potentially this package is broken."
-                )
-    # Sort the pakcage sizes in decreasing order
+                package_name, package_metadata = future.result()
+                if package_metadata:
+                    results[package_name] = package_metadata
+
+            except Exception as e:
+                print(f"Unexpected error processing package: {e}")
+
     results = {k: v for k, v in sorted(results.items(), key=lambda item: item[1]["size"], reverse=True)}
 
     return results
