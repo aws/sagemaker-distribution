@@ -13,7 +13,7 @@ ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
 jupyterlab|4.5.3|4.5.3
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
-pip|25.3|25.3
+pip|26.0|26.0
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
 amazon-sagemaker-jupyter-ai-q-developer|1.2.9|1.2.9
@@ -21,7 +21,7 @@ jupyter-scheduler|2.11.0|2.11.0
 amazon-sagemaker-jupyter-scheduler|3.1.16|3.1.16
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
-amazon_sagemaker_sql_editor|0.1.20|0.1.20
+amazon_sagemaker_sql_editor|0.1.21|0.1.21
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.4|1.0.4
 scipy|1.16.3|1.16.3
 matplotlib-base|3.10.8|3.10.8
@@ -32,8 +32,8 @@ ipywidgets|8.1.8|8.1.8
 notebook|7.5.3|7.5.3
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
-conda|25.11.1|25.11.1
-docker-cli|29.2.0|29.2.0
+conda|26.1.0|26.1.0
+docker-cli|29.2.1|29.2.1
 uvicorn|0.40.0|0.40.0
 fastapi|0.128.0|0.128.0
 git-remote-codecommit|1.16|1.16
@@ -41,14 +41,15 @@ jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|4.2.0|4.2.0
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
+jupyter_server_documents|0.1.0|0.1.0
 jupyterlab-git|0.51.4|0.51.4
 keras|3.12.0|3.12.0
 langchain-aws|0.2.35|0.2.35
-mcp|1.25.0|1.25.0
-mlflow|3.8.1|3.8.1
+mcp|1.26.0|1.26.0
+mlflow|3.9.0|3.9.0
 py-xgboost-gpu|2.1.4| 
 pyhive|0.7.0|0.7.0
-python-gssapi|1.10.1|1.10.1
+python-gssapi|1.11.1|1.11.1
 python-lsp-server|1.14.0|1.14.0
 s3fs|2025.3.2|2025.3.2
 sagemaker-code-editor|1.8.2|1.8.2
@@ -71,5 +72,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.9.27|0.9.27
+uv|0.9.28|0.9.28
 py-xgboost-cpu| |2.1.4
