@@ -13,7 +13,7 @@ ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
 jupyterlab|4.5.3|4.5.3
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
-pip|26.0|26.0
+pip|26.0.1|26.0.1
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
 amazon-sagemaker-jupyter-ai-q-developer|1.2.9|1.2.9
@@ -35,7 +35,7 @@ aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|26.1.0|26.1.0
 docker-cli|29.2.1|29.2.1
 uvicorn|0.40.0|0.40.0
-fastapi|0.128.0|0.128.0
+fastapi|0.128.1|0.128.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|4.2.0|4.2.0
@@ -72,5 +72,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.9.28|0.9.28
+uv|0.9.30|0.9.30
 py-xgboost-cpu| |2.1.4
