@@ -1,0 +1,7 @@
+--- /opt/conda/lib/python3.11/site-packages/hdijupyterutils/ipythondisplay.py
++++ /opt/conda/lib/python3.11/site-packages/hdijupyterutils/ipythondisplay.py
+@@ -1,4 +1,4 @@
+-from IPython.core.display import display, HTML
++from IPython.display import display, HTML
+ from IPython import get_ipython
+ import sys
