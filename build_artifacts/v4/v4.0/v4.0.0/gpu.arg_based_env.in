@@ -1,6 +1,8 @@
-conda-forge::cuda-compiler=$CUDA_MAJOR_MINOR_VERSION
-conda-forge::cuda-libraries=$CUDA_MAJOR_MINOR_VERSION
-conda-forge::cuda-libraries-dev=$CUDA_MAJOR_MINOR_VERSION
-conda-forge::cuda-nvml-dev
-conda-forge::cuda-command-line-tools=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::cuda-cudart=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::libcublas=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::libcudnn=9.10.2.21
+conda-forge::nccl
+conda-forge::cuda-nvrtc=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::libnvjitlink=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::libcusolver=$CUDA_MAJOR_MINOR_VERSION
 conda-forge::gds-tools
