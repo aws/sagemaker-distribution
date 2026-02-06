@@ -112,8 +112,8 @@ _image_generator_configs = {
     4: [
         {
             "build_args": {
-                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "cuda12.9.1-ubuntu24.04",
-                "CUDA_MAJOR_MINOR_VERSION": "12.9",
+                "TAG_FOR_BASE_MICROMAMBA_IMAGE": "cuda13.1.0-ubuntu24.04",
+                "CUDA_MAJOR_MINOR_VERSION": "13.1",
                 "ENV_IN_FILENAME": "gpu.env.in",
                 "PINNED_ENV_IN_FILENAME": "gpu.pinned_env.in",
                 "ARG_BASED_ENV_IN_FILENAME": "gpu.arg_based_env.in",
