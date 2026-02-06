@@ -57,6 +57,7 @@ ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
 COPY aws-cli-public-key.asc /tmp/
+COPY workflows-local-runner-image-ecr-accounts.json /tmp/
 COPY extract_amazon_q_agentic_chat_urls.py /tmp/
 COPY download_amazon_q_agentic_chat_artifacts.sh /tmp/
 

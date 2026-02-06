@@ -132,6 +132,11 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
     if os.path.exists(aws_cli_key_path):
         shutil.copy2(aws_cli_key_path, new_version_dir)
 
+    # Copy ECR account mapping from assets
+    ecr_mapping_path = os.path.relpath(f"assets/workflows-local-runner-image-ecr-accounts.json")
+    if os.path.exists(ecr_mapping_path):
+        shutil.copy2(ecr_mapping_path, new_version_dir)
+
     # Copy Amazon Q agentic chat scripts from assets
     q_extract_script_path = os.path.relpath(f"assets/extract_amazon_q_agentic_chat_urls.py")
     if os.path.exists(q_extract_script_path):

@@ -13,7 +13,11 @@ fi
 RESOURCE_METADATA_FILE=/opt/ml/metadata/resource-metadata.json
 SM_DOMAIN_ID=$(jq -r ".DomainId" < $RESOURCE_METADATA_FILE)
 AWS_ACCOUNT_ID=$(jq -r '.ExecutionRoleArn | split(":")[4]' < $RESOURCE_METADATA_FILE)
-ECR_ACCOUNT_ID=058264401727
+
+# Get ECR account ID based on region from centralized config
+ECR_CONFIG_FILE="/tmp/workflows-local-runner-image-ecr-accounts.json"
+ECR_ACCOUNT_ID=$(jq -r --arg region "$AWS_REGION" '.regions[$region] // .default' < "$ECR_CONFIG_FILE")
+
 DZ_DOMAIN_ID=$(jq -r '.AdditionalMetadata.DataZoneDomainId' < $RESOURCE_METADATA_FILE)
 DZ_PROJECT_ID=$(jq -r '.AdditionalMetadata.DataZoneProjectId' < $RESOURCE_METADATA_FILE)
 DZ_ENV_ID=$(jq -r '.AdditionalMetadata.DataZoneEnvironmentId' < $RESOURCE_METADATA_FILE)
