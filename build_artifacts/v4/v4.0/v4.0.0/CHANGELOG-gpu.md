@@ -27,7 +27,7 @@ mlflow|2.22.0|3.9.0
 python-gssapi|1.10.1|1.11.1
 s3fs|2024.12.0|2025.3.2
 sagemaker-code-editor|1.8.0|1.8.2
-sagemaker-gen-ai-jupyterlab-extension|1.0.11|1.0.13
+sagemaker-gen-ai-jupyterlab-extension|1.0.11|1.0.14
 sagemaker-python-sdk|2.245.0|2.254.1
 sagemaker-studio|1.1.4|1.1.5
 sagemaker-studio-analytics-extension|0.2.2|0.2.4
