@@ -30,7 +30,7 @@ jobs:
       pr_id: ${{ steps.validate_pr.outputs.pr_id }}
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Validate PR
         id: validate_pr
         env:
