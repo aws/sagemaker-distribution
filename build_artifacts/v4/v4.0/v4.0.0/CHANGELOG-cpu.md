@@ -18,8 +18,8 @@ aws-s3-access-grants-boto3-plugin|1.2.0|1.3.0
 conda|25.11.0|26.1.0
 docker-cli|27.5.1|29.2.1
 uvicorn|0.38.0|0.40.0
-fastapi|0.124.4|0.128.1
-jupyter-collaboration|3.1.2|4.2.0
+fastapi|0.124.4|0.128.3
+jupyter-collaboration|3.1.2|4.2.1
 jupyterlab-git|0.51.3|0.51.4
 langchain-aws|0.2.19|0.2.35
 mcp|1.23.3|1.26.0
@@ -34,7 +34,7 @@ sagemaker-studio-analytics-extension|0.2.2|0.2.4
 sagemaker-studio-dataengineering-extensions|1.3.3|1.3.4
 sagemaker-studio-dataengineering-sessions|1.3.11|1.3.12
 supervisor|4.2.5|4.3.0
-uv|0.9.17|0.9.30
+uv|0.9.17|0.10.0
 
 ## What's new: 
 
