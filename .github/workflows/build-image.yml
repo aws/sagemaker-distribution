@@ -39,7 +39,7 @@ jobs:
       pr_id: ${{ steps.get_pr_id.outputs.pr_id }}
       target_version: ${{ steps.calc_target.outputs.target_version }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
             fetch-depth: 0
       - uses: mamba-org/setup-micromamba@v2
@@ -111,7 +111,7 @@ jobs:
       id-token: write
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
           aws-region: us-east-1
@@ -134,7 +134,7 @@ jobs:
       id-token: write
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
           aws-region: us-east-1
@@ -157,7 +157,7 @@ jobs:
       id-token: write
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
           aws-region: us-east-1
@@ -180,7 +180,7 @@ jobs:
       id-token: write
     steps:
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v4
+        uses: aws-actions/configure-aws-credentials@v6
         with:
           role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
           aws-region: us-east-1
