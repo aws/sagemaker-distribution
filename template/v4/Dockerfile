@@ -8,7 +8,7 @@ ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
 
 # Amazon Q Agentic Chat version - update this default value when needed
-ARG FLARE_SERVER_VERSION_JL=1.25.0
+ARG FLARE_SERVER_VERSION_JL=1.58.0
 # IDE type for Amazon Q integration
 ARG AMAZON_Q_IDE_TYPE=jupyterlab
 
@@ -212,9 +212,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
-    jupyter labextension disable @jupyter/collaboration-extension && \
-    # Disable docprovider-extension for v3 and above images
-    jupyter labextension disable @jupyter/docprovider-extension
+    jupyter labextension disable @jupyter/collaboration-extension
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
