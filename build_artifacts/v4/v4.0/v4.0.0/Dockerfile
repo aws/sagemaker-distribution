@@ -46,7 +46,7 @@ RUN CURRENT_MICROMAMBA_VERSION=$(micromamba --version) && \
     fi
 
 RUN EXISTING_USER=$(getent passwd 1000 | cut -d: -f1) && \
-    userdel -r "$EXISTING_USER" && \
+    [ -n "$EXISTING_USER" ] && userdel -r "$EXISTING_USER" || true && \
     usermod "--login=${NB_USER}" "--home=/home/${NB_USER}" --move-home "-u ${NB_UID}" "${MAMBA_USER}" && \
     groupmod "--new-name=${NB_USER}" --non-unique "-g ${NB_GID}" "${MAMBA_USER}" && \
     # Update the expected value of MAMBA_USER for the
