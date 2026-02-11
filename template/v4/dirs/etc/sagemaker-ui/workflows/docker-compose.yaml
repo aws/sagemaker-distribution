@@ -1,5 +1,5 @@
 x-airflow-common: &airflow-common
-  image: 058264401727.dkr.ecr.${AWS_REGION}.amazonaws.com/mwaa_image:latest
+  image: ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/mwaa_image:latest
   network_mode: sagemaker
   environment:
     # AWS credentials
@@ -51,7 +51,7 @@ x-airflow-common: &airflow-common
 
 services:
   postgres:
-    image: 058264401727.dkr.ecr.${AWS_REGION}.amazonaws.com/postgres:13
+    image: ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/postgres:13
     network_mode: sagemaker
     container_name: mwaa-292-db
     environment:
