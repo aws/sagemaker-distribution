@@ -11,7 +11,7 @@ altair|5.5.0|5.5.0
 boto3|1.40.70|1.40.70
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
-jupyterlab|4.5.3|4.5.3
+jupyterlab|4.5.4|4.5.4
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
@@ -35,7 +35,7 @@ aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
-fastapi|0.128.5|0.128.5
+fastapi|0.128.7|0.128.7
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|2.1.5|2.1.5
@@ -60,7 +60,7 @@ sagemaker-jupyterlab-extension|0.5.1|0.5.1
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
 sagemaker-python-sdk|2.254.1|2.254.1
-sagemaker-studio|1.1.5|1.1.5
+sagemaker-studio|1.1.6|1.1.6
 sagemaker-studio-analytics-extension|0.2.4|0.2.4
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.4|1.3.4
