@@ -21,7 +21,7 @@ amazon-sagemaker-jupyter-scheduler|3.1.16|3.1.16
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.21|0.1.21
-amzn-sagemaker-aiops-jupyterlab-extension|1.0.4|1.0.4
+amzn-sagemaker-aiops-jupyterlab-extension|1.0.5|1.0.5
 scipy|1.16.3|1.16.3
 matplotlib-base|3.10.8|3.10.8
 scikit-learn|1.7.2|1.7.2
@@ -35,7 +35,7 @@ aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
-fastapi|0.128.7|0.128.7
+fastapi|0.128.8|0.128.8
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|2.1.5|2.1.5
