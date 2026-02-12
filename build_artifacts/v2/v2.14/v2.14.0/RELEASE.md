@@ -11,7 +11,7 @@ altair|5.5.0|5.5.0
 boto3|1.40.70|1.40.70
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
-jupyterlab|4.5.3|4.5.3
+jupyterlab|4.5.4|4.5.4
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
@@ -21,7 +21,7 @@ amazon-sagemaker-jupyter-scheduler|3.1.16|3.1.16
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.1.21|0.1.21
-amzn-sagemaker-aiops-jupyterlab-extension|1.0.4|1.0.4
+amzn-sagemaker-aiops-jupyterlab-extension|1.0.5|1.0.5
 scipy|1.16.3|1.16.3
 matplotlib-base|3.10.8|3.10.8
 scikit-learn|1.7.2|1.7.2
@@ -35,14 +35,14 @@ aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
-fastapi|0.128.7|0.128.7
+fastapi|0.128.8|0.128.8
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|2.1.5|2.1.5
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.51.4|0.51.4
-keras|3.12.0|3.12.0
+keras|3.13.2|3.13.2
 langchain-aws|0.2.35|0.2.35
 langchain-openai|0.3.35|0.3.35
 mcp|1.26.0|1.26.0
@@ -72,5 +72,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.10.0|0.10.0
+uv|0.10.2|0.10.2
 py-xgboost-cpu| |2.1.4
