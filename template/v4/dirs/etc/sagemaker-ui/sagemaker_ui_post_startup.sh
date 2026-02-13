@@ -53,6 +53,10 @@ dataZoneEndPoint=$(jq -r '.AdditionalMetadata.DataZoneEndpoint' < $sourceMetaDat
 dataZoneProjectId=$(jq -r '.AdditionalMetadata.DataZoneProjectId' < $sourceMetaData)
 dataZoneDomainRegion=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $sourceMetaData)
 
+# Fetch feature flags from domain landing page
+echo "Fetching feature flags from domain..."
+python3 /etc/sagemaker-ui/fetch_feature_flags.py || echo "Warning: Failed to fetch feature flags, continuing..."
+
 set +e
 
 # Remove the ~/.aws/config file to start clean when space restart
