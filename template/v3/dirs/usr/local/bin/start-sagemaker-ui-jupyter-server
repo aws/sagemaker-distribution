@@ -13,9 +13,6 @@ else
 
     # Disable jupyter-ai in favor of sagemaker_gen_ai_jupyterlab_extension
     jupyter labextension disable @jupyter-ai/core
-
-    # Enable RTC to allow async Q file updates
-    jupyter labextension enable @jupyter/docprovider-extension
 fi
 
 sudo cp -r /etc/sagemaker-ui/kernels/. /opt/conda/share/jupyter/kernels/

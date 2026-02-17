@@ -25,7 +25,6 @@ fi
 # Start Jupyter server in rtc mode for shared spaces
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ]; then
   jupyter labextension enable @jupyter/collaboration-extension
-  jupyter labextension enable @jupyter/docprovider-extension
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   # SAGEMAKER_SPACE_TYPE_LOWERCASE flag is used to determine if the server should start
@@ -40,6 +39,16 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
 
 # Start Jupyter server
 elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+  # Disable JSD for Private Spaces
+  jupyter labextension disable @jupyter-ai-contrib/server-documents
+  jupyter server extension disable jupyter_server_documents
+
+  # Re-enable ydoc backend (was disabled by JSD)
+  jupyter server extension enable jupyter_server_ydoc
+
+  # Disable docprovider (to match baseline)
+  jupyter labextension disable @jupyter/docprovider-extension
+
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   jupyter lab --ip 0.0.0.0 --port 8888 \
