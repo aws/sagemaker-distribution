@@ -28,7 +28,7 @@ scipy|1.16.3|1.16.3
 matplotlib-base|3.10.8|3.10.8
 scikit-learn|1.7.2|1.7.2
 torchvision|0.21.0|0.21.0
-uvicorn|0.40.0|0.40.0
+uvicorn|0.41.0|0.41.0
 autogluon|1.5.0|1.5.0
 ipywidgets|8.1.8|8.1.8
 notebook|7.5.3|7.5.3
@@ -36,12 +36,13 @@ aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.2.0|1.2.0
 conda|25.11.1|25.11.1
 docker-cli|27.5.1|27.5.1
-fastapi|0.128.8|0.128.8
+fastapi|0.129.0|0.129.0
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
-jupyter-collaboration|3.1.2|3.1.2
+jupyter-collaboration|4.1.2|4.1.2
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
+jupyter_server_documents|0.1.0|0.1.0
 jupyterlab-git|0.51.4|0.51.4
 keras|3.13.2|3.13.2
 langchain-aws|0.2.19|0.2.19
@@ -53,7 +54,7 @@ pyhive|0.7.0|0.7.0
 python-gssapi|1.11.1|1.11.1
 python-lsp-server|1.14.0|1.14.0
 s3fs|2024.12.0|2024.12.0
-sagemaker-code-editor|1.8.2|1.8.2
+sagemaker-code-editor|1.8.3|1.8.3
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.14
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
@@ -64,8 +65,8 @@ sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.1.6|1.1.6
 sagemaker-studio-analytics-extension|0.2.4|0.2.4
 sagemaker-studio-cli|1.0.7|1.0.7
-sagemaker-studio-dataengineering-extensions|1.3.4|1.3.4
-sagemaker-studio-dataengineering-sessions|1.3.12|1.3.12
+sagemaker-studio-dataengineering-extensions|1.3.7|1.3.7
+sagemaker-studio-dataengineering-sessions|1.3.13|1.3.13
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
@@ -73,5 +74,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.10.2|0.10.2
+uv|0.10.3|0.10.3
 py-xgboost-cpu| |2.1.4
