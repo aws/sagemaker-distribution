@@ -117,12 +117,8 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
     for f in glob.glob(f"{base_version_dir}/patch_*"):
         shutil.copy2(f, new_version_dir)
 
-    # For patches, get Dockerfile+dirs from base patch
-    # For minor/major, get Dockerfile+dirs from template
-    if runtime_version_upgrade_type == _PATCH:
-        base_path = base_version_dir
-    else:
-        base_path = f"template/v{new_version_major}"
+    # Always get Dockerfile+dirs from template
+    base_path = f"template/v{new_version_major}"
 
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
         shutil.copy2(f, new_version_dir)
