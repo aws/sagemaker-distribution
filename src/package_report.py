@@ -1,14 +1,11 @@
 import json
 import os
-import subprocess
-import time
 import warnings
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from itertools import islice
 
 import boto3
-from conda.models.match_spec import MatchSpec
 from condastats.cli import overall
 from dateutil.relativedelta import relativedelta
 

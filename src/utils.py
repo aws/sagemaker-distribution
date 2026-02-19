@@ -6,7 +6,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import Dict, Optional, Tuple
 
 from conda.env.specs.requirements import RequirementsSpec
-from conda.exceptions import PackagesNotFoundError
 from conda.models.match_spec import MatchSpec
 from semver import Version
 
