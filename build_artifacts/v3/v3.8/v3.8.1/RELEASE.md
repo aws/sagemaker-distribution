@@ -12,7 +12,7 @@ aioboto3|14.3.0|14.3.0
 altair|5.5.0|5.5.0
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
-jupyterlab|4.5.4|4.5.4
+jupyterlab|4.4.10|4.4.10
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 pip|25.3|25.3
 langchain|0.3.27|0.3.27
@@ -31,7 +31,7 @@ torchvision|0.21.0|0.21.0
 uvicorn|0.40.0|0.40.0
 autogluon|1.5.0|1.5.0
 ipywidgets|8.1.8|8.1.8
-notebook|7.5.3|7.5.3
+notebook|7.4.7|7.4.7
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.2.0|1.2.0
 conda|25.11.1|25.11.1
@@ -53,7 +53,7 @@ pyhive|0.7.0|0.7.0
 python-gssapi|1.10.1|1.10.1
 python-lsp-server|1.14.0|1.14.0
 s3fs|2024.12.0|2024.12.0
-sagemaker-code-editor|1.8.2|1.8.2
+sagemaker-code-editor|1.8.3|1.8.3
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.14
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
@@ -64,8 +64,8 @@ sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.1.6|1.1.6
 sagemaker-studio-analytics-extension|0.2.4|0.2.4
 sagemaker-studio-cli|1.0.7|1.0.7
-sagemaker-studio-dataengineering-extensions|1.3.4|1.3.4
-sagemaker-studio-dataengineering-sessions|1.3.12|1.3.12
+sagemaker-studio-dataengineering-extensions|1.3.7|1.3.7
+sagemaker-studio-dataengineering-sessions|1.3.13|1.3.13
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
