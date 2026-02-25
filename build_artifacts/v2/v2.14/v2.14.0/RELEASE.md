@@ -11,7 +11,7 @@ altair|5.5.0|5.5.0
 boto3|1.40.70|1.40.70
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
-jupyterlab|4.5.4|4.5.4
+jupyterlab|4.5.5|4.5.5
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
@@ -30,18 +30,17 @@ torchvision|0.21.0|0.21.0
 uvicorn|0.41.0|0.41.0
 autogluon|1.5.0|1.5.0
 ipywidgets|8.1.8|8.1.8
-notebook|7.5.3|7.5.3
+notebook|7.5.4|7.5.4
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
-fastapi|0.129.0|0.129.0
+fastapi|0.133.0|0.133.0
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
-jupyter-collaboration|4.1.2|4.1.2
+jupyter-collaboration|2.1.5|2.1.5
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
-jupyter_server_documents|0.1.0|0.1.0
 jupyterlab-git|0.51.4|0.51.4
 keras|3.13.2|3.13.2
 langchain-aws|0.2.35|0.2.35
@@ -73,5 +72,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.10.3|0.10.3
+uv|0.10.6|0.10.6
 py-xgboost-cpu| |2.1.4
