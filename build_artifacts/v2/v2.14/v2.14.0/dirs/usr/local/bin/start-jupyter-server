@@ -39,16 +39,6 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
 
 # Start Jupyter server
 elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
-  # Disable JSD for Private Spaces
-  jupyter labextension disable @jupyter-ai-contrib/server-documents
-  jupyter server extension disable jupyter_server_documents
-
-  # Re-enable ydoc backend (was disabled by JSD)
-  jupyter server extension enable jupyter_server_ydoc
-
-  # Re-enable docprovider (was disabled by JSD in V2)
-  jupyter labextension enable @jupyter/docprovider-extension
-
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   jupyter lab --ip 0.0.0.0 --port 8888 \
