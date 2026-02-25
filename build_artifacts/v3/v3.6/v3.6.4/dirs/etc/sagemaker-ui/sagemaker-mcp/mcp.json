@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "smus-local-mcp": {
+      "command": "python",  
+      "args": ["/etc/sagemaker-ui/sagemaker-mcp/smus-mcp.py"]
+    }
+  }
+}
