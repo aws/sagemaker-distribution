@@ -13,7 +13,7 @@ else
     # Uninstall SMUS-specific extensions
     micromamba remove -y sagemaker-studio-dataengineering-sessions sagemaker-studio-dataengineering-extensions
     # Disable SMUS-specific extensions
-    jupyter labextension disable sagemaker-data-explorer:plugin @amzn/sagemaker_gen_ai_jupyterlab_extension
+    jupyter labextension disable sagemaker-data-explorer:plugin
 fi
 
 # Enable S3AG plugin if TIP is enabled
@@ -46,8 +46,8 @@ elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
   # Re-enable ydoc backend (was disabled by JSD)
   jupyter server extension enable jupyter_server_ydoc
 
-  # Disable docprovider (to match baseline)
-  jupyter labextension disable @jupyter/docprovider-extension
+  # Enable docprovider for Agentic Chat
+  jupyter labextension enable @jupyter/docprovider-extension
 
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
