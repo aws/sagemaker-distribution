@@ -36,7 +36,7 @@ aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.2.0|1.2.0
 conda|25.11.1|25.11.1
 docker-cli|27.5.1|27.5.1
-fastapi|0.133.0|0.133.0
+fastapi|0.133.1|0.133.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|3.1.2|3.1.2
@@ -61,7 +61,7 @@ sagemaker-jupyterlab-extension|0.5.1|0.5.1
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
 sagemaker-python-sdk|2.245.0|2.245.0
-sagemaker-studio|1.1.6|1.1.6
+sagemaker-studio|1.1.7|1.1.7
 sagemaker-studio-analytics-extension|0.2.4|0.2.4
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.7|1.3.7
