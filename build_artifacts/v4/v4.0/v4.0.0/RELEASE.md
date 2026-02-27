@@ -11,11 +11,12 @@ altair|6.0.0|6.0.0
 boto3|1.40.70|1.40.70
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.0|2.3.0
-jupyterlab|4.5.4|4.5.4
+jupyterlab|4.5.5|4.5.5
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 pip|26.0.1|26.0.1
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
+sagemaker-jupyterlab-extension-common|0.3.0|0.3.0
 amazon-sagemaker-jupyter-ai-q-developer|1.2.9|1.2.9
 jupyter-scheduler|2.11.0|2.11.0
 amazon-sagemaker-jupyter-scheduler|3.1.16|3.1.16
@@ -29,13 +30,13 @@ scikit-learn|1.7.2|1.7.2
 torchvision|0.21.0|0.21.0
 autogluon|1.5.0|1.5.0
 ipywidgets|8.1.8|8.1.8
-notebook|7.5.3|7.5.3
+notebook|7.5.4|7.5.4
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|26.1.0|26.1.0
 docker-cli|29.2.1|29.2.1
 uvicorn|0.41.0|0.41.0
-fastapi|0.129.0|0.129.0
+fastapi|0.133.1|0.133.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|4.2.1|4.2.1
@@ -47,7 +48,7 @@ keras|3.13.2|3.13.2
 langchain-aws|0.2.35|0.2.35
 langchain-openai|0.3.35|0.3.35
 mcp|1.26.0|1.26.0
-mlflow|3.9.0|3.9.0
+mlflow|3.10.0|3.10.0
 py-xgboost-gpu|2.1.4| 
 pyhive|0.7.0|0.7.0
 python-gssapi|1.11.1|1.11.1
@@ -57,11 +58,11 @@ sagemaker-code-editor|1.8.3|1.8.3
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.14
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
-sagemaker-jupyterlab-extension|0.5.1|0.5.1
+sagemaker-jupyterlab-extension|0.5.2|0.5.2
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
 sagemaker-python-sdk|2.257.0|2.257.0
-sagemaker-studio|1.1.6|1.1.6
+sagemaker-studio|1.1.7|1.1.7
 sagemaker-studio-analytics-extension|0.2.4|0.2.4
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.7|1.3.7
@@ -73,5 +74,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.10.3|0.10.3
+uv|0.10.6|0.10.6
 py-xgboost-cpu| |2.1.4
