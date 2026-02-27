@@ -125,9 +125,10 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     SUPERVISOR_VERSION=$(grep "^conda-forge::supervisor\[" /tmp/$ENV_IN_FILENAME) && \
     JUPYTERLAB_VERSION=$(grep "^conda-forge::jupyterlab\[" /tmp/$ENV_IN_FILENAME) && \
     SAGEMAKER_JUPYTERLAB_VERSION=$(grep "^conda-forge::sagemaker-jupyterlab-extension" /tmp/$ENV_IN_FILENAME) && \
-    echo "Installing in sagemaker-recovery-mode micromamba environment: $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
+    PYTHON_VERSION=$(grep "^conda-forge::python\[" /tmp/$ENV_IN_FILENAME) && \
+    echo "Installing in sagemaker-recovery-mode micromamba environment: $PYTHON_VERSION $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
     micromamba create -n sagemaker-recovery-mode && \
-    micromamba install -n sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
+    micromamba install -n sagemaker-recovery-mode -y $PYTHON_VERSION $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
     sudo ln -s $(which python3) /usr/bin/python && \
     # Download shared web client libraries
