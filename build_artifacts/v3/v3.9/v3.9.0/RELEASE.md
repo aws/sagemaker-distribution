@@ -17,6 +17,7 @@ amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 pip|25.3|25.3
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
+sagemaker-jupyterlab-extension-common|0.3.0|0.3.0
 amazon-sagemaker-jupyter-ai-q-developer|1.2.9|1.2.9
 jupyter-scheduler|2.11.0|2.11.0
 amazon-sagemaker-jupyter-scheduler|3.1.16|3.1.16
@@ -57,7 +58,7 @@ sagemaker-code-editor|1.8.3|1.8.3
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.14
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
-sagemaker-jupyterlab-extension|0.5.1|0.5.1
+sagemaker-jupyterlab-extension|0.5.2|0.5.2
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
 sagemaker-python-sdk|2.245.0|2.245.0
