@@ -36,13 +36,13 @@ aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|24.11.3|24.11.3
 docker-cli|27.5.1|27.5.1
-fastapi|0.133.1|0.133.1
+fastapi|0.135.1|0.135.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|2.1.5|2.1.5
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
-jupyterlab-git|0.51.4|0.51.4
+jupyterlab-git|0.52.0|0.52.0
 keras|3.13.2|3.13.2
 langchain-aws|0.2.35|0.2.35
 langchain-openai|0.3.35|0.3.35
@@ -73,5 +73,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.18.0|2.18.0
 tf-keras|2.18.0|2.18.0
-uv|0.10.6|0.10.6
+uv|0.10.8|0.10.8
 py-xgboost-cpu| |2.1.4
