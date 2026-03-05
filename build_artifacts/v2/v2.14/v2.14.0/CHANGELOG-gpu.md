@@ -15,7 +15,7 @@ jupyterlab-git|0.51.4|0.52.0
 keras|3.12.0|3.13.2
 mcp|1.25.0|1.26.0
 python-gssapi|1.10.1|1.11.1
-sagemaker-code-editor|1.8.2|1.8.3
+sagemaker-code-editor|1.8.2|1.8.5
 sagemaker-gen-ai-jupyterlab-extension|1.0.13|1.0.14
 sagemaker-jupyterlab-extension|0.5.1|0.5.2
 sagemaker-python-sdk|2.254.1|2.257.0
