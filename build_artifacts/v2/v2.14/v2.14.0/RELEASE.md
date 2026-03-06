@@ -53,7 +53,7 @@ pyhive|0.7.0|0.7.0
 python-gssapi|1.11.1|1.11.1
 python-lsp-server|1.14.0|1.14.0
 s3fs|2024.12.0|2024.12.0
-sagemaker-code-editor|1.8.5|1.8.5
+sagemaker-code-editor|1.9.2|1.9.2
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.14
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
@@ -61,8 +61,8 @@ sagemaker-jupyterlab-extension|0.5.2|0.5.2
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
 sagemaker-python-sdk|2.257.0|2.257.0
-sagemaker-studio|1.1.7|1.1.7
-sagemaker-studio-analytics-extension|0.2.4|0.2.4
+sagemaker-studio|1.1.8|1.1.8
+sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.7|1.3.7
 sagemaker-studio-dataengineering-sessions|1.3.13|1.3.13
