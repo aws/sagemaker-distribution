@@ -9,6 +9,7 @@ import boto3
 from condastats.cli import overall
 from dateutil.relativedelta import relativedelta
 
+from conda.models.match_spec import MatchSpec
 from config import _image_generator_configs
 from dependency_upgrader import _dependency_metadata
 from utils import (
