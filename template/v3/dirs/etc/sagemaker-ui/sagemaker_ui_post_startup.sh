@@ -232,6 +232,12 @@ if [ $is_s3_storage_flag -ne 0 ]; then
   # Setting up the Git identity for the user .
   git config --global user.email "$email"
   git config --global user.name "$username"
+  if [ -d "$HOME/shared" ]; then
+    echo "Git project with /shared folder detected, creating README"
+    bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
+  else
+    echo "Git project without /shared folder, skipping README creation"
+  fi
 else
   echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation and creating README"
   bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
