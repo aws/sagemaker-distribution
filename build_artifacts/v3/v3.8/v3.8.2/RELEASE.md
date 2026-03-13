@@ -62,7 +62,7 @@ sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
 sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.1.8|1.1.8
-sagemaker-studio-analytics-extension|0.2.4|0.2.4
+sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.8|1.3.8
 sagemaker-studio-dataengineering-sessions|1.3.13|1.3.13
