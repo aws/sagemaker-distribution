@@ -53,6 +53,10 @@ dataZoneEndPoint=$(jq -r '.AdditionalMetadata.DataZoneEndpoint' < $sourceMetaDat
 dataZoneProjectId=$(jq -r '.AdditionalMetadata.DataZoneProjectId' < $sourceMetaData)
 dataZoneDomainRegion=$(jq -r '.AdditionalMetadata.DataZoneDomainRegion' < $sourceMetaData)
 
+# Fetch feature flags from domain landing page
+echo "Fetching feature flags from domain..."
+python3 /etc/sagemaker-ui/fetch_feature_flags.py || echo "Warning: Failed to fetch feature flags, continuing..."
+
 set +e
 
 # Remove the ~/.aws/config file to start clean when space restart
@@ -227,6 +231,12 @@ if [ $is_s3_storage_flag -ne 0 ]; then
   # Setting up the Git identity for the user .
   git config --global user.email "$email"
   git config --global user.name "$username"
+  if [ -d "$HOME/shared" ]; then
+    echo "Git project with /shared folder detected, creating README"
+    bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
+  else
+    echo "Git project without /shared folder, skipping README creation"
+  fi
 else
   echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation and creating README"
   bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
