@@ -13,7 +13,7 @@ else
     # Uninstall SMUS-specific extensions
     micromamba remove -y sagemaker-studio-dataengineering-sessions sagemaker-studio-dataengineering-extensions
     # Disable SMUS-specific extensions
-    jupyter labextension disable sagemaker-data-explorer:plugin @amzn/sagemaker_gen_ai_jupyterlab_extension
+    jupyter labextension disable sagemaker-data-explorer:plugin
 fi
 
 # Enable S3AG plugin if TIP is enabled
