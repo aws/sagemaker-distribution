@@ -1,8 +1,6 @@
-conda-forge::cuda-cudart
-conda-forge::libcublas
-conda-forge::libcudnn
-conda-forge::nccl
-conda-forge::cuda-nvrtc
-conda-forge::libnvjitlink
-conda-forge::libcusolver
-conda-forge::gds-tools
+conda-forge::cuda-compiler=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::cuda-libraries=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::cuda-libraries-dev=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::cuda-nvml-dev=12.6.77.*
+conda-forge::cuda-command-line-tools=$CUDA_MAJOR_MINOR_VERSION
+conda-forge::gds-tools=1.11.1.6.*
