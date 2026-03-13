@@ -257,6 +257,7 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     # This process must be done at the end of image build
     && rm -rf /opt/conda/etc/conda/test-files/ \
     && find /opt/conda -name "yarn.lock" -type f -delete \
+    && find /opt/conda/include/ -name "requirements.txt" -delete \
     && rm -rf /tmp/*.in
 
 # Explicitly disable BuildKit for SM Studio Docker functionality
