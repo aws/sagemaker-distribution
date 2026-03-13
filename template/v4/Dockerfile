@@ -8,7 +8,7 @@ ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
 
 # Amazon Q Agentic Chat version - update this default value when needed
-ARG FLARE_SERVER_VERSION_JL=1.25.0
+ARG FLARE_SERVER_VERSION_JL=1.58.0
 # IDE type for Amazon Q integration
 ARG AMAZON_Q_IDE_TYPE=jupyterlab
 
@@ -85,6 +85,12 @@ RUN apt-get update && apt-get upgrade -y && \
     Q_INSTALL_GLOBAL=true ./q/install.sh --no-confirm && \
     rm -rf q q.zip && \
     echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
+    : && \
+    # Install Kiro CLI
+    curl -o /tmp/kirocli.zip 'https://desktop-release.q.us-east-1.amazonaws.com/latest/kirocli-x86_64-linux.zip' && \
+    unzip /tmp/kirocli.zip -d /tmp && \
+    Q_INSTALL_GLOBAL=1 KIRO_CLI_SKIP_SETUP=1 /tmp/kirocli/install.sh && \
+    rm -rf /tmp/kirocli.zip /tmp/kirocli && \
 # CodeEditor - create server, user data dirs
     mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
