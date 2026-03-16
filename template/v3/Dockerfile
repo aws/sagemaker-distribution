@@ -13,6 +13,7 @@ ARG FLARE_SERVER_VERSION_JL=1.25.0
 ARG AMAZON_Q_IDE_TYPE=jupyterlab
 
 LABEL "org.amazon.sagemaker-distribution.image.version"=$IMAGE_VERSION
+LABEL com.amazonaws.sagemaker.capabilities.accept-bind-to-port=true
 
 ARG AMZN_BASE="/opt/amazon/sagemaker"
 ARG DB_ROOT_DIR="/opt/db"
