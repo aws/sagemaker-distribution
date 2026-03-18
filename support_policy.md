@@ -13,6 +13,14 @@ The table below outlines the release schedule for SageMaker Distribution Image v
 ## Vulnerability scanning
 AWS leverages [Amazon Elastic Container Registry (ECR) enhanced scanning](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html) to automatically detect vulnerabilities in SageMaker Distribution Images. AWS continuously runs ECR enhanced scanning on all supported image versions. When vulnerabilities are detected and a fix is available that satisfies the Semantic Versioning (SEMVER) constraints, AWS will release an update to remediate the issue.
 
+## Supported Major Versions
+
+| Image Version | Last minor version release | Supported until |
+| :---:         | :---:                      | :---:           |
+| 1.x.x         | Apr 30th, 2025             |  Oct 30th, 2025 |
+| 2.x.x         | Aug 25th, 2025             |  Feb 25th, 2026 |
+| 3.x.x         | Mar 29th, 2026             |  Sep 29th, 2026 |
+
 ## Supported Image Versions
 The tables below lists the supported SageMaker Distribution image versions and their planned end of support dates. When you are building images or pulling images from the ECR repository, we recommend you choose supported image versions from the tables below.
 
