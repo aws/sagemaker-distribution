@@ -16,6 +16,15 @@ else
     jupyter labextension disable sagemaker-data-explorer:plugin
 fi
 
+# Copy MCP server config and client settings to user-level Jupyter config
+mkdir -p ~/.jupyter
+cp /etc/sagemaker/jupyter/server/jupyter_server_config.py ~/.jupyter/
+cp /etc/sagemaker/jupyter/mcp_settings.json ~/.jupyter/
+
+# Copy JupyterLab settings (overrides)
+mkdir -p /opt/conda/share/jupyter/lab/settings
+cp -r /etc/sagemaker/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings/
+
 # Enable S3AG plugin if TIP is enabled
 if [ -n "$TRUSTED_IDENTITY_PROPOGATION_ENABLED" ]; then
     export BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin
