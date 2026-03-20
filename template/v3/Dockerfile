@@ -120,11 +120,13 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi && \
     # cuda-gdb 12.6.x is marked broken on conda-forge repodata but the artifact still exists.
-    # For GPU builds, download it and install alongside env specs; for CPU builds, skip it.
+    # For GPU builds, download it into a dedicated directory to avoid micromamba treating /tmp as
+    # a local channel (which causes file:///tmp/noarch/repodata.json errors); for CPU builds, skip it.
     if [[ -n $ARG_BASED_ENV_IN_FILENAME ]] ; then \
-        curl -fsSL -o /tmp/cuda-gdb-12.6.77-h50b4baa_1.conda https://conda.anaconda.org/conda-forge/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda && \
-        micromamba install -y --name base /tmp/cuda-gdb-12.6.77-h50b4baa_1.conda --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
-        rm /tmp/cuda-gdb-12.6.77-h50b4baa_1.conda ; \
+        mkdir -p /tmp/local-pkgs/linux-64 && \
+        curl -fsSL -o /tmp/local-pkgs/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda https://conda.anaconda.org/conda-forge/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda && \
+        micromamba install -y --name base /tmp/local-pkgs/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
+        rm -rf /tmp/local-pkgs ; \
     else \
         micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME ; \
     fi && \
