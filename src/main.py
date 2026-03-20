@@ -14,7 +14,7 @@ from docker.errors import BuildError, ContainerError
 from semver import Version
 
 from changelog_generator import generate_change_log
-from config import _image_generator_configs
+from config import EXTERNAL_LIB_CACHE_S3_BUCKET, _image_generator_configs
 from dependency_upgrader import (
     _MAJOR,
     _MINOR,
@@ -271,6 +271,7 @@ def _build_single_image(
     config = _get_config_for_image(target_version_dir, image_generator_config, force)
     image_type = config["image_type"]
     config["build_args"]["IMAGE_VERSION"] = config["image_tag_generator"].format(image_version=str(target_version))
+    config["build_args"]["EXTERNAL_LIB_CACHE_S3_BUCKET"] = EXTERNAL_LIB_CACHE_S3_BUCKET
 
     if glob.glob(os.path.join(target_version_dir, "*.patch")):
         dockerfile = f"./Dockerfile-{image_type}.patch"
