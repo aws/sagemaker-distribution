@@ -1,3 +1,5 @@
+EXTERNAL_LIB_CACHE_S3_BUCKET = "s3://external-lib-cache-prod"
+
 _image_generator_configs = {
     0: [
         {
