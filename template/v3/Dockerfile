@@ -118,8 +118,12 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     then echo 'No ARG_BASED_ENV_IN_FILENAME passed' ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi && \
+    # cuda-gdb 12.6.x is marked broken on conda-forge repodata but the artifact still exists.
+    # Download and install it directly alongside the rest of the env specs.
+    curl -fsSL -o /tmp/cuda-gdb-12.6.77-h50b4baa_1.conda https://conda.anaconda.org/conda-forge/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda && \
     # Enforce dependencies are all installed from conda-forge
-    micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
+    micromamba install -y --name base /tmp/cuda-gdb-12.6.77-h50b4baa_1.conda --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
+    rm /tmp/cuda-gdb-12.6.77-h50b4baa_1.conda && \
     mkdir -p $SAGEMAKER_RECOVERY_MODE_HOME && \
     chown $MAMBA_USER:$MAMBA_USER $SAGEMAKER_RECOVERY_MODE_HOME && \
     SUPERVISOR_VERSION=$(grep "^conda-forge::supervisor\[" /tmp/$ENV_IN_FILENAME) && \
