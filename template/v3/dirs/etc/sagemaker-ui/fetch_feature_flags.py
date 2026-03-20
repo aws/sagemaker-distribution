@@ -4,14 +4,14 @@ Fetch feature flags from DataZone domain and write to file.
 This script is intended to be called from the post-startup script.
 """
 
+import html
 import json
 import logging
 import os
 import re
 import sys
-import urllib.request
 import urllib.parse
-import html
+import urllib.request
 
 # Configure logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
