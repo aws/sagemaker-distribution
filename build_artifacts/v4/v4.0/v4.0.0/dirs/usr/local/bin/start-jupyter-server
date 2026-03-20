@@ -16,8 +16,10 @@ else
     jupyter labextension disable sagemaker-data-explorer:plugin
 fi
 
-# Setup MCP for SMAI spaces only
+# Setup MCP for SMAI spaces only (disabled by default in Dockerfile)
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+    jupyter server extension enable jupyter_server_mcp 2>/dev/null || true
+
     # Merge MCP client settings with user's existing config instead of overwriting
     source_mcp="/etc/sagemaker/jupyter/mcp_settings.json"
     target_mcp="$HOME/.jupyter/mcp_settings.json"
@@ -36,9 +38,6 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
     # Copy JupyterLab settings (overrides)
     mkdir -p /opt/conda/share/jupyter/lab/settings
     cp -r /etc/sagemaker/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings/
-else
-    # Disable MCP for non-SMAI private spaces
-    jupyter server extension disable jupyter_server_mcp 2>/dev/null || true
 fi
 
 # Enable S3AG plugin if TIP is enabled
