@@ -72,5 +72,5 @@ strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.19.1|2.19.1
-uv|0.10.11|0.10.11
+uv|0.10.12|0.10.12
 py-xgboost-cpu| |2.1.4

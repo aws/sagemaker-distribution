@@ -28,4 +28,4 @@ sagemaker-python-sdk|2.245.0|3.5.0
 sagemaker-studio-dataengineering-extensions|1.3.7|1.3.8
 sagemaker-studio-dataengineering-sessions|1.3.13|1.3.14
 tensorflow|2.18.0|2.19.1
-uv|0.10.8|0.10.11
+uv|0.10.8|0.10.12
