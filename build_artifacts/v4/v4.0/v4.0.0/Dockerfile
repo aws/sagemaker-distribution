@@ -91,6 +91,11 @@ RUN apt-get update && apt-get upgrade -y && \
     unzip /tmp/kirocli.zip -d /tmp && \
     Q_INSTALL_GLOBAL=1 KIRO_CLI_SKIP_SETUP=1 /tmp/kirocli/install.sh && \
     rm -rf /tmp/kirocli.zip /tmp/kirocli && \
+    # Clone skills from GitHub
+    git clone --depth 1 https://github.com/awslabs/agent-plugins.git /tmp/kiro-skills && \
+    mkdir -p /etc/sagemaker/kiro-skills && \
+    cp -r /tmp/kiro-skills/plugins/deploy-on-aws/skills/* /etc/sagemaker/kiro-skills && \
+    rm -rf /tmp/kiro-skills && \
 # CodeEditor - create server, user data dirs
     mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
@@ -219,7 +224,9 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="Spark"="SparkMagic Spark"=g'  /opt/conda/share/jupyter/kernels/sparkkernel/kernel.json && \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
-    jupyter labextension disable @jupyter/collaboration-extension
+    jupyter labextension disable @jupyter/collaboration-extension && \
+    # Disable MCP server extension by default - enabled at startup for SMAI spaces
+    jupyter server extension disable jupyter_server_mcp
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
