@@ -88,14 +88,6 @@ if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint -
     handle_workflows_startup_error 0
 fi
 
-# Do minimum system requirements check: 4GB RAM and more than 2 CPU cores
-free_mem=$(free -m | awk '/^Mem:/ {print $7}')
-cpu_cores=$(nproc)
-if [[ $free_mem -lt 4096 ]] || [[ $cpu_cores -le 2 ]]; then
-    echo "There is less than 4GB of available RAM or <=2 CPU cores. Workflows will not start. Free mem: $free_mem MB, CPU cores: $cpu_cores"
-    handle_workflows_startup_error 1
-fi
-
 (
 python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Creating directories'
 
@@ -109,30 +101,12 @@ mkdir -p $WORKFLOW_STARTUP_PATH
 mkdir -p $WORKFLOW_OUTPUT_PATH
 ) || handle_workflows_startup_error 2
 
-(
-# Set the status of the status file to 'starting'
-python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Installing prerequisites'
-
-# Workflows execution environment install
-sudo apt-get update
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo rm -f /etc/apt/keyrings/docker.gpg
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
-sudo chmod a+r /etc/apt/keyrings/docker.gpg
-echo \
-"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
-"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
-sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-VERSION_ID=$(cat /etc/os-release | grep -oP 'VERSION_ID=".*"' | cut -d'"' -f2)
-VERSION_STRING=$(sudo apt-cache madison docker-ce | awk '{ print $3 }' | grep -i $VERSION_ID | head -n 1)
-sudo apt-get install docker-ce-cli=$VERSION_STRING docker-compose-plugin=2.29.2-1~ubuntu.22.04~jammy -y --allow-downgrades
-) || handle_workflows_startup_error 3
 
 (
 # Set status to copying files
 python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Copying files'
 
+# Set up config files(plugins, requirements file, startup script), integrate with user custom setups
 # Create .airflowignore file
 cat >>"$WORKFLOW_DAG_PATH/.airflowignore" <<'END'
 .ipynb_checkpoints
@@ -174,14 +148,41 @@ if [ -d $USER_PLUGINS_FOLDER ]; then
     cp -r $USER_PLUGINS_FOLDER/* $WORKFLOW_PLUGINS_PATH
 fi
 
+# Copy sample dag if it does not exist
+cp -n "/etc/sagemaker-ui/workflows/sample_dag.py" "${WORKFLOW_DAG_PATH}/"
 ) || handle_workflows_startup_error 4
+
+# Original logics for starting up workflows local runner 
+# Do minimum system requirements check: 4GB RAM and more than 2 CPU cores
+free_mem=$(free -m | awk '/^Mem:/ {print $7}')
+cpu_cores=$(nproc)
+if [[ $free_mem -lt 4096 ]] || [[ $cpu_cores -le 2 ]]; then
+    echo "There is less than 4GB of available RAM or <=2 CPU cores. Workflows will not start. Free mem: $free_mem MB, CPU cores: $cpu_cores"
+    handle_workflows_startup_error 1
+fi
+
+(
+python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Installing prerequisites'
+
+# Workflows execution environment install
+sudo apt-get update
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo rm -f /etc/apt/keyrings/docker.gpg
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg
+sudo chmod a+r /etc/apt/keyrings/docker.gpg
+echo \
+"deb [arch="$(dpkg --print-architecture)" signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
+"$(. /etc/os-release && echo "$VERSION_CODENAME")" stable" | \
+sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+sudo apt-get update
+VERSION_ID=$(cat /etc/os-release | grep -oP 'VERSION_ID=".*"' | cut -d'"' -f2)
+VERSION_STRING=$(sudo apt-cache madison docker-ce | awk '{ print $3 }' | grep -i $VERSION_ID | head -n 1)
+sudo apt-get install docker-ce-cli=$VERSION_STRING docker-compose-plugin=2.29.2-1~ubuntu.22.04~jammy -y --allow-downgrades
+) || handle_workflows_startup_error 3
 
 (
 # Set status to installing workflows image
 python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Installing workflows image'
-
-# Copy sample dag if it does not exist
-cp -n "/etc/sagemaker-ui/workflows/sample_dag.py" "${WORKFLOW_DAG_PATH}/"
 
 # Log into ECR repository
 aws ecr get-login-password --region ${AWS_REGION} | docker login --username AWS --password-stdin ${ECR_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com
