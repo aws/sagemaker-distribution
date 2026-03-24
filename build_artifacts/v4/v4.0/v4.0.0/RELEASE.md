@@ -16,7 +16,7 @@ amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 pip|26.0.1|26.0.1
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
-sagemaker-jupyterlab-extension-common|0.3.1|0.3.1
+sagemaker-jupyterlab-extension-common|0.3.2|0.3.2
 amazon-sagemaker-jupyter-ai-q-developer|1.2.9|1.2.9
 jupyter-scheduler|2.12.0|2.12.0
 amazon-sagemaker-jupyter-scheduler|3.2.0|3.2.0
@@ -36,7 +36,7 @@ aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|26.1.1|26.1.1
 docker-cli|29.3.0|29.3.0
-fastapi|0.135.1|0.135.1
+fastapi|0.135.2|0.135.2
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-collaboration|4.2.1|4.2.1
@@ -57,10 +57,10 @@ sagemaker-code-editor|1.9.2|1.9.2
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.14
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
-sagemaker-jupyterlab-extension|0.5.2|0.5.2
+sagemaker-jupyterlab-extension|0.5.4|0.5.4
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
-sagemaker-python-sdk|3.5.0|3.5.0
+sagemaker-python-sdk|3.6.0|3.6.0
 sagemaker-studio|1.1.8|1.1.8
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
@@ -72,5 +72,5 @@ strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.19.1|2.19.1
-uv|0.10.12|0.10.12
+uv|0.11.0|0.11.0
 py-xgboost-cpu| |2.1.4
