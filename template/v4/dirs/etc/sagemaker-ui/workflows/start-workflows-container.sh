@@ -88,6 +88,9 @@ if  [ "$(python /etc/sagemaker-ui/workflows/workflow_client.py check-blueprint -
     handle_workflows_startup_error 0
 fi
 
+(
+python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Creating directories'
+
 # Create necessary directories
 mkdir -p $WORKFLOW_DAG_PATH
 mkdir -p $WORKFLOW_CONFIG_PATH
@@ -96,6 +99,12 @@ mkdir -p $WORKFLOW_REQUIREMENTS_PATH
 mkdir -p $WORKFLOW_PLUGINS_PATH
 mkdir -p $WORKFLOW_STARTUP_PATH
 mkdir -p $WORKFLOW_OUTPUT_PATH
+) || handle_workflows_startup_error 2
+
+
+(
+# Set status to copying files
+python /etc/sagemaker-ui/workflows/workflow_client.py update-local-runner-status --status 'starting' --detailed-status 'Copying files'
 
 # Set up config files(plugins, requirements file, startup script), integrate with user custom setups
 # Create .airflowignore file
@@ -141,6 +150,7 @@ fi
 
 # Copy sample dag if it does not exist
 cp -n "/etc/sagemaker-ui/workflows/sample_dag.py" "${WORKFLOW_DAG_PATH}/"
+) || handle_workflows_startup_error 4
 
 # Original logics for starting up workflows local runner 
 # Do minimum system requirements check: 4GB RAM and more than 2 CPU cores
