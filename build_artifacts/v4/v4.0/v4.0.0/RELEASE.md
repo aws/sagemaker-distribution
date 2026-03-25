@@ -54,7 +54,7 @@ python-gssapi|1.11.1|1.11.1
 python-lsp-server|1.14.0|1.14.0
 s3fs|2026.2.0|2026.2.0
 sagemaker-code-editor|1.9.2|1.9.2
-sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.14
+sagemaker-gen-ai-jupyterlab-extension|1.0.15|1.0.15
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
 sagemaker-jupyterlab-extension|0.5.4|0.5.4
@@ -72,5 +72,5 @@ strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.19.1|2.19.1
-uv|0.11.0|0.11.0
+uv|0.11.1|0.11.1
 py-xgboost-cpu| |2.1.4
