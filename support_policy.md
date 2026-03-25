@@ -4,14 +4,22 @@ Amazon SageMaker Distribution is a set of Docker images that include popular fra
 ## Support Policy
 The table below outlines the release schedule for SageMaker Distribution Image versions and their planned support timelines. AWS provides ongoing functionality and security updates for supported image versions. In some cases, an image version may need to be designated end of support earlier than originally planned if (a) security issues cannot be addressed while maintaining semantic versioning guidelines or (b) any of our major dependencies, like Python, reach end-of-life. AWS can release ad-hoc major or minor versions on an as-needed basis.
 
-| Version | Description | Release Cadence |
-| :---:   | :---:       | :---:           |
-| Major   | Amazon SageMaker Distribution's major version releases involve upgrading all of its core dependencies to the latest compatible versions. These major releases may also add or remove packages as part of the update. Major versions are denoted by the first number in the version string, such as 1.0, 2.0, or 3.0. | 6 months |
-| Minor   | Amazon SageMaker Distribution's minor version releases include upgrading all of its core dependencies to the latest compatible minor versions within the same major version. SageMaker Distribution can add new packages during a minor version release. Minor versions are denoted by the second number in the version string, for example, 1.1, 1.2, or 2.1. | 1 month |
-| Patch   | Amazon SageMaker Distribution's patch version releases include updating all of its core dependencies to the latest compatible patch versions within the same minor version. SageMaker Distribution does not add or remove any packages during a patch version release. Patch versions are denoted by the third number in the version string, for example, 1.1.1, 1.2.1, or 2.1.3. | As neccessary for fixing security vulnerabilities |
+| Version | Description | Release Cadence | Planned support |
+| :---:   | :---:       | :---:           | :---:           |
+| Major   | Amazon SageMaker Distribution's major version releases involve upgrading all of its core dependencies to the latest compatible versions. These major releases may also add or remove packages as part of the update. Major versions are denoted by the first number in the version string, such as 1.0, 2.0, or 3.0. | 6 months | 18 months |
+| Minor   | Amazon SageMaker Distribution's minor version releases include upgrading all of its core dependencies to the latest compatible minor versions within the same major version. SageMaker Distribution can add new packages during a minor version release. Minor versions are denoted by the second number in the version string, for example, 1.1, 1.2, or 2.1. | 1 month | 6 months |
+| Patch   | Amazon SageMaker Distribution's patch version releases include updating all of its core dependencies to the latest compatible patch versions within the same minor version. SageMaker Distribution does not add or remove any packages during a patch version release. Patch versions are denoted by the third number in the version string, for example, 1.1.1, 1.2.1, or 2.1.3. | As neccessary for fixing security vulnerabilities | Until new patch version is released |
 
 ## Vulnerability scanning
 AWS leverages [Amazon Elastic Container Registry (ECR) enhanced scanning](https://docs.aws.amazon.com/AmazonECR/latest/userguide/image-scanning-enhanced.html) to automatically detect vulnerabilities in SageMaker Distribution Images. AWS continuously runs ECR enhanced scanning on all supported image versions. When vulnerabilities are detected and a fix is available that satisfies the Semantic Versioning (SEMVER) constraints, AWS will release an update to remediate the issue.
+
+## Supported Major Versions
+
+| Image Version | Last minor version release | Supported until |
+| :---:         | :---:                      | :---:           |
+| 1.x.x         | Apr 30th, 2025             |  Oct 30th, 2025 |
+| 2.x.x         | Aug 25th, 2025             |  Feb 25th, 2026 |
+| 3.x.x         | Mar 29th, 2026             |  Sep 29th, 2026 |
 
 ## Supported Image Versions
 The tables below lists the supported SageMaker Distribution image versions and their planned end of support dates. When you are building images or pulling images from the ECR repository, we recommend you choose supported image versions from the tables below.
@@ -20,27 +28,31 @@ The tables below lists the supported SageMaker Distribution image versions and t
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
+| 3.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.9-cpu  |  Sep 9th, 2026  |
+| 3.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.8-cpu  |  Aug 1st, 2026  |
 | 3.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.7-cpu  |  Jun 22nd, 2026  |
 | 3.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.6-cpu  |  May 14th, 2026  |
 | 3.5.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.5-cpu  |  Apr 26th, 2026  |
-| 3.4.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.4-cpu  |  Feb 1st, 2026  |
+| 2.14.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.14-cpu  |  Sep 9th, 2026  |
+| 2.13.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.13-cpu  |  Aug 1st, 2026  |
 | 2.12.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.12-cpu  |  Jun 22nd, 2026  |
 | 2.11.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.11-cpu  |  May 14th, 2026  |
 | 2.10.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.10-cpu  |  Apr 26th, 2026  |
-| 2.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.9-cpu  | Feb 1st, 2026  |
 
 ### GPU Images
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
+| 3.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.9-gpu  |  Sep 9th, 2026  |
+| 3.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.8-gpu  |  Aug 1st, 2026  |
 | 3.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.7-gpu  |  Jun 22nd, 2026  |
 | 3.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.6-gpu  |  May 14th, 2026  |
 | 3.5.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.5-gpu  |  Apr 26th, 2026  |
-| 3.4.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.4-gpu  |  Feb 1st, 2026  |
+| 2.14.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.14-gpu  |  Sep 9th, 2026  |
+| 2.13.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.13-gpu  |  Aug 1st, 2026  |
 | 2.12.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.12-gpu  |  Jun 22nd, 2026  |
 | 2.11.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.11-gpu  |  May 14th, 2026  |
 | 2.10.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.10-gpu  |  Apr 26th, 2026  |
-| 2.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.9-gpu  | Feb 1st, 2026  |
 
 
 ## Unsupported Image Versions
@@ -50,10 +62,12 @@ The tables below list SageMaker Distribution Image versions that are no longer s
 
 | Image Version | ECR Image URI | End of Support Date |
 | :---:         | :---:         | :---:               |
+| 3.4.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.4-cpu  |  Feb 1st, 2026  |
 | 3.3.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.3-cpu  | Jan  7th, 2026  |
 | 3.2.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.2-cpu  | Dec  4th, 2025  |
 | 3.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.1-cpu  | Nov 19th, 2025  |
 | 3.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.0-cpu  | Jun 30th, 2025  |
+| 2.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.9-cpu  | Feb 1st, 2026  |
 | 2.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.8-cpu  | Jan  7th, 2026  |
 | 2.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.7-cpu  | Dec  4th, 2025  |
 | 2.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.6-cpu  | Jun 30th, 2025  |
@@ -87,10 +101,12 @@ The tables below list SageMaker Distribution Image versions that are no longer s
 ### GPU Images
 | Image Version | ECR Image URI | End of Support Date |
 | :---:         | :---:         | :---:               |
+| 3.4.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.4-gpu  |  Feb 1st, 2026  |
 | 3.3.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.3-gpu  | Jan  7th, 2026  |
 | 3.2.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.2-gpu  | Dec  4th, 2025  |
 | 3.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.1-gpu  | Nov 19th, 2025  |
 | 3.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.0-gpu  | Jun 30th, 2025  |
+| 2.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.9-gpu  | Feb 1st, 2026  |
 | 2.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.8-gpu  | Jan  7th, 2026  |
 | 2.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.7-gpu  | Dec  4th, 2025  |
 | 2.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.6-gpu  | Jun 30th, 2025  |

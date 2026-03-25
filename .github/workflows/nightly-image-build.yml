@@ -17,7 +17,7 @@ jobs:
         minor-versions: ${{ steps.set-matrix.outputs.minor-versions }}
         major-versions: ${{ steps.set-matrix.outputs.major-versions }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - name: Get versions from schedule
         id: set-matrix
         env:
