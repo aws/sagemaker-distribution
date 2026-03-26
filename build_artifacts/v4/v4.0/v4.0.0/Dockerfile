@@ -91,11 +91,6 @@ RUN apt-get update && apt-get upgrade -y && \
     unzip /tmp/kirocli.zip -d /tmp && \
     Q_INSTALL_GLOBAL=1 KIRO_CLI_SKIP_SETUP=1 /tmp/kirocli/install.sh && \
     rm -rf /tmp/kirocli.zip /tmp/kirocli && \
-    # Clone skills from GitHub
-    git clone --depth 1 https://github.com/awslabs/agent-plugins.git /tmp/kiro-skills && \
-    mkdir -p /etc/sagemaker/kiro-skills && \
-    cp -r /tmp/kiro-skills/plugins/deploy-on-aws/skills/* /etc/sagemaker/kiro-skills && \
-    rm -rf /tmp/kiro-skills && \
 # CodeEditor - create server, user data dirs
     mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
