@@ -35,7 +35,7 @@ notebook|7.5.5|7.5.5
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|26.1.1|26.1.1
-docker-cli|29.3.0|29.3.0
+docker-cli|29.3.1|29.3.1
 fastapi|0.135.2|0.135.2
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
@@ -65,7 +65,7 @@ sagemaker-studio|1.1.8|1.1.8
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.8|1.3.8
-sagemaker-studio-dataengineering-sessions|1.3.14|1.3.14
+sagemaker-studio-dataengineering-sessions|1.3.16|1.3.16
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
