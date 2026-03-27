@@ -6,9 +6,10 @@ ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
+ARG EXTERNAL_LIB_CACHE_S3_BUCKET=''
 
 # Amazon Q Agentic Chat version - update this default value when needed
-ARG FLARE_SERVER_VERSION_JL=1.25.0
+ARG FLARE_SERVER_VERSION_JL=1.62.0
 # IDE type for Amazon Q integration
 ARG AMAZON_Q_IDE_TYPE=jupyterlab
 
@@ -55,6 +56,7 @@ ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
 COPY aws-cli-public-key.asc /tmp/
+COPY workflows-local-runner-image-ecr-accounts.json /tmp/
 COPY extract_amazon_q_agentic_chat_urls.py /tmp/
 COPY download_amazon_q_agentic_chat_artifacts.sh /tmp/
 
@@ -117,24 +119,33 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     then echo 'No ARG_BASED_ENV_IN_FILENAME passed' ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi && \
-    # Enforce dependencies are all installed from conda-forge
-    micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
+    # cuda-gdb 12.6.x is marked broken on conda-forge repodata but the artifact still exists.
+    # For GPU builds, download it into a dedicated directory to avoid micromamba treating /tmp as
+    # a local channel (which causes file:///tmp/noarch/repodata.json errors); for CPU builds, skip it.
+    if [[ -n $ARG_BASED_ENV_IN_FILENAME ]] ; then \
+        mkdir -p /tmp/local-pkgs/linux-64 && \
+        curl -fsSL -o /tmp/local-pkgs/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda https://conda.anaconda.org/conda-forge/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda && \
+        micromamba install -y --name base /tmp/local-pkgs/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
+        rm -rf /tmp/local-pkgs ; \
+    else \
+        micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME ; \
+    fi && \
     mkdir -p $SAGEMAKER_RECOVERY_MODE_HOME && \
     chown $MAMBA_USER:$MAMBA_USER $SAGEMAKER_RECOVERY_MODE_HOME && \
     SUPERVISOR_VERSION=$(grep "^conda-forge::supervisor\[" /tmp/$ENV_IN_FILENAME) && \
     JUPYTERLAB_VERSION=$(grep "^conda-forge::jupyterlab\[" /tmp/$ENV_IN_FILENAME) && \
     SAGEMAKER_JUPYTERLAB_VERSION=$(grep "^conda-forge::sagemaker-jupyterlab-extension" /tmp/$ENV_IN_FILENAME) && \
-    echo "Installing in sagemaker-recovery-mode micromamba environment: $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
+    PYTHON_VERSION=$(grep "^conda-forge::python\[" /tmp/$ENV_IN_FILENAME) && \
+    echo "Installing in sagemaker-recovery-mode micromamba environment: $PYTHON_VERSION $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION" && \
     micromamba create --prefix /opt/conda/envs/sagemaker-recovery-mode && \
-    micromamba install --prefix /opt/conda/envs/sagemaker-recovery-mode -y $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
+    micromamba install --prefix /opt/conda/envs/sagemaker-recovery-mode -y $PYTHON_VERSION $JUPYTERLAB_VERSION $SAGEMAKER_JUPYTERLAB_VERSION $SUPERVISOR_VERSION && \
     micromamba clean --all --yes --force-pkgs-dirs && \
-    rm -rf /opt/conda/etc/conda/test-files/ && \
-    find /opt/conda -name "yarn.lock" -type f -delete && \
-    rm -rf /tmp/*.in && \
     sudo ln -s $(which python3) /usr/bin/python && \
     # Download shared web client libraries
     sudo mkdir -p /etc/web-client/libs && \
-    sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/web-client/libs/jszip.min.js" || (echo "Failed to download JSZip library" && exit 1) && \
+    (sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/web-client/libs/jszip.min.js" || \
+    sudo aws s3 cp $EXTERNAL_LIB_CACHE_S3_BUCKET/libs/jszip.min.js /etc/web-client/libs/jszip.min.js || \
+    (echo "Failed to download JSZip library from both CDN and S3" && exit 1)) && \
     # Download Amazon Q artifacts for JupyterLab extension
     bash /tmp/download_amazon_q_agentic_chat_artifacts.sh $FLARE_SERVER_VERSION_JL /etc/amazon-q-agentic-chat/artifacts/$AMAZON_Q_IDE_TYPE $AMAZON_Q_IDE_TYPE && \
     # Fix ownership for JupyterLab access
@@ -247,7 +258,12 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && chmod +x /usr/local/bin/testOSSCompliance \
     && chmod +x ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh \
     && ${HOME_DIR}/oss_compliance/generate_oss_compliance.sh ${HOME_DIR} python \
-    && rm -rf ${HOME_DIR}/oss_compliance*
+    && rm -rf ${HOME_DIR}/oss_compliance* \
+    # Remove all temp data generated during image build process
+    # This process must be done at the end of image build
+    && rm -rf /opt/conda/etc/conda/test-files/ \
+    && find /opt/conda -name "yarn.lock" -type f -delete \
+    && rm -rf /tmp/*.in
 
 # Explicitly disable BuildKit for SM Studio Docker functionality
 ENV DOCKER_BUILDKIT=0

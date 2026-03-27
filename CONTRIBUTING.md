@@ -41,8 +41,6 @@ GitHub provides additional document on [forking a repository](https://help.githu
 
 
 ## For adding new Conda packages to SageMaker Distribution
-SageMaker Distribution will add new Conda packages only during a minor/major version release.
-New packages will not be added during a patch version release.
 
 Follow these steps for sending out a pull request for adding new packages:
 1. Identify the latest version of SageMaker Distribution.
