@@ -9,7 +9,7 @@ replace_string() {
     local search="$1"
     local replace="$2"
     echo "Replacing '$search' with '$replace'..."
-    grep -l -i -r "$search" "$BASE_PATH" | xargs sed -i "s/$search/$replace/gI"
+    grep -l -i -r "$search" "$BASE_PATH" | xargs sed -i "s/$search/$replace/g"
 }
 
 # List of replacements
