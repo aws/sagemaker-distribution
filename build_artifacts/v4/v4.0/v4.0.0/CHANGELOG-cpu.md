@@ -25,10 +25,11 @@ jupyter-collaboration|3.1.2|4.2.1
 langchain-aws|0.2.19|0.2.35
 mlflow|2.22.0|3.10.1
 s3fs|2024.12.0|2026.2.0
+sagemaker-code-editor|1.9.2|1.9.4
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.15
 sagemaker-jupyterlab-extension|0.5.2|0.5.4
-sagemaker-python-sdk|2.245.0|3.6.0
+sagemaker-python-sdk|2.245.0|3.7.0
 sagemaker-studio-dataengineering-extensions|1.3.7|1.3.8
 sagemaker-studio-dataengineering-sessions|1.3.13|1.3.16
 tensorflow|2.18.0|2.19.1
-uv|0.10.8|0.11.1
+uv|0.10.8|0.11.2
