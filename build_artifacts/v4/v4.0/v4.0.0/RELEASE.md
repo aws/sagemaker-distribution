@@ -52,7 +52,7 @@ py-xgboost-gpu|2.1.4|
 pyhive|0.7.0|0.7.0
 python-gssapi|1.11.1|1.11.1
 python-lsp-server|1.14.0|1.14.0
-s3fs|2026.2.0|2026.2.0
+s3fs|2026.3.0|2026.3.0
 sagemaker-code-editor|1.9.4|1.9.4
 sagemaker-gen-ai-jupyterlab-extension|1.0.15|1.0.15
 sagemaker-headless-execution-driver|0.0.13|0.0.13

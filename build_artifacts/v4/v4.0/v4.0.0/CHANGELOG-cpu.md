@@ -24,7 +24,7 @@ fastapi|0.135.1|0.135.2
 jupyter-collaboration|3.1.2|4.2.1
 langchain-aws|0.2.19|0.2.35
 mlflow|2.22.0|3.10.1
-s3fs|2024.12.0|2026.2.0
+s3fs|2024.12.0|2026.3.0
 sagemaker-code-editor|1.9.2|1.9.4
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.15
 sagemaker-jupyterlab-extension|0.5.2|0.5.4
