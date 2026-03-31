@@ -429,7 +429,7 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" 
     rm -rf "$SMUS_PROJECT_DIR/.temp_sagemaker_unified_studio_debugging_info"
 
     # Create workflows resources (directories, config files, sample DAG)
-    bash /etc/sagemaker-ui/workflows/create-workflows-resources.sh
+    bash /etc/sagemaker-ui/workflows/create-workflows-resources.sh || echo "Warning: workflows resource creation failed, continuing..."
 
     # ensure functions inherit traps and fail immediately
     set -eE
