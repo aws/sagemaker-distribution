@@ -20,8 +20,9 @@ notebook|7.5.4|7.5.5
 aws-s3-access-grants-boto3-plugin|1.2.0|1.3.0
 conda|25.11.1|26.1.1
 docker-cli|27.5.1|29.3.1
-fastapi|0.135.1|0.135.2
+fastapi|0.135.1|0.135.3
 jupyter-collaboration|3.1.2|4.3.0
+jupyter-server-proxy|4.4.0|4.5.0
 langchain-aws|0.2.19|0.2.35
 mlflow|2.22.0|3.10.1
 s3fs|2024.12.0|2026.3.0
@@ -30,6 +31,6 @@ sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.15
 sagemaker-jupyterlab-extension|0.5.2|0.5.4
 sagemaker-python-sdk|2.245.0|3.7.0
 sagemaker-studio-dataengineering-extensions|1.3.7|1.3.8
-sagemaker-studio-dataengineering-sessions|1.3.13|1.3.16
+sagemaker-studio-dataengineering-sessions|1.3.13|1.3.18
 tensorflow|2.18.0|2.19.1
 uv|0.10.8|0.11.2
