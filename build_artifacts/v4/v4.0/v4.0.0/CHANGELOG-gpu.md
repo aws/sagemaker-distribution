@@ -10,7 +10,7 @@ altair|5.5.0|6.0.0
 boto3|1.37.3|1.42.70
 jupyterlab|4.5.5|4.5.6
 pip|25.3|26.0.1
-sagemaker-jupyterlab-extension-common|0.3.0|0.3.2
+sagemaker-jupyterlab-extension-common|0.3.0|0.3.3
 jupyter-scheduler|2.11.0|2.12.0
 amazon-sagemaker-jupyter-scheduler|3.1.16|3.2.0
 amazon_sagemaker_sql_editor|0.1.21|0.2.1
@@ -21,7 +21,7 @@ aws-s3-access-grants-boto3-plugin|1.2.0|1.3.0
 conda|25.11.1|26.1.1
 docker-cli|27.5.1|29.3.1
 fastapi|0.135.1|0.135.2
-jupyter-collaboration|3.1.2|4.2.1
+jupyter-collaboration|3.1.2|4.3.0
 langchain-aws|0.2.19|0.2.35
 mlflow|2.22.0|3.10.1
 s3fs|2024.12.0|2026.3.0

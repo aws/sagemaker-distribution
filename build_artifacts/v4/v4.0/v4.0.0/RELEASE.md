@@ -16,7 +16,7 @@ amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 pip|26.0.1|26.0.1
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
-sagemaker-jupyterlab-extension-common|0.3.2|0.3.2
+sagemaker-jupyterlab-extension-common|0.3.3|0.3.3
 amazon-sagemaker-jupyter-ai-q-developer|1.2.9|1.2.9
 jupyter-scheduler|2.12.0|2.12.0
 amazon-sagemaker-jupyter-scheduler|3.2.0|3.2.0
@@ -39,7 +39,7 @@ docker-cli|29.3.1|29.3.1
 fastapi|0.135.2|0.135.2
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
-jupyter-collaboration|4.2.1|4.2.1
+jupyter-collaboration|4.3.0|4.3.0
 jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.4.0|4.4.0
 jupyterlab-git|0.52.0|0.52.0
