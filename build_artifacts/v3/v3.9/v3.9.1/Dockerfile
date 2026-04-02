@@ -9,7 +9,7 @@ ARG IMAGE_VERSION
 ARG EXTERNAL_LIB_CACHE_S3_BUCKET=''
 
 # Amazon Q Agentic Chat version - update this default value when needed
-ARG FLARE_SERVER_VERSION_JL=1.62.0
+ARG FLARE_SERVER_VERSION_JL=1.25.0
 # IDE type for Amazon Q integration
 ARG AMAZON_Q_IDE_TYPE=jupyterlab
 
