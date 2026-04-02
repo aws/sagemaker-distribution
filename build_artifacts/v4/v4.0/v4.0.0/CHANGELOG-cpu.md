@@ -8,6 +8,7 @@ python|3.12.9|3.12.13
 pytorch|2.6.0|2.8.0
 altair|5.5.0|6.0.0
 boto3|1.37.3|1.42.70
+jupyter-lsp|2.3.0|2.3.1
 jupyterlab|4.5.5|4.5.6
 pip|25.3|26.0.1
 sagemaker-jupyterlab-extension-common|0.3.0|0.3.3
@@ -33,4 +34,4 @@ sagemaker-python-sdk|2.245.0|3.7.0
 sagemaker-studio-dataengineering-extensions|1.3.7|1.3.8
 sagemaker-studio-dataengineering-sessions|1.3.13|1.3.18
 tensorflow|2.18.0|2.19.1
-uv|0.10.8|0.11.2
+uv|0.10.8|0.11.3

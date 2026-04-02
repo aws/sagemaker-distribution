@@ -10,7 +10,7 @@ pandas|2.3.3|2.3.3
 altair|6.0.0|6.0.0
 boto3|1.42.70|1.42.70
 ipython|8.37.0|8.37.0
-jupyter-lsp|2.3.0|2.3.0
+jupyter-lsp|2.3.1|2.3.1
 jupyterlab|4.5.6|4.5.6
 amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 pip|26.0.1|26.0.1
@@ -72,5 +72,5 @@ strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.19.1|2.19.1
-uv|0.11.2|0.11.2
+uv|0.11.3|0.11.3
 py-xgboost-cpu| |2.1.4
