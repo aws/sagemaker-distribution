@@ -28,7 +28,7 @@ scipy|1.16.3|1.16.3
 matplotlib-base|3.10.8|3.10.8
 scikit-learn|1.7.2|1.7.2
 torchvision|0.24.0|0.24.0
-uvicorn|0.42.0|0.42.0
+uvicorn|0.43.0|0.43.0
 autogluon|1.5.0|1.5.0
 ipywidgets|8.1.8|8.1.8
 notebook|7.5.5|7.5.5

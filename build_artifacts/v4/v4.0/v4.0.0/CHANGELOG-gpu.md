@@ -16,7 +16,7 @@ jupyter-scheduler|2.11.0|2.12.0
 amazon-sagemaker-jupyter-scheduler|3.1.16|3.2.0
 amazon_sagemaker_sql_editor|0.1.21|0.2.1
 torchvision|0.21.0|0.24.0
-uvicorn|0.41.0|0.42.0
+uvicorn|0.41.0|0.43.0
 notebook|7.5.4|7.5.5
 aws-s3-access-grants-boto3-plugin|1.2.0|1.3.0
 conda|25.11.1|26.1.1
