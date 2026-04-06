@@ -20,21 +20,6 @@ fi
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
     jupyter server extension enable jupyter_server_mcp 2>/dev/null || true
 
-    # Merge MCP client settings with user's existing config instead of overwriting
-    source_mcp="/etc/sagemaker/jupyter/mcp_settings.json"
-    target_mcp="$HOME/.jupyter/mcp_settings.json"
-    mkdir -p ~/.jupyter
-    if [ -f "$target_mcp" ] && jq empty "$target_mcp" 2>/dev/null; then
-        jq -s '
-            .[0].mcp_servers as $existing |
-            .[1].mcp_servers as $new |
-            ($existing | map(.name)) as $names |
-            .[0] | .mcp_servers += [$new[] | select(.name as $n | $names | index($n) | not)]
-        ' "$target_mcp" "$source_mcp" > "$target_mcp.tmp" && mv "$target_mcp.tmp" "$target_mcp"
-    else
-        cp "$source_mcp" "$target_mcp"
-    fi
-
     # Copy JupyterLab settings (overrides)
     mkdir -p /opt/conda/share/jupyter/lab/settings
     cp -r /etc/sagemaker/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings/
