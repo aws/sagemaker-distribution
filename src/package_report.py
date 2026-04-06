@@ -336,7 +336,8 @@ def _generate_python_package_dependency_report(
     Generate dependency report for newly introduced packages using parallel conda search calls for improved performance.
     """
     # Get a list of newly introduced marquee packages in changeset and their versions.
-    _, new_packages = derive_changeset(target_version_dir, base_version_dir, image_config)
+    changeset = derive_changeset(base_version_dir, target_version_dir, image_config)
+    new_packages = changeset.direct.added
 
     results = dict()
 

@@ -14,7 +14,7 @@ from docker.errors import BuildError, ContainerError
 from semver import Version
 
 from changelog_generator import generate_change_log
-from config import _image_generator_configs
+from config import EXTERNAL_LIB_CACHE_S3_BUCKET, _image_generator_configs
 from dependency_upgrader import (
     _MAJOR,
     _MINOR,
@@ -127,11 +127,6 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
     aws_cli_key_path = os.path.relpath(f"assets/aws-cli-public-key.asc")
     if os.path.exists(aws_cli_key_path):
         shutil.copy2(aws_cli_key_path, new_version_dir)
-
-    # Copy ECR account mapping from assets
-    ecr_mapping_path = os.path.relpath(f"assets/workflows-local-runner-image-ecr-accounts.json")
-    if os.path.exists(ecr_mapping_path):
-        shutil.copy2(ecr_mapping_path, new_version_dir)
 
     # Copy Amazon Q agentic chat scripts from assets
     q_extract_script_path = os.path.relpath(f"assets/extract_amazon_q_agentic_chat_urls.py")
@@ -271,6 +266,7 @@ def _build_single_image(
     config = _get_config_for_image(target_version_dir, image_generator_config, force)
     image_type = config["image_type"]
     config["build_args"]["IMAGE_VERSION"] = config["image_tag_generator"].format(image_version=str(target_version))
+    config["build_args"]["EXTERNAL_LIB_CACHE_S3_BUCKET"] = EXTERNAL_LIB_CACHE_S3_BUCKET
 
     if glob.glob(os.path.join(target_version_dir, "*.patch")):
         dockerfile = f"./Dockerfile-{image_type}.patch"
