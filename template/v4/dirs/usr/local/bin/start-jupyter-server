@@ -14,6 +14,28 @@ else
     micromamba remove -y sagemaker-studio-dataengineering-sessions sagemaker-studio-dataengineering-extensions
     # Disable SMUS-specific extensions
     jupyter labextension disable sagemaker-data-explorer:plugin
+    # Disable old Q chat extension
+    jupyter labextension disable @amzn/amazon_sagemaker_jupyter_ai_q_developer
+fi
+
+# Setup skills and subagent for SMAI spaces
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+    # Sync pre-packaged skills to EBS
+    bash /etc/sagemaker/skills/sync_skills.sh || echo "Warning: skills sync failed, continuing..."
+
+    # Install subagent config (always overwrite)
+    mkdir -p "$HOME/.kiro/agents"
+    cp /etc/sagemaker/sagemaker-default-agent.json "$HOME/.kiro/agents/sagemaker-default-agent.json"
+
+    # Set default agent only if user hasn't configured one
+    KIRO_CLI_SETTINGS="$HOME/.kiro/settings/cli.json"
+    mkdir -p "$HOME/.kiro/settings"
+    if [ ! -f "$KIRO_CLI_SETTINGS" ]; then
+        echo '{"chat.defaultAgent":"sagemaker_default"}' > "$KIRO_CLI_SETTINGS"
+    elif ! jq -e '."chat.defaultAgent"' "$KIRO_CLI_SETTINGS" >/dev/null 2>&1; then
+        jq '. + {"chat.defaultAgent":"sagemaker_default"}' "$KIRO_CLI_SETTINGS" > "$KIRO_CLI_SETTINGS.tmp"
+        mv "$KIRO_CLI_SETTINGS.tmp" "$KIRO_CLI_SETTINGS"
+    fi
 fi
 
 # Enable S3AG plugin if TIP is enabled
