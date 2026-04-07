@@ -31,6 +31,7 @@ class NightlyBuildHelper:
             schedule.setdefault("active_nightly_builds", [])
             schedule.setdefault("patch_base_versions", [])
             schedule.setdefault("minor_base_versions", [])
+            schedule.setdefault("major_base_versions", [])
             return schedule_var, schedule
         except Exception as e:
             print(f"Error loading schedule from GitHub: {e}")
@@ -72,10 +73,11 @@ class NightlyBuildHelper:
 
         if version_obj.patch == 0:  # Handling minor version
             # Remove previous minor version from minor_base_versions
-            self.current_schedule["minor_base_versions"] = [
-                v for v in self.current_schedule["minor_base_versions"]
-                if not v.startswith(f"{version_obj.major}.{version_obj.minor-1}")
-            ]
+            if version_obj.minor > 0:
+                self.current_schedule["minor_base_versions"] = [
+                    v for v in self.current_schedule["minor_base_versions"]
+                    if not v.startswith(f"{version_obj.major}.{version_obj.minor-1}")
+                ]
         else:  # Handling patch version
             prev_version = str(version_obj.replace(patch=version_obj.patch - 1))
             if prev_version in self.current_schedule["patch_base_versions"]:
@@ -99,11 +101,12 @@ class NightlyBuildHelper:
             self.current_schedule["active_nightly_builds"].extend(next_versions)
             self.current_schedule["patch_base_versions"].append(version)
             self.current_schedule["minor_base_versions"].append(version)
-            prev_version = str(version_obj.replace(minor=version_obj.minor - 1))
-            # If 2.2.0 is released, and 2.1.0 was the base for 3.0.0, now set 2.2.0 as base
-            if prev_version in self.current_schedule["major_base_versions"]:
-                self.current_schedule["major_base_versions"].remove(prev_version)
-                self.current_schedule["major_base_versions"].append(version)
+            if version_obj.minor > 0:
+                prev_version = str(version_obj.replace(minor=version_obj.minor - 1))
+                # If 2.2.0 is released, and 2.1.0 was the base for 3.0.0, now set 2.2.0 as base
+                if prev_version in self.current_schedule["major_base_versions"]:
+                    self.current_schedule["major_base_versions"].remove(prev_version)
+                    self.current_schedule["major_base_versions"].append(version)
         else:  # Handling patch version
             self.current_schedule["active_nightly_builds"].extend(next_versions)
             self.current_schedule["patch_base_versions"].append(version)
