@@ -6,9 +6,10 @@ ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
+ARG EXTERNAL_LIB_CACHE_S3_BUCKET=''
 
 # Amazon Q Agentic Chat version - update this default value when needed
-ARG FLARE_SERVER_VERSION_JL=1.25.0
+ARG FLARE_SERVER_VERSION_JL=1.62.0
 # IDE type for Amazon Q integration
 ARG AMAZON_Q_IDE_TYPE=jupyterlab
 
@@ -55,7 +56,6 @@ ENV MAMBA_USER=$NB_USER
 ENV USER=$NB_USER
 
 COPY aws-cli-public-key.asc /tmp/
-COPY workflows-local-runner-image-ecr-accounts.json /tmp/
 COPY extract_amazon_q_agentic_chat_urls.py /tmp/
 COPY download_amazon_q_agentic_chat_artifacts.sh /tmp/
 
@@ -118,8 +118,17 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     then echo 'No ARG_BASED_ENV_IN_FILENAME passed' ; \
     else envsubst < /tmp/$ARG_BASED_ENV_IN_FILENAME | tee --append /tmp/$ENV_IN_FILENAME ; \
     fi && \
-    # Enforce dependencies are all installed from conda-forge
-    micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
+    # cuda-gdb 12.6.x is marked broken on conda-forge repodata but the artifact still exists.
+    # For GPU builds, download it into a dedicated directory to avoid micromamba treating /tmp as
+    # a local channel (which causes file:///tmp/noarch/repodata.json errors); for CPU builds, skip it.
+    if [[ -n $ARG_BASED_ENV_IN_FILENAME ]] ; then \
+        mkdir -p /tmp/local-pkgs/linux-64 && \
+        curl -fsSL -o /tmp/local-pkgs/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda https://conda.anaconda.org/conda-forge/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda && \
+        micromamba install -y --name base /tmp/local-pkgs/linux-64/cuda-gdb-12.6.77-h50b4baa_1.conda --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME && \
+        rm -rf /tmp/local-pkgs ; \
+    else \
+        micromamba install -y --name base --file /tmp/$ENV_IN_FILENAME --file /tmp/$PINNED_ENV_IN_FILENAME ; \
+    fi && \
     mkdir -p $SAGEMAKER_RECOVERY_MODE_HOME && \
     chown $MAMBA_USER:$MAMBA_USER $SAGEMAKER_RECOVERY_MODE_HOME && \
     SUPERVISOR_VERSION=$(grep "^conda-forge::supervisor\[" /tmp/$ENV_IN_FILENAME) && \
@@ -133,7 +142,9 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sudo ln -s $(which python3) /usr/bin/python && \
     # Download shared web client libraries
     sudo mkdir -p /etc/web-client/libs && \
-    sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/web-client/libs/jszip.min.js" || (echo "Failed to download JSZip library" && exit 1) && \
+    (sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/web-client/libs/jszip.min.js" || \
+    sudo aws s3 cp $EXTERNAL_LIB_CACHE_S3_BUCKET/libs/jszip.min.js /etc/web-client/libs/jszip.min.js || \
+    (echo "Failed to download JSZip library from both CDN and S3" && exit 1)) && \
     # Download Amazon Q artifacts for JupyterLab extension
     bash /tmp/download_amazon_q_agentic_chat_artifacts.sh $FLARE_SERVER_VERSION_JL /etc/amazon-q-agentic-chat/artifacts/$AMAZON_Q_IDE_TYPE $AMAZON_Q_IDE_TYPE && \
     # Fix ownership for JupyterLab access

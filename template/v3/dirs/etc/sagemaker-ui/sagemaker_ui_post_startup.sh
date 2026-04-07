@@ -427,12 +427,9 @@ nohup python /etc/sagemaker/sm_pysdk_default_config.py &
 if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" != "true" ]; then
     # clean up gen ai debugging file
     rm -rf "$SMUS_PROJECT_DIR/.temp_sagemaker_unified_studio_debugging_info"
-    # do not fail immediately for non-zero exit code returned
-    # by start-workflows-container. An expected non-zero exit
-    # code will be returned if there is not a minimum of 2
-    # CPU cores available.
-    # Start workflows local runner
-    bash /etc/sagemaker-ui/workflows/start-workflows-container.sh
+
+    # Create workflows resources (directories, config files, sample DAG)
+    bash /etc/sagemaker-ui/workflows/create-workflows-resources.sh || echo "Warning: workflows resource creation failed, continuing..."
 
     # ensure functions inherit traps and fail immediately
     set -eE
