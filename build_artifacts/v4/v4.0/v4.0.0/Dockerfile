@@ -6,7 +6,6 @@ ARG ENV_IN_FILENAME
 ARG PINNED_ENV_IN_FILENAME
 ARG ARG_BASED_ENV_IN_FILENAME
 ARG IMAGE_VERSION
-ARG EXTERNAL_LIB_CACHE_S3_BUCKET=''
 
 # Amazon Q Agentic Chat version - update this default value when needed
 ARG FLARE_SERVER_VERSION_JL=1.62.0
@@ -141,9 +140,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sudo ln -s $(which python3) /usr/bin/python && \
     # Download shared web client libraries
     sudo mkdir -p /etc/web-client/libs && \
-    (sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/web-client/libs/jszip.min.js" || \
-    sudo aws s3 cp $EXTERNAL_LIB_CACHE_S3_BUCKET/libs/jszip.min.js /etc/web-client/libs/jszip.min.js || \
-    (echo "Failed to download JSZip library from both CDN and S3" && exit 1)) && \
+    sudo curl -L --retry 3 --retry-delay 5 --fail "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js" -o "/etc/web-client/libs/jszip.min.js" || (echo "Failed to download JSZip library" && exit 1) && \
     # Download Amazon Q artifacts for JupyterLab extension
     bash /tmp/download_amazon_q_agentic_chat_artifacts.sh $FLARE_SERVER_VERSION_JL /etc/amazon-q-agentic-chat/artifacts/$AMAZON_Q_IDE_TYPE $AMAZON_Q_IDE_TYPE && \
     # Fix ownership for JupyterLab access
