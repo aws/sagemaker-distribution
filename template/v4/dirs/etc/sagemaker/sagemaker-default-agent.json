@@ -1,0 +1,8 @@
+{
+  "name": "sagemaker_default",
+  "description": "SageMaker AI assistant with pre-installed skills for model customization, evaluation, deployment, and HyperPod operations.",
+  "tools": ["@builtin"],
+  "allowedTools": [],
+  "mcpServers": {},
+  "resources": []
+}
