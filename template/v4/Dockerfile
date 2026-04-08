@@ -222,6 +222,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
     jupyter labextension disable @jupyter/collaboration-extension && \
+    # Disable MCP server extension by default - enabled at startup for SMAI spaces
+    jupyter server extension disable jupyter_server_mcp && \
     # Disable docprovider-extension for v3 and above images
     jupyter labextension disable @jupyter/docprovider-extension
 
