@@ -1,4 +1,4 @@
-# Change log: 2.12.5 (cpu)
+# Change log: 2.12.5 (gpu)
 
 This page lists all package changes since the previous release (2.12.4).
 
