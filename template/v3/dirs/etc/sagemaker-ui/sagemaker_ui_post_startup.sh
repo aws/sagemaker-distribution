@@ -93,9 +93,9 @@ fi
 
 # Check if domain is in express mode by looking for a default IAM connection
 if [ ! -z "$dataZoneEndPoint" ]; then
-    iam_connections=$(aws datazone list-connections --endpoint-url "$dataZoneEndPoint" --domain-identifier "$dataZoneDomainId" --type IAM --name "default.iam" --region "$dataZoneDomainRegion" --query "items" --output json 2>&1)
+    iam_connections=$(aws datazone list-connections --endpoint-url "$dataZoneEndPoint" --domain-identifier "$dataZoneDomainId" --project-identifier "$dataZoneProjectId" --type IAM --name "default.iam" --region "$dataZoneDomainRegion" --query "items" --output json 2>&1)
 else
-    iam_connections=$(aws datazone list-connections --domain-identifier "$dataZoneDomainId" --type IAM --name "default.iam" --region "$dataZoneDomainRegion" --query "items" --output json 2>&1)
+    iam_connections=$(aws datazone list-connections --domain-identifier "$dataZoneDomainId" --project-identifier "$dataZoneProjectId" --type IAM --name "default.iam" --region "$dataZoneDomainRegion" --query "items" --output json 2>&1)
 fi
 
 iam_connection_count=$(echo "$iam_connections" | jq -r 'if type == "array" then length else 0 end' 2>/dev/null || echo "0")
