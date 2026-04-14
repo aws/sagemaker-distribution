@@ -91,19 +91,19 @@ c.Application.logging_config = {
 EOT
 fi
 
-# Add debug call to get domain info
+# Check if domain is in express mode by looking for a default IAM connection
 if [ ! -z "$dataZoneEndPoint" ]; then
-    domain_response=$(aws datazone get-domain --debug --endpoint-url "$dataZoneEndPoint" --identifier "$dataZoneDomainId" --region "$dataZoneDomainRegion" 2>&1)
-
+    iam_connections=$(aws datazone list-connections --endpoint-url "$dataZoneEndPoint" --domain-identifier "$dataZoneDomainId" --type IAM --name "default.iam" --region "$dataZoneDomainRegion" --query "items" --output json 2>&1)
 else
-    domain_response=$(aws datazone get-domain --debug --identifier "$dataZoneDomainId" --region "$dataZoneDomainRegion" 2>&1)
+    iam_connections=$(aws datazone list-connections --domain-identifier "$dataZoneDomainId" --type IAM --name "default.iam" --region "$dataZoneDomainRegion" --query "items" --output json 2>&1)
 fi
 
-# Check if domain is in express mode
-response_body=$(echo "$domain_response" | grep -A1 "Response body:" | tail -n1 | sed 's/^b'\''//;s/'\''$//')
-# Remove leading/trailing whitespace and the 'b' prefix
-cleaned_response=$(echo "$response_body" | sed 's/\\n//g')
-is_express_mode=$(echo "$cleaned_response" | jq -r '((.preferences.DOMAIN_MODE // null) == "EXPRESS") or ((.domainVersion // null) == "V2" and ((.iamSignIns // []) | contains(["IAM_ROLE"]) and contains(["IAM_USER"])))')
+iam_connection_count=$(echo "$iam_connections" | jq -r 'if type == "array" then length else 0 end' 2>/dev/null || echo "0")
+if [ "$iam_connection_count" -gt 0 ]; then
+    is_express_mode="true"
+else
+    is_express_mode="false"
+fi
 
 if [ "$is_express_mode" = "true" ]; then
     echo "Domain is in express mode. Using default credentials"
