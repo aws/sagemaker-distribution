@@ -52,7 +52,7 @@ pyhive|0.7.0|0.7.0
 python-gssapi|1.10.1|1.10.1
 python-lsp-server|1.14.0|1.14.0
 s3fs|2024.12.0|2024.12.0
-sagemaker-code-editor|1.8.7|1.8.7
+sagemaker-code-editor|1.8.8|1.8.8
 sagemaker-gen-ai-jupyterlab-extension|1.0.15|1.0.15
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
