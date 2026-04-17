@@ -5,7 +5,9 @@ set -eu
 IMAGE_SKILLS_DIR="/etc/sagemaker/skills"
 EBS_SKILLS_DIR="$HOME/.agent/skills"
 LOCK_FILE="$EBS_SKILLS_DIR/.sagemaker-lock"
-KIRO_SKILLS_DIR="$HOME/.kiro/skills"
+
+# Agent targets to symlink skills into (add new agents here)
+AGENT_SKILLS_DIRS=("$HOME/.kiro/skills")
 
 compute_checksum() {
     (cd "$1" && find . -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')
@@ -21,7 +23,8 @@ set_locked_checksum() {
     mv "$LOCK_FILE.tmp" "$LOCK_FILE"
 }
 
-mkdir -p "$EBS_SKILLS_DIR" "$KIRO_SKILLS_DIR"
+mkdir -p "$EBS_SKILLS_DIR"
+for dir in "${AGENT_SKILLS_DIRS[@]}"; do mkdir -p "$dir"; done
 
 if [ ! -d "$IMAGE_SKILLS_DIR" ]; then
     echo "No bundled skills found at $IMAGE_SKILLS_DIR, skipping."
@@ -56,11 +59,14 @@ for skill_path in "$IMAGE_SKILLS_DIR"/*/; do
         fi
     fi
 
-    kiro_link="$KIRO_SKILLS_DIR/$skill_name"
-    if [ ! -e "$kiro_link" ]; then
-        ln -s "$ebs_skill" "$kiro_link"
-        echo "Created symlink $kiro_link -> $ebs_skill"
-    fi
+    # Create symlinks for all agent targets
+    for agent_dir in "${AGENT_SKILLS_DIRS[@]}"; do
+        link="$agent_dir/$skill_name"
+        if [ ! -e "$link" ]; then
+            ln -s "$ebs_skill" "$link"
+            echo "Created symlink $link -> $ebs_skill"
+        fi
+    done
 done
 
 echo "Skills sync complete."

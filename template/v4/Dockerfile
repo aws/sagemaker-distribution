@@ -92,11 +92,15 @@ RUN apt-get update && apt-get upgrade -y && \
     Q_INSTALL_GLOBAL=1 KIRO_CLI_SKIP_SETUP=1 /tmp/kirocli/install.sh && \
     rm -rf /tmp/kirocli.zip /tmp/kirocli && \
     : && \
-    # Clone SageMaker AI skills from GitHub
-    git clone --depth 1 https://github.com/awslabs/agent-plugins.git /tmp/agent-plugins && \
+    # Clone skills from manifest config
     mkdir -p /etc/sagemaker/skills && \
-    cp -r /tmp/agent-plugins/plugins/sagemaker-ai/skills/* /etc/sagemaker/skills/ && \
-    rm -rf /tmp/agent-plugins && \
+    jq -c '.[]' /etc/sagemaker/skills/skills-manifest.json | while read -r entry; do \
+        repo=$(echo "$entry" | jq -r '.repo'); \
+        spath=$(echo "$entry" | jq -r '.path'); \
+        git clone --depth 1 "$repo" /tmp/skill-repo && \
+        cp -r "/tmp/skill-repo/$spath"/* /etc/sagemaker/skills/ && \
+        rm -rf /tmp/skill-repo; \
+    done && \
 # CodeEditor - create server, user data dirs
     mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \

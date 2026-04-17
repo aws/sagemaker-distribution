@@ -21,21 +21,10 @@ fi
 # Setup skills and subagent for SMAI spaces
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
     # Sync pre-packaged skills to EBS
-    bash /etc/sagemaker/skills/sync_skills.sh || echo "Warning: skills sync failed, continuing..."
+    bash /etc/sagemaker/skills/sync_skills.sh 2>&1 || echo "Warning: skills sync failed, continuing..."
 
-    # Install subagent config (always overwrite)
-    mkdir -p "$HOME/.kiro/agents"
-    cp /etc/sagemaker/sagemaker-default-agent.json "$HOME/.kiro/agents/sagemaker-default-agent.json"
-
-    # Set default agent only if user hasn't configured one
-    KIRO_CLI_SETTINGS="$HOME/.kiro/settings/cli.json"
-    mkdir -p "$HOME/.kiro/settings"
-    if [ ! -f "$KIRO_CLI_SETTINGS" ]; then
-        echo '{"chat.defaultAgent":"sagemaker_default"}' > "$KIRO_CLI_SETTINGS"
-    elif ! jq -e '."chat.defaultAgent"' "$KIRO_CLI_SETTINGS" >/dev/null 2>&1; then
-        jq '. + {"chat.defaultAgent":"sagemaker_default"}' "$KIRO_CLI_SETTINGS" > "$KIRO_CLI_SETTINGS.tmp"
-        mv "$KIRO_CLI_SETTINGS.tmp" "$KIRO_CLI_SETTINGS"
-    fi
+    # Sync agent config (subagent + default agent settings)
+    bash /etc/sagemaker/sync_agent.sh 2>&1 || echo "Warning: agent config sync failed, continuing..."
 fi
 
 # Enable S3AG plugin if TIP is enabled
