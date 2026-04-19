@@ -64,6 +64,12 @@ eval "$(micromamba shell hook --shell=bash)"
 # Activate conda environment 'base', which is the default environment for sagemaker-distribution
 micromamba activate base
 
+# Setup skills and subagent for SMAI spaces
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+  bash /etc/sagemaker/skills/sync_skills.sh 2>&1 || echo "Warning: skills sync failed, continuing..."
+  bash /etc/sagemaker/sync_agent.sh 2>&1 || echo "Warning: agent config sync failed, continuing..."
+fi
+
 # Start code-editor server
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker app.
