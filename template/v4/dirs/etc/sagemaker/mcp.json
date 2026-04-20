@@ -1,8 +1,0 @@
-{
-  "mcpServers": {
-    "jupyter_mcp_server": {
-      "type": "http",
-      "url": "http://localhost:8080/mcp"
-    }
-  }
-}

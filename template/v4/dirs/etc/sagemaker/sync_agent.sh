@@ -4,19 +4,12 @@ set -eu
 
 AGENT_CONFIG_SRC="/etc/sagemaker/sagemaker-default-agent.json"
 AGENT_CONFIG_DST="$HOME/.kiro/agents/sagemaker-default-agent.json"
-MCP_CONFIG_SRC="/etc/sagemaker/mcp.json"
-MCP_CONFIG_DST="$HOME/.kiro/settings/mcp.json"
 KIRO_CLI_SETTINGS="$HOME/.kiro/settings/cli.json"
 
 # Install subagent config (always overwrite)
 mkdir -p "$HOME/.kiro/agents"
 cp "$AGENT_CONFIG_SRC" "$AGENT_CONFIG_DST"
 echo "Installed agent config to $AGENT_CONFIG_DST"
-
-# Install MCP config (always overwrite)
-mkdir -p "$HOME/.kiro/settings"
-cp "$MCP_CONFIG_SRC" "$MCP_CONFIG_DST"
-echo "Installed MCP config to $MCP_CONFIG_DST"
 
 # Set default agent only if user hasn't configured one
 mkdir -p "$HOME/.kiro/settings"
