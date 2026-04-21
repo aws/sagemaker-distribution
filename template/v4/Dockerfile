@@ -91,16 +91,6 @@ RUN apt-get update && apt-get upgrade -y && \
     unzip /tmp/kirocli.zip -d /tmp && \
     Q_INSTALL_GLOBAL=1 KIRO_CLI_SKIP_SETUP=1 /tmp/kirocli/install.sh && \
     rm -rf /tmp/kirocli.zip /tmp/kirocli && \
-    : && \
-    # Clone skills from manifest config
-    mkdir -p /etc/sagemaker/skills && \
-    jq -c '.[]' /etc/sagemaker/skills/skills-manifest.json | while read -r entry; do \
-        repo=$(echo "$entry" | jq -r '.repo'); \
-        spath=$(echo "$entry" | jq -r '.path'); \
-        git clone --depth 1 "$repo" /tmp/skill-repo && \
-        cp -r "/tmp/skill-repo/$spath"/* /etc/sagemaker/skills/ && \
-        rm -rf /tmp/skill-repo; \
-    done && \
 # CodeEditor - create server, user data dirs
     mkdir -p /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data \
     && chown $MAMBA_USER:$MAMBA_USER /opt/amazon/sagemaker/sagemaker-code-editor-server-data /opt/amazon/sagemaker/sagemaker-ui-code-editor-server-data /opt/amazon/sagemaker/sagemaker-code-editor-user-data && \
@@ -112,6 +102,8 @@ RUN apt-get update && apt-get upgrade -y && \
 COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
 RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     rm -rf ${DIRECTORY_TREE_STAGE_DIR} && \
+    # Clone skills from manifest config (must run after COPY dirs/ + rsync which provides skills-manifest.json)
+    bash /etc/sagemaker/skills/clone_skills.sh && \
 # CodeEditor - download the extensions
     mkdir -p /etc/code-editor/extensions /etc/code-editor/extensions-sagemaker-ui && \
     while IFS= read -r url || [ -n "$url" ]; do \
