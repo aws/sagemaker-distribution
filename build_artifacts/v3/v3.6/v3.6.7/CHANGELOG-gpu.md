@@ -14,7 +14,7 @@ Package | Previous Version | Current Version | Change Type
 jupyter-lsp|2.3.0|2.3.1|patch
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.5|1.0.6|patch
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.15|patch
-sagemaker-studio|1.1.8|1.1.12|patch
+sagemaker-studio|1.1.8|1.1.13|patch
 sagemaker-studio-dataengineering-sessions|1.3.14|1.3.18|patch
 
 ## Indirect dependencies
