@@ -18,8 +18,8 @@ else
     jupyter labextension disable @amzn/amazon_sagemaker_jupyter_ai_q_developer
 fi
 
-# Setup skills and subagent for SMAI spaces
-if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+# Setup skills and subagent for SMAI private spaces only
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" != "shared" ]; then
     # Sync pre-packaged skills to EBS
     bash /etc/sagemaker/skills/sync_skills.sh 2>&1 || echo "Warning: skills sync failed, continuing..."
 
