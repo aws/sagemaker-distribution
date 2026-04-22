@@ -17,7 +17,7 @@ amzn-sagemaker-aiops-jupyterlab-extension|1.0.5|1.0.6|patch
 fastapi|0.135.2|0.135.3|patch
 sagemaker-code-editor|1.9.2|1.9.5|patch
 sagemaker-gen-ai-jupyterlab-extension|1.0.14|1.0.15|patch
-sagemaker-studio|1.1.8|1.1.12|patch
+sagemaker-studio|1.1.8|1.1.13|patch
 sagemaker-studio-dataengineering-sessions|1.3.14|1.3.18|patch
 
 ## Indirect dependencies
@@ -43,8 +43,8 @@ narwhals|2.18.1|2.20.0|minor
 pygments|2.19.2|2.20.0|minor
 prometheus_client|0.24.1|0.25.0|minor
 json5|0.13.0|0.14.0|minor
-pydantic-core|2.41.5|2.46.2|minor
-pydantic|2.12.5|2.13.2|minor
+pydantic-core|2.41.5|2.46.3|minor
+pydantic|2.12.5|2.13.3|minor
 pydantic-settings|2.13.1|2.14.0|minor
 regex|2026.2.28|2026.4.4|minor
 googleapis-common-protos|1.73.0|1.74.0|minor
@@ -81,7 +81,7 @@ nbconvert-pandoc|7.17.0|7.17.1|patch
 nbconvert|7.17.0|7.17.1|patch
 cryptography|46.0.5|46.0.7|patch
 pyathena|3.30.0|3.30.1|patch
-fastcore|1.12.31|1.12.39|patch
+fastcore|1.12.31|1.12.40|patch
 expat|2.7.4|2.7.5|patch
 fonttools|4.62.0|4.62.1|patch
 google-auth|2.49.1|2.49.2|patch
