@@ -60,7 +60,7 @@ sagemaker-jupyterlab-extension|0.5.4|0.5.4
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
 sagemaker-python-sdk|2.254.1|2.254.1
-sagemaker-studio|1.1.12|1.1.12
+sagemaker-studio|1.1.13|1.1.13
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.8|1.3.8
