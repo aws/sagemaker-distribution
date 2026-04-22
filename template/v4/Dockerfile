@@ -102,6 +102,8 @@ RUN apt-get update && apt-get upgrade -y && \
 COPY dirs/ ${DIRECTORY_TREE_STAGE_DIR}/
 RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     rm -rf ${DIRECTORY_TREE_STAGE_DIR} && \
+    # Clone skills from manifest config (must run after COPY dirs/ + rsync which provides skills-manifest.json)
+    bash /etc/sagemaker/skills/clone_skills.sh && \
 # CodeEditor - download the extensions
     mkdir -p /etc/code-editor/extensions /etc/code-editor/extensions-sagemaker-ui && \
     while IFS= read -r url || [ -n "$url" ]; do \
@@ -222,6 +224,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sed -i 's="PySpark"="SparkMagic PySpark"=g'  /opt/conda/share/jupyter/kernels/pysparkkernel/kernel.json && \
     # Configure RTC - disable jupyter_collaboration by default
     jupyter labextension disable @jupyter/collaboration-extension && \
+    # Disable MCP server extension by default - enabled at startup for SMAI spaces
+    jupyter server extension disable jupyter_server_mcp && \
     # Disable docprovider-extension for v3 and above images
     jupyter labextension disable @jupyter/docprovider-extension
 
