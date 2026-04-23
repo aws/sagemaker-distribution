@@ -12,14 +12,19 @@ This page lists all package changes since the previous release (4.0.0).
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 altair|6.0.0|6.1.0|minor
-uvicorn|0.44.0|0.45.0|minor
+sagemaker-jupyterlab-extension-common|0.3.3|0.4.2|minor
+uvicorn|0.44.0|0.46.0|minor
 fastapi|0.135.3|0.136.0|minor
 sagemaker-mlflow|0.2.0|0.3.0|minor
+boto3|1.42.70|1.42.84|patch
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.5|1.0.6|patch
 conda|26.3.1|26.3.2|patch
 docker-cli|29.4.0|29.4.1|patch
 sagemaker-code-editor|1.9.4|1.9.5|patch
+sagemaker-jupyterlab-extension|0.5.4|0.5.7|patch
 sagemaker-studio|1.1.8|1.1.13|patch
+sagemaker-studio-dataengineering-extensions|1.3.8|1.3.9|patch
+sagemaker-studio-dataengineering-sessions|1.3.18|1.3.19|patch
 uv|0.11.4|0.11.7|patch
 
 ## Indirect dependencies
@@ -39,12 +44,15 @@ libsqlite|3.52.0|3.53.0|minor
 ca-certificates|2026.2.25|2026.4.22|minor
 filelock|3.25.2|3.29.0|minor
 certifi|2026.2.25|2026.4.22|minor
+idna|3.11|3.13|minor
 nccl|2.29.3.1|2.30.3.1|minor
+aiobotocore|3.3.0|3.4.0|minor
 greenlet|3.3.2|3.4.0|minor
 narwhals|2.19.0|2.20.0|minor
 prometheus_client|0.24.1|0.25.0|minor
 pydantic-core|2.41.5|2.46.3|minor
 pydantic|2.12.5|2.13.3|minor
+wheel|0.46.3|0.47.0|minor
 pydantic-settings|2.13.1|2.14.0|minor
 snowflake-connector-python|3.13.2|3.17.4|minor
 apsw|3.52.0.0|3.53.0.0|minor
@@ -54,10 +62,12 @@ opentelemetry-proto|1.40.0|1.41.0|minor
 smart_open|7.5.1|7.6.0|minor
 smart-open|7.5.1|7.6.0|minor
 awswrangler|3.15.1|3.16.0|minor
-databricks-sdk|0.102.0|0.103.0|minor
+pathspec|1.0.4|1.1.0|minor
+conda-libmamba-solver|26.3.0|26.4.0|minor
+databricks-sdk|0.102.0|0.105.0|minor
 deltalake|1.3.2|1.5.0|minor
 dnspython|2.7.0|2.8.0|minor
-uvicorn-standard|0.44.0|0.45.0|minor
+uvicorn-standard|0.44.0|0.46.0|minor
 fastapi-core|0.135.3|0.136.0|minor
 skops|0.13.0|0.14|minor
 sagemaker-core|2.7.1|2.8.0|minor
@@ -67,17 +77,22 @@ llvm-openmp|22.1.2|22.1.4|patch
 liblzma|5.8.2|5.8.3|patch
 libpng|1.6.56|1.6.58|patch
 libjpeg-turbo|3.1.2|3.1.4.1|patch
+botocore|1.42.70|1.42.84|patch
 zipp|3.23.0|3.23.1|patch
 mako|1.3.10|1.3.11|patch
+s3transfer|0.16.0|0.16.1|patch
 platformdirs|4.9.4|4.9.6|patch
 jupyter_events|0.12.0|0.12.1|patch
 langsmith|0.7.26|0.7.33|patch
-fastcore|1.12.34|1.12.40|patch
+fastcore|1.12.34|1.12.42|patch
 fonttools|4.62.0|4.62.1|patch
 google-auth|2.49.1|2.49.2|patch
 virtualenv|21.2.0|21.2.4|patch
 rich|14.3.3|14.3.4|patch
 python-multipart|0.0.24|0.0.26|patch
+python-fasthtml|0.13.3|0.13.4|patch
+typer|0.24.1|0.24.2|patch
+libsolv|0.7.36|0.7.37|patch
 reproc|14.2.5.post0|14.2.7.post0|patch
 reproc-cpp|14.2.5.post0|14.2.7.post0|patch
 python-duckdb|1.5.1|1.5.2|patch
@@ -94,5 +109,6 @@ opentelemetry-instrumentation-threading|0.61b0|0.62b0|
 
 Package | Version
 ---|---
+onemkl-license|2025.3.1
 fastar|0.11.0
 sqlglot|28.10.1

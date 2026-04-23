@@ -8,7 +8,7 @@ jinja2|3.1.6|3.1.6
 pytorch|2.8.0|2.8.0
 pandas|2.3.3|2.3.3
 altair|6.1.0|6.1.0
-boto3|1.42.70|1.42.70
+boto3|1.42.84|1.42.84
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.1|2.3.1
 jupyterlab|4.5.6|4.5.6
@@ -16,7 +16,7 @@ amazon-q-developer-jupyterlab-ext|3.4.8|3.4.8
 pip|26.0.1|26.0.1
 langchain|0.3.27|0.3.27
 jupyter-ai|2.31.7|2.31.7
-sagemaker-jupyterlab-extension-common|0.3.3|0.3.3
+sagemaker-jupyterlab-extension-common|0.4.2|0.4.2
 amazon-sagemaker-jupyter-ai-q-developer|1.2.9|1.2.9
 jupyter-scheduler|2.12.0|2.12.0
 amazon-sagemaker-jupyter-scheduler|3.2.0|3.2.0
@@ -28,7 +28,7 @@ scipy|1.16.3|1.16.3
 matplotlib-base|3.10.8|3.10.8
 scikit-learn|1.7.2|1.7.2
 torchvision|0.24.0|0.24.0
-uvicorn|0.45.0|0.45.0
+uvicorn|0.46.0|0.46.0
 autogluon|1.5.0|1.5.0
 ipywidgets|8.1.8|8.1.8
 notebook|7.5.5|7.5.5
@@ -57,15 +57,15 @@ sagemaker-code-editor|1.9.5|1.9.5
 sagemaker-gen-ai-jupyterlab-extension|1.0.15|1.0.15
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
-sagemaker-jupyterlab-extension|0.5.4|0.5.4
+sagemaker-jupyterlab-extension|0.5.7|0.5.7
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.3.0|0.3.0
 sagemaker-python-sdk|3.7.1|3.7.1
 sagemaker-studio|1.1.13|1.1.13
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
-sagemaker-studio-dataengineering-extensions|1.3.8|1.3.8
-sagemaker-studio-dataengineering-sessions|1.3.18|1.3.18
+sagemaker-studio-dataengineering-extensions|1.3.9|1.3.9
+sagemaker-studio-dataengineering-sessions|1.3.19|1.3.19
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
