@@ -18,13 +18,22 @@ else
     jupyter labextension disable @amzn/amazon_sagemaker_jupyter_ai_q_developer
 fi
 
-# Setup skills and subagent for SMAI spaces
-if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+# Setup skills and subagent for SMAI private spaces only
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" != "shared" ]; then
     # Sync pre-packaged skills to EBS
     bash /etc/sagemaker/skills/sync_skills.sh 2>&1 || echo "Warning: skills sync failed, continuing..."
 
     # Sync agent config (subagent + default agent settings)
     bash /etc/sagemaker/sync_agent.sh 2>&1 || echo "Warning: agent config sync failed, continuing..."
+fi
+
+# Setup MCP for SMAI spaces only (disabled by default in Dockerfile)
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+    jupyter server extension enable jupyter_server_mcp 2>/dev/null || true
+
+    # Copy JupyterLab settings (overrides)
+    mkdir -p /opt/conda/share/jupyter/lab/settings
+    cp -r /etc/sagemaker/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings/
 fi
 
 # Enable S3AG plugin if TIP is enabled

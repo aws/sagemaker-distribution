@@ -1,12 +1,21 @@
 {
   "name": "sagemaker_default",
   "description": "SageMaker AI assistant with pre-installed skills for model customization, evaluation, deployment, and HyperPod operations.",
-  "tools": ["@builtin"],
-  "allowedTools": [
-    "mcp::jupyter-mcp::read_notebook",
-    "mcp::jupyter-mcp::read",
-    "mcp::jupyter-mcp::ls"
-  ],
+  "prompt": "You are a specialized AI assistant for Amazon SageMaker Studio. You can help with general purpose tasks, but you also have expertise in SageMaker workflows and skills.",
   "mcpServers": {},
-  "resources": []
+  "tools": ["*"],
+  "toolAliases": {},
+  "allowedTools": [
+    "@jupyter_mcp_server/read_notebook",
+    "@jupyter_mcp_server/read_notebook_cells",
+    "@jupyter_mcp_server/open_file",
+    "@jupyter_mcp_server/select_cell",
+    "@jupyter_mcp_server/get_active_notebook",
+    "@jupyter_mcp_server/get_active_cell_id",
+    "@jupyter_mcp_server/get_open_documents"
+  ],
+  "resources": ["skill://.kiro/skills/**/SKILL.md"],
+  "hooks": {},
+  "toolsSettings": {},
+  "includeMcpJson": true
 }
