@@ -1,0 +1,23 @@
+{
+    "disabledExtensions": {
+      "@jupyterlab/apputils-extension:announcements": true,
+      "@amzn/sagemaker-jupyterlab-emr-extension": true,
+      "@amzn/sagemaker-jupyter-scheduler": true,
+      "@amzn/sagemaker-jupyterlab-extension-common:panorama": true,
+      "@amzn/sagemaker-jupyterlab-extensions:sessionmanagement": true,
+      "@amzn/sagemaker-jupyterlab-extensions:spacemenu": true,
+      "@amzn/amazon_sagemaker_sql_editor": true,
+      "@sagemaker-studio:EmrCluster": true,
+      "@jupyter/collaboration-extension": true,
+      "jupyterlab-chat-extension": true,
+      "@jupyter-ai/jupyternaut": true,
+      "@jupyter-ai/router": true,
+      "@jupyter-ai/persona-manager": true,
+      "@jupyter-ai/acp-client": true,
+      "@jupyter-ai/chat-commands": true,
+      "@jupyter-ai-contrib/server-documents": true,
+      "jupyterlab-commands-toolkit": true,
+      "jupyterlab-notebook-awareness": true,
+      "jupyterlab-eventlistener": true
+    }
+}
