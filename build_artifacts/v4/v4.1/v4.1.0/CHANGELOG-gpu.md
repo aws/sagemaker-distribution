@@ -73,6 +73,7 @@ opentelemetry-proto|1.40.0|1.41.1|minor
 smart_open|7.5.1|7.6.0|minor
 virtualenv|21.2.0|21.3.0|minor
 wheel|0.46.3|0.47.0|minor
+plum-dispatch|2.8.0|2.9.0|minor
 typer|0.24.1|0.25.0|minor
 smart-open|7.5.1|7.6.0|minor
 awswrangler|3.15.1|3.16.0|minor
@@ -100,6 +101,7 @@ mako|1.3.10|1.3.11|patch
 s3transfer|0.16.0|0.16.1|patch
 platformdirs|4.9.4|4.9.6|patch
 jupyter_events|0.12.0|0.12.1|patch
+redshift_connector|2.1.5|2.1.10|patch
 fastcore|1.12.34|1.12.43|patch
 fonttools|4.62.0|4.62.1|patch
 matplotlib|3.10.8|3.10.9|patch
@@ -114,7 +116,7 @@ reproc|14.2.5.post0|14.2.7.post0|patch
 reproc-cpp|14.2.5.post0|14.2.7.post0|patch
 python-duckdb|1.5.1|1.5.2|patch
 duckdb|1.5.1|1.5.2|patch
-gitpython|3.1.46|3.1.47|patch
+gitpython|3.1.46|3.1.48|patch
 jupyter_ydoc|3.4.0|3.4.1|patch
 langsmith|0.7.26|0.7.37|patch
 param|2.3.2|2.3.3|patch
@@ -142,7 +144,7 @@ griffelib|2.0.2
 joserfc|1.6.4
 jsonref|1.1.0
 pathable|0.5.0
-jsonschema-path|0.4.5
+jsonschema-path|0.4.6
 more-itertools|11.0.2
 jaraco.classes|3.4.0
 jaraco.context|6.1.2
