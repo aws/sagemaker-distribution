@@ -1,0 +1,15 @@
+{
+    "ServerApp": {
+        "jpserver_extensions": {
+            "jupyter_ai": false,
+            "jupyter_ai_acp_client": false,
+            "jupyter_ai_tools": false,
+            "jupyter_ai_persona_manager": false,
+            "jupyter_ai_router": false,
+            "jupyter_ai_jupyternaut": false,
+            "jupyter_ai_chat_commands": false,
+            "jupyter_server_mcp": false,
+            "jupyterlab_chat": false
+        }
+    }
+}

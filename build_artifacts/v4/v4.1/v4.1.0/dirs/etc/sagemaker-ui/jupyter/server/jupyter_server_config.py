@@ -35,20 +35,6 @@ try:
 except:
     pass
 
-# Disable JAI v3 server extensions for SMUS
-c.ServerApp.jpserver_extensions = {
-    "jupyter_ai": False,
-    "jupyter_ai_acp_client": False,
-    "jupyter_ai_tools": False,
-    "jupyter_ai_persona_manager": False,
-    "jupyter_ai_router": False,
-    "jupyter_ai_jupyternaut": False,
-    "jupyter_ai_chat_commands": False,
-    "jupyter_server_documents": False,
-    "jupyter_server_mcp": False,
-    "jupyterlab_chat": False,
-}
-
 c.SchedulerApp.scheduler_class = SageMakerUnifiedStudioScheduler
 c.SchedulerApp.environment_manager_class = SagemakerEnvironmentManager
 c.SchedulerApp.job_files_manager_class = SageMakerJobFilesManager
