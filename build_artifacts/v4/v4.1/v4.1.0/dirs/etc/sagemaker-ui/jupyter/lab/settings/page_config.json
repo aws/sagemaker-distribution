@@ -15,7 +15,6 @@
       "@jupyter-ai/persona-manager": true,
       "@jupyter-ai/acp-client": true,
       "@jupyter-ai/chat-commands": true,
-      "@jupyter-ai-contrib/server-documents": true,
       "jupyterlab-commands-toolkit": true,
       "jupyterlab-notebook-awareness": true,
       "jupyterlab-eventlistener": true

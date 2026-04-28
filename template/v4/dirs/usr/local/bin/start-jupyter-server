@@ -45,7 +45,6 @@ fi
 # Start Jupyter server in rtc mode for shared spaces (skip in recovery mode)
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ] && [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
   jupyter labextension enable @jupyter/collaboration-extension
-  jupyter labextension enable @jupyter/docprovider-extension
   # Disable chat icon in shared spaces
   jupyter labextension disable jupyterlab-chat-extension
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
