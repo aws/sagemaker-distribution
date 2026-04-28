@@ -44,7 +44,6 @@ c.ServerApp.jpserver_extensions = {
     "jupyter_ai_router": False,
     "jupyter_ai_jupyternaut": False,
     "jupyter_ai_chat_commands": False,
-    "jupyter_server_documents": False,
     "jupyter_server_mcp": False,
     "jupyterlab_chat": False,
 }
