@@ -47,6 +47,7 @@ amazon-sagemaker-jupyter-ai-q-developer|1.2.9
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 importlib_resources|6.5.2|7.1.0|major
+python-json-logger|2.0.7|3.2.1|major
 cryptography|44.0.3|46.0.7|major
 pyopenssl|24.3.0|25.3.0|major
 gdown|5.2.1|6.0.0|major
@@ -60,7 +61,7 @@ python-tzdata|2026.1|2026.2|minor
 pydantic-core|2.41.5|2.46.3|minor
 pydantic|2.12.5|2.13.3|minor
 aiobotocore|3.3.0|3.5.0|minor
-greenlet|3.3.2|3.4.0|minor
+greenlet|3.3.2|3.5.0|minor
 narwhals|2.19.0|2.20.0|minor
 prometheus_client|0.24.1|0.25.0|minor
 snowflake-connector-python|3.13.2|3.17.4|minor
@@ -70,6 +71,7 @@ opentelemetry-api|1.40.0|1.41.0|minor
 opentelemetry-sdk|1.40.0|1.41.0|minor
 opentelemetry-proto|1.40.0|1.41.1|minor
 smart_open|7.5.1|7.6.0|minor
+virtualenv|21.2.0|21.3.0|minor
 wheel|0.46.3|0.47.0|minor
 typer|0.24.1|0.25.0|minor
 smart-open|7.5.1|7.6.0|minor
@@ -84,6 +86,7 @@ fastapi-core|0.135.3|0.136.1|minor
 pydantic-settings|2.13.1|2.14.0|minor
 sse-starlette|3.3.4|3.4.1|minor
 skops|0.13.0|0.14|minor
+thrift|0.22.0|0.23.0|minor
 sagemaker-core|2.7.1|2.9.0|minor
 sagemaker-train|1.7.1|1.9.0|minor
 sagemaker-serve|1.7.1|1.9.0|minor
@@ -101,9 +104,9 @@ fastcore|1.12.34|1.12.43|patch
 fonttools|4.62.0|4.62.1|patch
 matplotlib|3.10.8|3.10.9|patch
 google-auth|2.49.1|2.49.2|patch
-virtualenv|21.2.0|21.2.4|patch
+py-spy|0.4.1|0.4.2|patch
 rich|14.3.3|14.3.4|patch
-python-multipart|0.0.24|0.0.26|patch
+python-multipart|0.0.24|0.0.27|patch
 python-fasthtml|0.13.3|0.13.4|patch
 numba|0.65.0|0.65.1|patch
 libsolv|0.7.36|0.7.37|patch
