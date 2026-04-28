@@ -15,6 +15,7 @@ fi
 
 sudo cp -r /etc/sagemaker-ui/kernels/. /opt/conda/share/jupyter/kernels/
 sudo cp /etc/sagemaker-ui/jupyter/server/jupyter_server_config.py /opt/conda/etc/jupyter/
+sudo cp /etc/sagemaker-ui/jupyter/server/jupyter_server_config.d/zzz_sagemaker_ui_overrides.json /opt/conda/etc/jupyter/jupyter_server_config.d/
 
 mkdir -p /opt/conda/share/jupyter/lab/settings
 cp -r /etc/sagemaker-ui/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings
