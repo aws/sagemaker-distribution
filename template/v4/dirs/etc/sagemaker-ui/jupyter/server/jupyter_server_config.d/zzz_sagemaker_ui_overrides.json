@@ -9,7 +9,8 @@
             "jupyter_ai_jupyternaut": false,
             "jupyter_ai_chat_commands": false,
             "jupyter_server_mcp": false,
-            "jupyterlab_chat": false
+            "jupyterlab_chat": false,
+            "jupyter_server_documents": false
         }
     }
 }

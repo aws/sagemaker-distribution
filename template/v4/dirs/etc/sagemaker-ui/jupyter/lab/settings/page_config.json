@@ -17,6 +17,7 @@
       "@jupyter-ai/chat-commands": true,
       "jupyterlab-commands-toolkit": true,
       "jupyterlab-notebook-awareness": true,
-      "jupyterlab-eventlistener": true
+      "jupyterlab-eventlistener": true,
+      "@jupyter-ai-contrib/server-documents": true
     }
 }
