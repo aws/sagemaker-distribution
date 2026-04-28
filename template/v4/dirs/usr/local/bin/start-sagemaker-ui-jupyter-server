@@ -12,6 +12,7 @@ else
     micromamba activate base
     # Enable RTC to allow async Q file updates
     jupyter labextension enable @jupyter/docprovider-extension
+    jupyter server extension enable jupyter_server_ydoc
 fi
 
 sudo cp -r /etc/sagemaker-ui/kernels/. /opt/conda/share/jupyter/kernels/
