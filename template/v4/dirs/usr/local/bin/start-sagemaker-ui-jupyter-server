@@ -10,6 +10,8 @@ if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
 else
     # Activate conda environment 'base' which is the default for Cosmos
     micromamba activate base
+    micromamba remove -y jupyter_server_documents
+
     # Enable RTC to allow async Q file updates
     jupyter labextension enable @jupyter/docprovider-extension
     jupyter server extension enable jupyter_server_ydoc
