@@ -1,16 +1,8 @@
-import os
-
-from sagemaker_studio_jupyter_scheduler.scheduler import (
-    SagemakerEnvironmentManager,
-    SageMakerJobFilesManager,
-    SageMakerUnifiedStudioScheduler,
-)
+# Default Jupyter server config
+# Note: those config can be overridden by user-level configs.
 
 c.ServerApp.terminado_settings = {"shell_command": ["/bin/bash"]}
-region = os.environ.get("AWS_REGION")
-csp_rule = os.environ.get("JUPYTERSERVER_CSP_RULE")
-
-c.ServerApp.tornado_settings = {"compress_response": True, "headers": {"Content-Security-Policy": csp_rule}}
+c.ServerApp.tornado_settings = {"compress_response": True}
 
 # Do not delete files to trash. Instead, permanently delete files.
 c.FileContentsManager.delete_to_trash = False
@@ -34,7 +26,3 @@ try:
     c.LanguageServerManager.extra_node_roots = [f"{module_location}/sql-language-server"]
 except:
     pass
-
-c.SchedulerApp.scheduler_class = SageMakerUnifiedStudioScheduler
-c.SchedulerApp.environment_manager_class = SagemakerEnvironmentManager
-c.SchedulerApp.job_files_manager_class = SageMakerJobFilesManager
