@@ -29,7 +29,7 @@ sagemaker-jupyterlab-extension|0.5.4|0.5.7|patch
 sagemaker-studio|1.1.8|1.1.14|patch
 sagemaker-studio-dataengineering-extensions|1.3.8|1.3.9|patch
 sagemaker-studio-dataengineering-sessions|1.3.18|1.3.19|patch
-uv|0.11.4|0.11.7|patch
+uv|0.11.4|0.11.8|patch
 
 ### Removed
 
@@ -52,6 +52,7 @@ cryptography|44.0.3|46.0.7|major
 pyopenssl|24.3.0|25.3.0|major
 gdown|5.2.1|6.0.0|major
 libsqlite|3.52.0|3.53.0|minor
+ncurses|6.5|6.6|minor
 ca-certificates|2026.2.25|2026.4.22|minor
 filelock|3.25.2|3.29.0|minor
 certifi|2026.2.25|2026.4.22|minor
@@ -97,7 +98,7 @@ libpng|1.6.56|1.6.58|patch
 libjpeg-turbo|3.1.2|3.1.4.1|patch
 botocore|1.42.70|1.42.91|patch
 zipp|3.23.0|3.23.1|patch
-mako|1.3.10|1.3.11|patch
+mako|1.3.10|1.3.12|patch
 s3transfer|0.16.0|0.16.1|patch
 platformdirs|4.9.4|4.9.6|patch
 jupyter_events|0.12.0|0.12.1|patch
