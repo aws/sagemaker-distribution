@@ -32,11 +32,11 @@ The tables below lists the supported SageMaker Distribution image versions and t
 | 4.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.1-cpu  |  Oct 29th, 2026  |
 | 4.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.0-cpu  |  Oct 7th, 2026  |
 | 3.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.9-cpu  |  Sep 29th, 2026  |
-| 3.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.8-cpu  |  May 30th, 2026  |
+| 3.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.8-cpu  |  Jun 30th, 2026  |
 | 3.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.7-cpu  |  May 30th, 2026  |
 | 3.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.6-cpu  |  May 14th, 2026  |
-| 2.14.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.14-cpu  |  May 30th, 2026  |
-| 2.13.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.13-cpu  |  May 30th, 2026  |
+| 2.14.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.14-cpu  |  Jul 30th, 2026  |
+| 2.13.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.13-cpu  |  Jun 30th, 2026  |
 | 2.12.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.12-cpu  |  May 30th, 2026  |
 | 2.11.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.11-cpu  |  May 14th, 2026  |
 
@@ -47,11 +47,11 @@ The tables below lists the supported SageMaker Distribution image versions and t
 | 4.1.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.1-gpu  |  Oct 29th, 2026  |
 | 4.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.0-gpu  |  Oct 7th, 2026  |
 | 3.9.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.9-gpu  |  Sep 29th, 2026  |
-| 3.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.8-gpu  |  May 30th, 2026  |
+| 3.8.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.8-gpu  |  Jun 30th, 2026  |
 | 3.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.7-gpu  |  May 30th, 2026  |
 | 3.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:3.6-gpu  |  May 14th, 2026  |
-| 2.14.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.14-gpu  |  May 30th, 2026  |
-| 2.13.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.13-gpu  |  May 30th, 2026  |
+| 2.14.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.14-gpu  |  Jul 30th, 2026  |
+| 2.13.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.13-gpu  |  Jun 30th, 2026  |
 | 2.12.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.12-gpu  |  May 30th, 2026  |
 | 2.11.x         | public.ecr.aws/sagemaker/sagemaker-distribution:2.11-gpu  |  May 14th, 2026  |
 
