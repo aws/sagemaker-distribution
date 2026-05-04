@@ -1,0 +1,6 @@
+[
+  {
+    "repo": "https://github.com/awslabs/agent-plugins.git",
+    "path": "plugins/sagemaker-ai/skills"
+  }
+]

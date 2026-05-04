@@ -1,0 +1,14 @@
+{
+  "@jupyterlab/application-extension:shell": {
+    "layout": {
+      "multiple": {
+        "JupyterlabChat:sidepanel": {
+          "area": "right"
+        }
+      }
+    }
+  },
+  "@jupyterlab/filebrowser-extension:browser": {
+    "showHiddenFiles": true
+  }
+}
