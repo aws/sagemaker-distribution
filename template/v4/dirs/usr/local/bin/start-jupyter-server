@@ -14,6 +14,26 @@ else
     micromamba remove -y sagemaker-studio-dataengineering-sessions sagemaker-studio-dataengineering-extensions
     # Disable SMUS-specific extensions
     jupyter labextension disable sagemaker-data-explorer:plugin
+    # Disable old Q chat extension
+    jupyter labextension disable @amzn/amazon_sagemaker_jupyter_ai_q_developer
+fi
+
+# Setup skills and subagent for SMAI private spaces only
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" != "shared" ]; then
+    # Sync pre-packaged skills to EBS
+    bash /etc/sagemaker/skills/sync_skills.sh 2>&1 || echo "Warning: skills sync failed, continuing..."
+
+    # Sync agent config (subagent + default agent settings)
+    bash /etc/sagemaker/sync_agent.sh 2>&1 || echo "Warning: agent config sync failed, continuing..."
+fi
+
+# Setup MCP for SMAI spaces only (disabled by default in Dockerfile)
+if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+    jupyter server extension enable jupyter_server_mcp 2>/dev/null || true
+
+    # Copy JupyterLab settings (overrides)
+    mkdir -p /opt/conda/share/jupyter/lab/settings
+    cp -r /etc/sagemaker/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings/
 fi
 
 # Enable S3AG plugin if TIP is enabled
@@ -25,7 +45,8 @@ fi
 # Start Jupyter server in rtc mode for shared spaces (skip in recovery mode)
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ] && [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
   jupyter labextension enable @jupyter/collaboration-extension
-  jupyter labextension enable @jupyter/docprovider-extension
+  # Disable chat icon in shared spaces
+  jupyter labextension disable jupyterlab-chat-extension
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   # SAGEMAKER_SPACE_TYPE_LOWERCASE flag is used to determine if the server should start
