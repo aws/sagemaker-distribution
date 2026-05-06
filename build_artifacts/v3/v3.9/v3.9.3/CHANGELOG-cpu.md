@@ -16,6 +16,7 @@ sagemaker-code-editor|1.9.5|1.9.6|patch
 sagemaker-gen-ai-jupyterlab-extension|1.0.15|1.0.16|patch
 sagemaker-jupyterlab-extension|0.5.4|0.5.7|patch
 sagemaker-studio|1.1.13|1.1.14|patch
+sagemaker-studio-dataengineering-extensions|1.3.8|1.3.10|patch
 sagemaker-studio-dataengineering-sessions|1.3.18|1.3.20|patch
 
 ## Indirect dependencies
@@ -40,7 +41,7 @@ harfbuzz|11.2.1|11.0.0|minor
 greenlet|3.4.0|3.5.0|minor
 wcwidth|0.6.0|0.7.0|minor
 jupyter_server|2.17.0|2.18.1|minor
-langsmith|0.7.33|0.8.0|minor
+langsmith|0.7.33|0.8.1|minor
 wheel|0.46.3|0.47.0|minor
 expat|2.7.5|2.8.0|minor
 lcms2|2.18|2.19|minor

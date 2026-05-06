@@ -65,7 +65,7 @@ sagemaker-python-sdk|2.245.0|2.245.0
 sagemaker-studio|1.1.14|1.1.14
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
-sagemaker-studio-dataengineering-extensions|1.3.8|1.3.8
+sagemaker-studio-dataengineering-extensions|1.3.10|1.3.10
 sagemaker-studio-dataengineering-sessions|1.3.20|1.3.20
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
