@@ -16,14 +16,14 @@ jupyterlab|4.5.6|4.5.7|patch
 amazon_sagemaker_sql_editor|0.2.1|0.2.4|patch
 matplotlib-base|3.10.8|3.10.9|patch
 notebook|7.5.5|7.5.6|patch
-docker-cli|29.4.1|29.4.2|patch
+docker-cli|29.4.1|29.4.3|patch
 sagemaker-code-editor|1.9.5|1.9.6|patch
 sagemaker-gen-ai-jupyterlab-extension|1.0.15|1.0.16|patch
 sagemaker-jupyterlab-extension|0.5.4|0.5.7|patch
-sagemaker-studio|1.1.13|1.1.14|patch
+sagemaker-studio|1.1.13|1.1.15|patch
 sagemaker-studio-dataengineering-extensions|1.3.8|1.3.10|patch
 sagemaker-studio-dataengineering-sessions|1.3.18|1.3.20|patch
-uv|0.11.7|0.11.10|patch
+uv|0.11.7|0.11.11|patch
 
 ## Indirect dependencies
 
@@ -52,15 +52,18 @@ langsmith|0.7.33|0.8.1|minor
 wheel|0.46.3|0.47.0|minor
 lcms2|2.18|2.19.1|minor
 google-auth|2.49.2|2.50.0|minor
+google-api-core|2.30.3|2.29.0|minor
 python-discovery|1.2.2|1.3.0|minor
 virtualenv|21.2.4|21.3.1|minor
+markdown-it-py|4.0.0|4.1.0|minor
 plum-dispatch|2.8.0|2.9.0|minor
 typer|0.24.1|0.25.1|minor
 cloudpathlib|0.23.0|0.24.0|minor
 pathspec|1.0.4|1.1.1|minor
 conda-libmamba-solver|26.3.0|26.4.1|minor
 databricks-sdk|0.103.0|0.106.0|minor
-sse-starlette|3.3.4|3.4.1|minor
+google-cloud-bigquery-core|3.18.0|3.41.0|minor
+sse-starlette|3.3.4|3.4.2|minor
 thrift|0.22.0|0.23.0|minor
 sagemaker-core|2.8.0|2.10.0|minor
 sagemaker-train|1.8.0|1.10.0|minor
@@ -75,6 +78,8 @@ s3transfer|0.16.0|0.16.1|patch
 parso|0.8.6|0.8.7|patch
 jupyter_events|0.12.0|0.12.1|patch
 mistune|3.2.0|3.2.1|patch
+pydantic-core|2.46.3|2.46.4|patch
+pydantic|2.13.3|2.13.4|patch
 marshmallow|3.26.1|3.26.2|patch
 onnxruntime|1.24.2|1.24.4|patch
 redshift_connector|2.1.5|2.1.10|patch
@@ -95,6 +100,7 @@ pymysql|1.1.2|1.1.3|patch
 Package | Version
 ---|---
 onemkl-license|2025.3.1
+google-api-core-grpc|2.29.0
 opensearch-py|2.5.0
 
 ### Removed
