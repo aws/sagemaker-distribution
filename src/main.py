@@ -14,7 +14,11 @@ from docker.errors import BuildError, ContainerError
 from semver import Version
 
 from changelog_generator import generate_change_log
-from config import EXTERNAL_LIB_CACHE_S3_BUCKET, _image_generator_configs
+from config import (
+    EXTERNAL_LIB_CACHE_S3_BUCKET,
+    _image_generator_configs,
+    _minor_versions_read_from_previous_patch,
+)
 from dependency_upgrader import (
     _MAJOR,
     _MINOR,
@@ -102,12 +106,20 @@ def _create_new_version_artifacts(args):
             base_version_dir, new_version_dir, runtime_version_upgrade_type, image_generator_config
         )
 
-    _copy_static_files(base_version_dir, new_version_dir, str(next_version.major), runtime_version_upgrade_type)
+    _copy_static_files(
+        base_version_dir,
+        new_version_dir,
+        str(next_version.major),
+        str(next_version.minor),
+        runtime_version_upgrade_type,
+    )
     with open(f"{new_version_dir}/source-version.txt", "w") as f:
         f.write(args.base_patch_version)
 
 
-def _copy_static_files(base_version_dir, new_version_dir, new_version_major, runtime_version_upgrade_type):
+def _copy_static_files(
+    base_version_dir, new_version_dir, new_version_major, new_version_minor, runtime_version_upgrade_type
+):
     for f in glob.glob(f"{base_version_dir}/gpu.arg_based_env.in"):
         shutil.copy2(f, new_version_dir)
     for f in glob.glob(f"{base_version_dir}/cpu.pinned_env.in"):
@@ -117,8 +129,24 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, run
     for f in glob.glob(f"{base_version_dir}/patch_*"):
         shutil.copy2(f, new_version_dir)
 
-    # Always get Dockerfile+dirs from template
-    base_path = f"template/v{new_version_major}"
+    # Determine where to read the Dockerfile + dirs/ from.
+    #
+    # Default: template/v{major}/. This picks up the latest template state for every build.
+    #
+    # Exception: for patch bumps in a minor version listed in
+    # _minor_versions_read_from_previous_patch, read from the previous patch's
+    # build_artifacts/ directory instead. This "freezes" the static files for that
+    # minor version so later template changes don't leak into its patches.
+    #
+    # TODO: remove the frozen-minor branch once no minors are in the set
+    # (i.e. once 4.0 is deprecated).
+    if runtime_version_upgrade_type == _PATCH and (
+        int(new_version_major),
+        int(new_version_minor),
+    ) in _minor_versions_read_from_previous_patch:
+        base_path = base_version_dir
+    else:
+        base_path = f"template/v{new_version_major}"
 
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
         shutil.copy2(f, new_version_dir)
