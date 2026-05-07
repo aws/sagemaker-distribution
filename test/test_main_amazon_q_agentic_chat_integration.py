@@ -66,7 +66,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(new_version_dir)
 
             # Call the function
-            _copy_static_files(base_version_dir, new_version_dir, "2", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "2", "0", "minor")
 
             # Verify that copy2 was called for Amazon Q script
             copy_calls = [call[0][0] for call in mock_copy.call_args_list]
@@ -98,7 +98,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(new_version_dir)
 
             # Call the function - should not raise exception
-            _copy_static_files(base_version_dir, new_version_dir, "2", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "2", "0", "minor")
 
             # Verify that copy2 was not called for Amazon Q script
             copy_calls = [call[0][0] for call in mock_copy.call_args_list]
@@ -130,7 +130,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(new_version_dir)
 
             # Test with major version >= 1
-            _copy_static_files(base_version_dir, new_version_dir, "1", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "1", "0", "minor")
 
             # Verify that copytree was called for dirs
             assert mock_copytree.called
@@ -163,7 +163,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(new_version_dir)
 
             # Test with major version 0
-            _copy_static_files(base_version_dir, new_version_dir, "0", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "0", "0", "minor")
 
             # Verify that copytree was not called (dirs should not be copied for v0)
             assert not mock_copytree.called
@@ -192,7 +192,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(base_version_dir)
             os.makedirs(new_version_dir)
 
-            _copy_static_files(base_version_dir, new_version_dir, "2", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "2", "0", "minor")
 
             # Verify relpath was called for the Amazon Q script
             relpath_calls = [call[0][0] for call in mock_relpath.call_args_list]

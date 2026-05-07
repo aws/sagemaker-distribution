@@ -1,5 +1,20 @@
 EXTERNAL_LIB_CACHE_S3_BUCKET = "s3://external-lib-cache-prod"
 
+# Minor versions whose patch releases should read static files (Dockerfile, dirs/)
+# from the previous patch's build_artifacts/ directory instead of from template/v{major}/.
+#
+# This prevents later template changes (e.g. features added in newer minors) from
+# leaking into maintenance patches of older minor versions. Each entry is a
+# (major, minor) tuple.
+#
+# NOTE: Minor/major bumps always read from template/v{major}/ regardless of this set —
+# only PATCH bumps honor the freeze.
+#
+# TODO: remove the (4, 0) entry once the 4.0 minor version is deprecated.
+_minor_versions_read_from_previous_patch = {
+    (4, 0),
+}
+
 _image_generator_configs = {
     0: [
         {
