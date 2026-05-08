@@ -42,12 +42,13 @@ jobs:
               with:
                 role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
                 aws-region: us-east-1
-                role-duration-seconds: 900
+                role-duration-seconds: 60
                 audience: https://sts.us-east-1.amazonaws.com
-            - name: Run CodeBuild
-              uses: aws-actions/aws-codebuild-run-build@v1
-              with:
-                project-name: NightlyScheduleUpdater
-                env-vars-for-codebuild: VERSION
-              env:
-                VERSION: ${{ steps.version.outputs.version }}
+            - name: Start CodeBuild (fire and forget)
+              run: |
+                aws codebuild start-build \
+                  --project-name NightlyScheduleUpdater \
+                  --environment-variables-override "name=VERSION,value=${{ steps.version.outputs.version }},type=PLAINTEXT" \
+                  --source-version main \
+                  --query 'build.id' --output text
+                echo "✅ Queued NightlyScheduleUpdater for version ${{ steps.version.outputs.version }}"
