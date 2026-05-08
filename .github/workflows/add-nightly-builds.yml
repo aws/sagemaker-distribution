@@ -42,7 +42,7 @@ jobs:
               with:
                 role-to-assume: ${{ secrets.START_CODEBUILD_ROLE }}
                 aws-region: us-east-1
-                role-duration-seconds: 60
+                role-duration-seconds: 900
                 audience: https://sts.us-east-1.amazonaws.com
             - name: Start CodeBuild (fire and forget)
               run: |
