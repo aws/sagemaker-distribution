@@ -266,7 +266,9 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
     && rm -rf /opt/conda/etc/conda/test-files/ \
     && find /opt/conda -name "yarn.lock" -type f -delete \
     && find /opt/conda/include/ -name "requirements.txt" -delete \
-    && rm -rf /tmp/*.in
+    && rm -rf /tmp/*.in \
+    # Restore /home to world-writable (systemd's tmpfiles.d on Ubuntu 24.04 sets it to 755)
+    && chmod 777 /home
 
 # Explicitly disable BuildKit for SM Studio Docker functionality
 ENV DOCKER_BUILDKIT=0
