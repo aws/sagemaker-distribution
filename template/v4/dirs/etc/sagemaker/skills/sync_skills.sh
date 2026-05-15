@@ -7,7 +7,7 @@ EBS_SKILLS_DIR="$HOME/.agent/skills"
 LOCK_FILE="$EBS_SKILLS_DIR/.sagemaker-lock"
 
 # Agent targets to symlink skills into (add new agents here)
-AGENT_SKILLS_DIRS=("$HOME/.kiro/skills")
+AGENT_SKILLS_DIRS=("$HOME/.kiro/skills" "$HOME/.claude/skills")
 
 compute_checksum() {
     (cd "$1" && find . -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')
