@@ -44,11 +44,19 @@ jobs:
                 aws-region: us-east-1
                 role-duration-seconds: 900
                 audience: https://sts.us-east-1.amazonaws.com
-            - name: Start CodeBuild (fire and forget)
+            - name: Start CodeBuild (with retry)
               run: |
-                aws codebuild start-build \
-                  --project-name NightlyScheduleUpdater \
-                  --environment-variables-override "name=VERSION,value=${{ steps.version.outputs.version }},type=PLAINTEXT" \
-                  --source-version main \
-                  --query 'build.id' --output text
-                echo "✅ Queued NightlyScheduleUpdater for version ${{ steps.version.outputs.version }}"
+                for i in $(seq 1 10); do
+                  if aws codebuild start-build \
+                    --project-name NightlyScheduleUpdater \
+                    --environment-variables-override "name=VERSION,value=${{ steps.version.outputs.version }},type=PLAINTEXT" \
+                    --source-version main \
+                    --query 'build.id' --output text; then
+                    echo "✅ Queued NightlyScheduleUpdater for version ${{ steps.version.outputs.version }}"
+                    exit 0
+                  fi
+                  echo "⏳ Attempt $i/10 failed, retrying in 60s..."
+                  sleep 60
+                done
+                echo "❌ Failed after 10 attempts"
+                exit 1
