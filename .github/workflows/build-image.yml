@@ -104,6 +104,7 @@ jobs:
           fi
   call-codebuild-project:
     runs-on: ubuntu-latest
+    timeout-minutes: 480
     needs: open-pr
     permissions:
       pull-requests: write
@@ -127,6 +128,7 @@ jobs:
           source-version-override: "pr/${{ needs.open-pr.outputs.pr_id }}"
   call-reports-generate-codebuild-project:
     runs-on: ubuntu-latest
+    timeout-minutes: 480
     needs: [call-codebuild-project, open-pr]
     permissions:
       pull-requests: write
@@ -150,6 +152,7 @@ jobs:
           source-version-override: "pr/${{ needs.open-pr.outputs.pr_id }}"
   call-cpu-test-codebuild-project:
     runs-on: ubuntu-latest
+    timeout-minutes: 480
     needs: [call-codebuild-project, open-pr]
     permissions:
       pull-requests: write
@@ -173,6 +176,7 @@ jobs:
           source-version-override: "pr/${{ needs.open-pr.outputs.pr_id }}"
   call-gpu-test-codebuild-project:
     runs-on: ubuntu-latest
+    timeout-minutes: 480
     needs: [call-codebuild-project, open-pr]
     permissions:
       pull-requests: write
