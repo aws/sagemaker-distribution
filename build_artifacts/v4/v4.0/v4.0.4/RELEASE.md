@@ -60,11 +60,11 @@ sagemaker-jupyterlab-extension|0.5.7|0.5.7
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.2.0|0.2.0
 sagemaker-python-sdk|3.7.1|3.7.1
-sagemaker-studio|1.1.15|1.1.15
+sagemaker-studio|1.1.19|1.1.19
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.10|1.3.10
-sagemaker-studio-dataengineering-sessions|1.3.20|1.3.20
+sagemaker-studio-dataengineering-sessions|1.3.21|1.3.21
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
