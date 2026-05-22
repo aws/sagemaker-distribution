@@ -13,7 +13,7 @@ ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.1|2.3.1
 jupyterlab|4.5.7|4.5.7
 boto3|1.43.0|1.43.0
-sagemaker-jupyterlab-extension-common|0.4.3|0.4.3
+sagemaker-jupyterlab-extension-common|0.4.5|0.4.5
 amazon-sagemaker-jupyter-scheduler|3.2.2|3.2.2
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
@@ -31,7 +31,7 @@ notebook|7.5.6|7.5.6
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|26.5.0|26.5.0
-docker-cli|29.5.1|29.5.1
+docker-cli|29.5.2|29.5.2
 fastapi|0.136.1|0.136.1
 mcp|1.27.1|1.27.1
 git-remote-codecommit|1.16|1.16
@@ -55,15 +55,15 @@ sagemaker-code-editor|1.9.6|1.9.6
 sagemaker-gen-ai-jupyterlab-extension|1.0.16|1.0.16
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
-sagemaker-jupyterlab-extension|0.5.7|0.5.7
+sagemaker-jupyterlab-extension|0.5.9|0.5.9
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.4.0|0.4.0
-sagemaker-python-sdk|3.11.0|3.11.0
-sagemaker-studio|1.1.15|1.1.15
+sagemaker-python-sdk|3.12.0|3.12.0
+sagemaker-studio|1.1.19|1.1.19
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.10|1.3.10
-sagemaker-studio-dataengineering-sessions|1.3.20|1.3.20
+sagemaker-studio-dataengineering-sessions|1.3.21|1.3.21
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
