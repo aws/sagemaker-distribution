@@ -1,0 +1,92 @@
+# Change log: 4.0.4 (gpu)
+
+This page lists all package changes since the previous release (4.0.3).
+
+## Direct dependencies
+
+> [!NOTE]
+> These packages are explicitly included in the image. Their updates follow SageMaker Distribution's [versioning strategy](https://github.com/aws/sagemaker-distribution#versioning-strategy).
+
+### Changed
+
+Package | Previous Version | Current Version | Change Type
+---|---|---|---
+amazon-sagemaker-jupyter-scheduler|3.2.0|3.2.2|patch
+mcp|1.27.0|1.27.1|patch
+sagemaker-studio|1.1.15|1.1.19|patch
+sagemaker-studio-dataengineering-sessions|1.3.20|1.3.21|patch
+uv|0.11.13|0.11.15|patch
+
+### Removed
+
+Package | Last Version
+---|---
+amazon-q-developer-jupyterlab-ext|3.4.8
+
+## Indirect dependencies
+
+> [!NOTE]
+> These packages are pulled in automatically to satisfy the requirements of the direct dependencies. Their versions may vary between releases.
+
+### Changed
+
+Package | Previous Version | Current Version | Change Type
+---|---|---|---
+zipp|3.23.1|4.1.0|major
+pycparser|2.22|3.0|major
+ca-certificates|2026.4.22|2026.5.20|minor
+certifi|2026.4.22|2026.5.20|minor
+idna|3.13|3.15|minor
+yarl|1.23.0|1.24.2|minor
+decorator|5.2.1|5.3.1|minor
+uuid-utils|0.15.0|0.16.0|minor
+onnxruntime|1.25.1|1.26.0|minor
+fastcore|1.12.47|1.13.2|minor
+fonttools|4.62.1|4.63.0|minor
+libpciaccess|0.18|0.19|minor
+google-auth|2.52.0|2.53.0|minor
+opentelemetry-proto|1.41.1|1.42.1|minor
+databricks-sdk|0.108.0|0.110.0|minor
+deepdiff|9.0.0|9.1.0|minor
+docstring_parser|0.17.0|0.18.0|minor
+watchfiles|1.1.1|1.2.0|minor
+param|2.3.3|2.4.0|minor
+panel|1.8.10|1.9.0|minor
+pymysql|1.1.3|1.2.0|minor
+sagemaker-core|2.10.1|2.12.0|minor
+sagemaker-train|1.10.1|1.12.0|minor
+sagemaker-serve|1.10.1|1.12.0|minor
+sagemaker-mlops|1.10.1|1.12.0|minor
+snowflake-sqlalchemy|1.9.0|1.10.0|minor
+slack-sdk|3.41.0|3.42.0|minor
+llvm-openmp|22.1.5|22.1.6|patch
+libexpat|2.8.0|2.8.1|patch
+libuuid|2.42|2.42.1|patch
+requests|2.34.0|2.34.2|patch
+libcublas|12.9.1.4|12.9.2.10|patch
+aiohappyeyeballs|2.6.1|2.6.2|patch
+greenlet|3.5.0|3.5.1|patch
+narwhals|2.21.0|2.21.2|patch
+orjson|3.11.8|3.11.9|patch
+langsmith|0.8.3|0.8.5|patch
+xorg-libxi|1.8.2|1.8.3|patch
+libdrm|2.4.125|2.4.127|patch
+python-discovery|1.3.0|1.3.1|patch
+virtualenv|21.3.1|21.3.3|patch
+python-multipart|0.0.28|0.0.29|patch
+awswrangler|3.16.0|3.16.1|patch
+conda-libmamba-solver|26.4.1|26.4.2|patch
+python-duckdb|1.5.2|1.5.3|patch
+duckdb|1.5.2|1.5.3|patch
+rich-toolkit|0.19.8|0.19.10|patch
+sse-starlette|3.4.3|3.4.4|patch
+mdit-py-plugins|0.6.0|0.6.1|patch
+
+### New
+
+Package | Version
+---|---
+cachebox|5.2.3
+nh3|0.3.5
+panel-material-ui|0.11.0
+vertica-python|1.4.0
