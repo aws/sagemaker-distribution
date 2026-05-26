@@ -24,7 +24,7 @@ matplotlib-base|3.10.9|3.10.9
 scikit-learn|1.7.2|1.7.2
 pip|26.1.1|26.1.1
 torchvision|0.24.0|0.24.0
-uvicorn|0.47.0|0.47.0
+uvicorn|0.48.0|0.48.0
 autogluon|1.5.0|1.5.0
 ipywidgets|8.1.8|8.1.8
 notebook|7.5.6|7.5.6
@@ -32,7 +32,7 @@ aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 conda|26.5.0|26.5.0
 docker-cli|29.5.2|29.5.2
-fastapi|0.136.1|0.136.1
+fastapi|0.136.3|0.136.3
 mcp|1.27.1|1.27.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
@@ -70,5 +70,5 @@ strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.19.1|2.19.1
-uv|0.11.15|0.11.15
+uv|0.11.16|0.11.16
 py-xgboost-cpu| |2.1.4
