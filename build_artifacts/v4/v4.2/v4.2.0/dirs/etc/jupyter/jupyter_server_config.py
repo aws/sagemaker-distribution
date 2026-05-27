@@ -26,3 +26,6 @@ try:
     c.LanguageServerManager.extra_node_roots = [f"{module_location}/sql-language-server"]
 except:
     pass
+
+# Set Kiro as the default AI persona
+c.PersonaManager.default_persona_id = "jupyter-ai-personas::jupyter_ai_acp_client::KiroAcpPersona"
