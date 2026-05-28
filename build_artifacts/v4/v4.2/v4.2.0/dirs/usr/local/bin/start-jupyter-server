@@ -25,10 +25,8 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
     bash /etc/sagemaker/sync_agent.sh 2>&1 || echo "Warning: agent config sync failed, continuing..."
 fi
 
-# Setup MCP for SMAI spaces only (disabled by default in Dockerfile)
+# Setup MCP for SMAI spaces only
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
-    jupyter server extension enable jupyter_server_mcp 2>/dev/null || true
-
     # Copy JupyterLab settings (overrides)
     mkdir -p /opt/conda/share/jupyter/lab/settings
     cp -r /etc/sagemaker/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings/
