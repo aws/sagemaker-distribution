@@ -27,7 +27,7 @@ amazon-sagemaker-jupyter-scheduler|3.2.0|3.2.2|patch
 fastapi|0.136.1|0.136.3|patch
 mcp|1.27.0|1.27.1|patch
 sagemaker-jupyterlab-extension|0.5.7|0.5.9|patch
-sagemaker-studio|1.1.15|1.1.19|patch
+sagemaker-studio|1.1.15|1.1.20|patch
 sagemaker-studio-dataengineering-sessions|1.3.20|1.3.21|patch
 uv|0.11.13|0.11.16|patch
 
@@ -54,11 +54,13 @@ rich-rst|1.3.2|2.0.1|major
 ca-certificates|2026.4.22|2026.5.20|minor
 fsspec|2026.3.0|2026.4.0|minor
 certifi|2026.4.22|2026.5.20|minor
-idna|3.13|3.15|minor
+idna|3.13|3.17|minor
 libuv|1.51.0|1.52.1|minor
 fontconfig|2.17.1|2.18.0|minor
+frozenlist|1.7.0|1.8.0|minor
 yarl|1.23.0|1.24.2|minor
 botocore|1.42.97|1.43.0|minor
+platformdirs|4.9.6|4.10.0|minor
 decorator|5.2.1|5.3.1|minor
 s3transfer|0.16.1|0.17.1|minor
 pyjwt|2.12.1|2.13.0|minor
@@ -70,6 +72,9 @@ google-auth|2.52.0|2.53.0|minor
 opentelemetry-api|1.41.0|1.42.1|minor
 opentelemetry-sdk|1.41.0|1.42.1|minor
 opentelemetry-proto|1.41.1|1.42.1|minor
+python-discovery|1.3.0|1.4.0|minor
+virtualenv|21.3.1|21.4.1|minor
+python-xxhash|3.6.0|3.7.0|minor
 python-fasthtml|0.14.1|0.12.50|minor
 typer|0.25.1|0.26.2|minor
 libboost|1.88.0|1.90.0|minor
@@ -86,6 +91,7 @@ jsonschema-path|0.4.6|0.5.0|minor
 more-itertools|11.0.2|11.1.0|minor
 jaraco.functools|4.4.0|4.5.0|minor
 fastmcp|3.2.4|3.3.1|minor
+jiter|0.13.0|0.15.0|minor
 jupyterlab-chat|0.21.1|0.22.0|minor
 uuid-utils|0.15.0|0.16.0|minor
 mlflow-skinny|3.11.1|3.12.0|minor
@@ -109,12 +115,11 @@ aiohappyeyeballs|2.6.1|2.6.2|patch
 greenlet|3.5.0|3.5.1|patch
 sqlalchemy|2.0.49|2.0.50|patch
 narwhals|2.21.0|2.21.2|patch
+tornado|6.5.5|6.5.6|patch
 soupsieve|2.8.3|2.8.4|patch
 xorg-libxi|1.8.2|1.8.3|patch
 joserfc|1.6.5|1.6.8|patch
 libdrm|2.4.125|2.4.127|patch
-python-discovery|1.3.0|1.3.1|patch
-virtualenv|21.3.1|21.3.3|patch
 libavif16|1.4.1|1.4.2|patch
 python-multipart|0.0.28|0.0.29|patch
 ujson|5.12.0|5.12.1|patch
@@ -128,8 +133,9 @@ duckdb|1.5.2|1.5.3|patch
 rich-toolkit|0.19.8|0.19.10|patch
 fastapi-core|0.136.1|0.136.3|patch
 sse-starlette|3.4.3|3.4.4|patch
+py-key-value-aio|0.4.4|0.4.5|patch
 jupyter-ai-acp-client|0.1.3|0.1.5|patch
-langsmith|0.8.3|0.8.5|patch
+langsmith|0.8.3|0.8.6|patch
 mdit-py-plugins|0.6.0|0.6.1|patch
 opentelemetry-semantic-conventions|0.62b0|0.63b1|
 opentelemetry-exporter-prometheus|0.62b0|0.63b1|
@@ -153,8 +159,11 @@ conda-rattler-solver|0.1.0
 conda-self|0.2.0
 fastmcp-slim|3.3.1
 jupyterlab-git-core|0.53.0
+lz4|4.4.5
 nh3|0.3.5
 panel-material-ui|0.11.0
+tzlocal|5.3.1
+trino-python-client|0.337.0
 vertica-python|1.4.0
 
 ### Removed
