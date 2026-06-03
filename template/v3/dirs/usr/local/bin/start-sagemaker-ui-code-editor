@@ -57,6 +57,24 @@ install_prepackaged_extensions() {
         ln -s "$dir" "${persistent_extensions_dir}/${dir_name}"
         echo "Added extension: $dir"
     done
+  else
+    # Remove stale symlinks pointing to non-existent targets (old image versions)
+    # and re-symlink extensions from the current image
+    find "$persistent_extensions_dir" -maxdepth 1 -type l | while read -r link; do
+      if [ ! -e "$link" ]; then
+        echo "Removing stale extension symlink: $link"
+        rm -f "$link"
+      fi
+    done
+
+    # Add symlinks for any new image extensions not already in the persistent dir
+    find "$prepackaged_extensions_dir" -mindepth 1 -maxdepth 1 -type d | while read -r dir; do
+      dir_name=$(basename "$dir")
+      if [ ! -e "${persistent_extensions_dir}/${dir_name}" ]; then
+        ln -s "$dir" "${persistent_extensions_dir}/${dir_name}"
+        echo "Added new extension: $dir"
+      fi
+    done
   fi
 }
 
