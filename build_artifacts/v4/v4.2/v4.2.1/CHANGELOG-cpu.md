@@ -12,11 +12,13 @@ This page lists all package changes since the previous release (4.2.0).
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 jupyterlab|4.5.7|4.5.8|patch
+amazon_sagemaker_sql_editor|0.2.4|0.2.5|patch
 pip|26.1.1|26.1.2|patch
 notebook|7.5.6|7.5.7|patch
 conda|26.5.0|26.5.2|patch
 docker-cli|29.5.2|29.5.3|patch
 mcp|1.27.1|1.27.2|patch
+sagemaker-studio|1.1.20|1.1.22|patch
 uv|0.11.16|0.11.19|patch
 
 ## Indirect dependencies
@@ -61,7 +63,7 @@ sagemaker-train|1.12.0|1.13.1|minor
 llvm-openmp|22.1.6|22.1.7|patch
 libsqlite|3.53.1|3.53.2|patch
 openssl|3.6.2|3.6.3|patch
-filelock|3.29.0|3.29.1|patch
+filelock|3.29.0|3.29.2|patch
 fontconfig|2.18.0|2.18.1|patch
 graphite2|1.3.14|1.3.15|patch
 alsa-lib|1.2.15.3|1.2.16|patch
@@ -98,6 +100,7 @@ Package | Version
 ---|---
 nest-asyncio2|1.7.2
 tomli-w|1.2.0
+oracledb|3.4.2
 panel-core|1.9.3
 
 ### Removed

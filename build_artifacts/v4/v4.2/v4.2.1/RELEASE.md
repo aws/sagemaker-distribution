@@ -17,7 +17,7 @@ sagemaker-jupyterlab-extension-common|0.4.5|0.4.5
 amazon-sagemaker-jupyter-scheduler|3.2.2|3.2.2
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
-amazon_sagemaker_sql_editor|0.2.4|0.2.4
+amazon_sagemaker_sql_editor|0.2.5|0.2.5
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.6|1.0.6
 scipy|1.16.3|1.16.3
 matplotlib-base|3.10.9|3.10.9
@@ -59,7 +59,7 @@ sagemaker-jupyterlab-extension|0.5.9|0.5.9
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.4.0|0.4.0
 sagemaker-python-sdk|3.12.0|3.12.0
-sagemaker-studio|1.1.20|1.1.20
+sagemaker-studio|1.1.22|1.1.22
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.10|1.3.10
