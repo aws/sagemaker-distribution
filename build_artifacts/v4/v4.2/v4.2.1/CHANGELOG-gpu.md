@@ -64,7 +64,7 @@ sagemaker-train|1.12.0|1.13.1|minor
 llvm-openmp|22.1.6|22.1.7|patch
 libsqlite|3.53.1|3.53.2|patch
 openssl|3.6.2|3.6.3|patch
-filelock|3.29.0|3.29.2|patch
+filelock|3.29.0|3.29.3|patch
 fontconfig|2.18.0|2.18.1|patch
 graphite2|1.3.14|1.3.15|patch
 alsa-lib|1.2.15.3|1.2.16|patch
@@ -90,6 +90,7 @@ jupyter-collaboration-ui|2.4.0|2.4.1|patch
 jupyter-docprovider|2.4.0|2.4.1|patch
 jupyterlab-chat|0.22.0|0.22.1|patch
 jupyter-ai-tools|0.5.1|0.5.2|patch
+jupyter_server_documents|0.2.1|0.2.4|patch
 langsmith|0.8.6|0.8.14|patch
 panel-material-ui|0.11.0|0.11.2|patch
 panel|1.9.1|1.9.3|patch
