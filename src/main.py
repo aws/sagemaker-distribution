@@ -140,10 +140,14 @@ def _copy_static_files(
     #
     # TODO: remove the frozen-minor branch once no minors are in the set
     # (i.e. once 4.0 is deprecated).
-    if runtime_version_upgrade_type == _PATCH and (
-        int(new_version_major),
-        int(new_version_minor),
-    ) in _minor_versions_read_from_previous_patch:
+    if (
+        runtime_version_upgrade_type == _PATCH
+        and (
+            int(new_version_major),
+            int(new_version_minor),
+        )
+        in _minor_versions_read_from_previous_patch
+    ):
         base_path = base_version_dir
     else:
         base_path = f"template/v{new_version_major}"
