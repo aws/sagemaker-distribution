@@ -1,0 +1,26 @@
+#!/bin/bash
+
+set -e
+
+# Generate and execute the shell code to modifies shell variables to include
+# micromamba commands (e.g. using `micromamba activate` to activate environments)
+eval "$(micromamba shell hook --shell=bash)"
+
+# apply patches for SMUS
+/etc/patches/apply_patches.sh smus && sudo rm -rf /etc/patches
+
+# Activate conda environment depending on if we are in Recovery or Standard mode. 
+if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
+    export HOME=$SAGEMAKER_RECOVERY_MODE_HOME
+    # Activate conda environment `sagemaker-recovery-mode`
+    micromamba activate sagemaker-recovery-mode
+else
+    # Activate conda environment 'base', where supervisord is installed
+    micromamba activate base
+fi
+
+export SAGEMAKER_APP_TYPE_LOWERCASE=$(echo $SAGEMAKER_APP_TYPE | tr '[:upper:]' '[:lower:]')
+export SERVICE_NAME='SageMakerUnifiedStudio'
+
+mkdir -p $STUDIO_LOGGING_DIR/$SAGEMAKER_APP_TYPE_LOWERCASE/supervisord
+exec supervisord -c /etc/supervisor/conf.d/supervisord-sagemaker-ui.conf -n
