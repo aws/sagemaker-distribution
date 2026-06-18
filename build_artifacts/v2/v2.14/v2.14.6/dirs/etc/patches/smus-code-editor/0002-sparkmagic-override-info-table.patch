@@ -1,0 +1,17 @@
+--- /opt/conda/lib/python3.11/site-packages/sparkmagic/utils/utils.py 
++++ /opt/conda/lib/python3.11/site-packages/sparkmagic/utils/utils.py
+@@ -94,15 +94,7 @@
+ 
+ 
+ def get_sessions_info_html(info_sessions, current_session_id):
+-    html = (
+-        """<table>
+-<tr><th>ID</th><th>YARN Application ID</th><th>Kind</th><th>State</th><th>Spark UI</th><th>Driver log</th><th>User</th><th>Current session?</th></tr>"""
+-        + "".join(
+-            [session.get_row_html(current_session_id) for session in info_sessions]
+-        )
+-        + "</table>"
+-    )
+-
++    html = ""
+     return html
