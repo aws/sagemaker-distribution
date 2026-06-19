@@ -295,52 +295,58 @@ fi
 
 # Setup SageMaker MCP configuration
 echo "Setting up SageMaker MCP configuration..."
-mkdir -p $HOME/.aws/amazonq/
-target_file="$HOME/.aws/amazonq/mcp.json"
 source_file="/etc/sagemaker-ui/sagemaker-mcp/mcp.json"
 
+# Write MCP config to both qcli and Kiro CLI paths
+mkdir -p "$HOME/.aws/amazonq/" "$HOME/.kiro/settings/"
+mcp_target_files=(
+    "$HOME/.aws/amazonq/mcp.json"
+    "$HOME/.kiro/settings/mcp.json"
+)
+
 if [ -f "$source_file" ]; then
-    # Extract all servers from source configuration
-    if [ -f "$target_file" ]; then
-        # Target file exists - merge configurations
-        echo "Existing MCP configuration found, merging configurations..."
+    for mcp_target_file in "${mcp_target_files[@]}"; do
+        if [ -f "$mcp_target_file" ]; then
+            # Target file exists - merge configurations
+            echo "Existing MCP configuration found at $mcp_target_file, merging configurations..."
 
-        # Check if it's valid JSON first
-        if jq empty "$target_file" 2>/dev/null; then
-            # Initialize mcpServers object if it doesn't exist
-            if ! jq -e '.mcpServers' "$target_file" >/dev/null 2>&1; then
-                echo "Creating mcpServers object in existing configuration"
-                jq '. + {"mcpServers":{}}' "$target_file" > "$target_file.tmp"
-                mv "$target_file.tmp" "$target_file"
-            fi
-
-            servers=$(jq '.mcpServers | keys[]' "$source_file" | tr -d '"')
-
-            # Add each server from source to target if it doesn't exist
-            for server in $servers; do
-                if ! jq -e ".mcpServers.\"$server\"" "$target_file" >/dev/null 2>&1; then
-                    server_config=$(jq ".mcpServers.\"$server\"" "$source_file")
-                    jq --arg name "$server" --argjson config "$server_config" \
-                        '.mcpServers[$name] = $config' "$target_file" > "$target_file.tmp"
-                    mv "$target_file.tmp" "$target_file"
-                    echo "Added server '$server' to existing configuration"
-                else
-                    echo "Server '$server' already exists in configuration"
+            # Check if it's valid JSON first
+            if jq empty "$mcp_target_file" 2>/dev/null; then
+                # Initialize mcpServers object if it doesn't exist
+                if ! jq -e '.mcpServers' "$mcp_target_file" >/dev/null 2>&1; then
+                    echo "Creating mcpServers object in existing configuration"
+                    jq '. + {"mcpServers":{}}' "$mcp_target_file" > "$mcp_target_file.tmp"
+                    mv "$mcp_target_file.tmp" "$mcp_target_file"
                 fi
-            done
+
+                servers=$(jq '.mcpServers | keys[]' "$source_file" | tr -d '"')
+
+                # Add each server from source to target if it doesn't exist
+                for server in $servers; do
+                    if ! jq -e ".mcpServers.\"$server\"" "$mcp_target_file" >/dev/null 2>&1; then
+                        server_config=$(jq ".mcpServers.\"$server\"" "$source_file")
+                        jq --arg name "$server" --argjson config "$server_config" \
+                            '.mcpServers[$name] = $config' "$mcp_target_file" > "$mcp_target_file.tmp"
+                        mv "$mcp_target_file.tmp" "$mcp_target_file"
+                        echo "Added server '$server' to $mcp_target_file"
+                    else
+                        echo "Server '$server' already exists in $mcp_target_file"
+                    fi
+                done
+            else
+                echo "Warning: $mcp_target_file is not valid JSON, replacing with default configuration"
+                cp "$source_file" "$mcp_target_file"
+            fi
         else
-            echo "Warning: Existing MCP configuration is not valid JSON, replacing with default configuration"
-            cp "$source_file" "$target_file"
+            # File doesn't exist, copy our configuration
+            cp "$source_file" "$mcp_target_file"
+            echo "Created new MCP configuration at $mcp_target_file"
         fi
-    else
-        # File doesn't exist, copy our configuration
-        cp "$source_file" "$target_file"
-        echo "Created new MCP configuration with default servers"
-    fi
-    # Replace AWS_REGION_NAME placeholder with actual region name
-    echo "Updating MCP configuration with AWS Region $REGION_NAME..."
-    sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$target_file"
-    echo "Successfully added AWS Region $REGION_NAME to $target_file"
+        # Replace AWS_REGION_NAME placeholder with actual region name
+        echo "Updating MCP configuration with AWS Region $REGION_NAME..."
+        sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$mcp_target_file"
+        echo "Successfully added AWS Region $REGION_NAME to $mcp_target_file"
+    done
     echo "Successfully configured MCP for SageMaker"
 else
     echo "Warning: MCP configuration file not found at $source_file"
@@ -348,6 +354,7 @@ fi
 
 # Migrating MCP configuration to new config file
 echo "Migrating MCP configuration to Amazon Q agents..."
+target_file="$HOME/.aws/amazonq/mcp.json"
 agents_target_file="$HOME/.aws/amazonq/agents/default.json"
 agents_source_file="/etc/sagemaker-ui/sagemaker-mcp/default.json"
 
