@@ -14,6 +14,7 @@ Package | Previous Version | Current Version | Change Type
 jupyterlab|4.5.8|4.5.9|patch
 sagemaker-code-editor|1.9.6|1.9.7|patch
 sagemaker-studio-dataengineering-extensions|1.3.10|1.3.12|patch
+uv|0.11.21|0.11.22|patch
 
 ## Indirect dependencies
 
@@ -59,7 +60,7 @@ python-discovery|1.4.0|1.4.2|patch
 starlette|1.3.0|1.3.1|patch
 python-duckdb|1.5.3|1.5.4|patch
 duckdb|1.5.3|1.5.4|patch
-fastapi-cli|0.0.24|0.0.26|patch
+fastapi-cli|0.0.24|0.0.27|patch
 param|2.4.0|2.4.1|patch
 pylint|4.0.5|4.0.6|patch
 snowflake-sqlalchemy|1.10.0|1.10.1|patch
