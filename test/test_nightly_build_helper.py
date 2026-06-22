@@ -128,3 +128,54 @@ class TestNightlyBuildHelper:
         """Test handling of invalid version formats"""
         with pytest.raises(ValueError):
             helper.remove_version(version)
+
+    def test_remove_version_removes_all_duplicates(self, mock_github):
+        """Test that remove_version removes ALL occurrences, not just the first."""
+        schedule_with_dupes = {
+            "active_nightly_builds": ["2.13.8", "2.13.8", "4.0.5"],
+            "patch_base_versions": ["2.13.7", "2.13.7", "4.0.4"],
+            "minor_base_versions": [],
+            "major_base_versions": [],
+        }
+        mock_github["variable"].value = json.dumps(schedule_with_dupes)
+        with patch.dict("os.environ", {"GH_TOKEN": "fake-token", "GITHUB_REPOSITORY": "fake/repo"}):
+            helper = NightlyBuildHelper()
+        helper.remove_version("2.13.8")
+
+        assert "2.13.8" not in helper.current_schedule["active_nightly_builds"]
+        assert helper.current_schedule["active_nightly_builds"] == ["4.0.5"]
+        assert "2.13.7" not in helper.current_schedule["patch_base_versions"]
+        assert helper.current_schedule["patch_base_versions"] == ["4.0.4"]
+
+    def test_add_next_versions_no_duplicates_on_repeat(self, mock_github):
+        """Test that calling add_next_versions twice doesn't create duplicates."""
+        schedule = {
+            "active_nightly_builds": [],
+            "patch_base_versions": [],
+            "minor_base_versions": [],
+            "major_base_versions": [],
+        }
+        mock_github["variable"].value = json.dumps(schedule)
+        with patch.dict("os.environ", {"GH_TOKEN": "fake-token", "GITHUB_REPOSITORY": "fake/repo"}):
+            helper = NightlyBuildHelper()
+        helper.add_next_versions("4.0.4")
+        helper.add_next_versions("4.0.4")
+
+        assert helper.current_schedule["active_nightly_builds"].count("4.0.5") == 1
+        assert helper.current_schedule["patch_base_versions"].count("4.0.4") == 1
+
+    def test_add_next_versions_idempotent_when_already_present(self, mock_github):
+        """Test that add_next_versions doesn't duplicate if version already in schedule."""
+        schedule = {
+            "active_nightly_builds": ["4.0.5"],
+            "patch_base_versions": ["4.0.4"],
+            "minor_base_versions": [],
+            "major_base_versions": [],
+        }
+        mock_github["variable"].value = json.dumps(schedule)
+        with patch.dict("os.environ", {"GH_TOKEN": "fake-token", "GITHUB_REPOSITORY": "fake/repo"}):
+            helper = NightlyBuildHelper()
+        helper.add_next_versions("4.0.4")
+
+        assert helper.current_schedule["active_nightly_builds"].count("4.0.5") == 1
+        assert helper.current_schedule["patch_base_versions"].count("4.0.4") == 1

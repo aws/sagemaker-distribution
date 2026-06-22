@@ -6,11 +6,12 @@ import sys
 from github import Github
 from packaging.version import Version
 
+
 class NightlyBuildHelper:
     def __init__(self):
         """Initialize with GitHub credentials from environment variables."""
-        token = os.environ.get('GH_TOKEN')
-        repo_name = os.environ.get('GITHUB_REPOSITORY')
+        token = os.environ.get("GH_TOKEN")
+        repo_name = os.environ.get("GITHUB_REPOSITORY")
 
         if not token:
             raise ValueError("GH_TOKEN environment variable is required")
@@ -44,7 +45,9 @@ class NightlyBuildHelper:
             print(f"Updated schedule: {schedule_json}")
             # Update the existing variable
             self.schedule_variable.edit(schedule_json)
-            print("Successfully updated NIGHTLY_BUILD_SCHEDULE variable: https://github.com/aws/sagemaker-distribution/settings/variables/actions")
+            print(
+                "Successfully updated NIGHTLY_BUILD_SCHEDULE variable: https://github.com/aws/sagemaker-distribution/settings/variables/actions"
+            )
         except Exception as e:
             print(f"Error saving schedule to GitHub: {e}")
             sys.exit(1)
@@ -68,20 +71,24 @@ class NightlyBuildHelper:
             print(f"Version {version} not found in active nightly builds schedule.")
             return
 
-        # Remove from active builds
-        self.current_schedule["active_nightly_builds"].remove(version)
+        # Remove ALL occurrences from active builds (handles duplicates)
+        self.current_schedule["active_nightly_builds"] = [
+            v for v in self.current_schedule["active_nightly_builds"] if v != version
+        ]
 
         if version_obj.patch == 0:  # Handling minor version
             # Remove previous minor version from minor_base_versions
             if version_obj.minor > 0:
                 self.current_schedule["minor_base_versions"] = [
-                    v for v in self.current_schedule["minor_base_versions"]
+                    v
+                    for v in self.current_schedule["minor_base_versions"]
                     if not v.startswith(f"{version_obj.major}.{version_obj.minor-1}")
                 ]
         else:  # Handling patch version
             prev_version = str(version_obj.replace(patch=version_obj.patch - 1))
-            if prev_version in self.current_schedule["patch_base_versions"]:
-                self.current_schedule["patch_base_versions"].remove(prev_version)
+            self.current_schedule["patch_base_versions"] = [
+                v for v in self.current_schedule["patch_base_versions"] if v != prev_version
+            ]
 
         self._sort_lists()
         self._save_schedule()
@@ -98,46 +105,59 @@ class NightlyBuildHelper:
         next_versions = [str(version_obj.bump_patch())]
         if version_obj.patch == 0:  # Handling minor version
             next_versions.append(str(version_obj.bump_minor()))
-            self.current_schedule["active_nightly_builds"].extend(next_versions)
-            self.current_schedule["patch_base_versions"].append(version)
-            self.current_schedule["minor_base_versions"].append(version)
+            for v in next_versions:
+                if v not in self.current_schedule["active_nightly_builds"]:
+                    self.current_schedule["active_nightly_builds"].append(v)
+            if version not in self.current_schedule["patch_base_versions"]:
+                self.current_schedule["patch_base_versions"].append(version)
+            if version not in self.current_schedule["minor_base_versions"]:
+                self.current_schedule["minor_base_versions"].append(version)
             if version_obj.minor > 0:
                 prev_version = str(version_obj.replace(minor=version_obj.minor - 1))
                 # If 2.2.0 is released, and 2.1.0 was the base for 3.0.0, now set 2.2.0 as base
                 if prev_version in self.current_schedule["major_base_versions"]:
-                    self.current_schedule["major_base_versions"].remove(prev_version)
-                    self.current_schedule["major_base_versions"].append(version)
+                    self.current_schedule["major_base_versions"] = [
+                        v for v in self.current_schedule["major_base_versions"] if v != prev_version
+                    ]
+                    if version not in self.current_schedule["major_base_versions"]:
+                        self.current_schedule["major_base_versions"].append(version)
         else:  # Handling patch version
-            self.current_schedule["active_nightly_builds"].extend(next_versions)
-            self.current_schedule["patch_base_versions"].append(version)
+            for v in next_versions:
+                if v not in self.current_schedule["active_nightly_builds"]:
+                    self.current_schedule["active_nightly_builds"].append(v)
+            if version not in self.current_schedule["patch_base_versions"]:
+                self.current_schedule["patch_base_versions"].append(version)
             prev_version = str(version_obj.replace(patch=version_obj.patch - 1))
             # If 2.2.1 is released, and 2.2.0 was the base for 2.3.0, now set 2.2.1 as base
             if prev_version in self.current_schedule["minor_base_versions"]:
-                self.current_schedule["minor_base_versions"].remove(prev_version)
-                self.current_schedule["minor_base_versions"].append(version)
+                self.current_schedule["minor_base_versions"] = [
+                    v for v in self.current_schedule["minor_base_versions"] if v != prev_version
+                ]
+                if version not in self.current_schedule["minor_base_versions"]:
+                    self.current_schedule["minor_base_versions"].append(version)
             # If 2.2.1 is released, and 2.2.0 was the base for 3.0.0, now set 2.2.1 as base
             if prev_version in self.current_schedule["major_base_versions"]:
-                self.current_schedule["major_base_versions"].remove(prev_version)
-                self.current_schedule["major_base_versions"].append(version)
+                self.current_schedule["major_base_versions"] = [
+                    v for v in self.current_schedule["major_base_versions"] if v != prev_version
+                ]
+                if version not in self.current_schedule["major_base_versions"]:
+                    self.current_schedule["major_base_versions"].append(version)
 
         self._sort_lists()
         self._save_schedule()
 
+
 def main():
-    parser = argparse.ArgumentParser(description='Nightly build helper tool')
-    subparsers = parser.add_subparsers(dest='command', help='Commands')
+    parser = argparse.ArgumentParser(description="Nightly build helper tool")
+    subparsers = parser.add_subparsers(dest="command", help="Commands")
 
     # Remove version command
-    remove_parser = subparsers.add_parser('remove-version',
-        help='Remove a version from active builds')
-    remove_parser.add_argument('version',
-        help='Version to remove (e.g., 1.2.3)')
+    remove_parser = subparsers.add_parser("remove-version", help="Remove a version from active builds")
+    remove_parser.add_argument("version", help="Version to remove (e.g., 1.2.3)")
 
     # Add next versions command
-    add_parser = subparsers.add_parser('add-next-versions',
-        help='Add next version(s) based on released version')
-    add_parser.add_argument('version',
-        help='Version that was released (e.g., 1.2.3)')
+    add_parser = subparsers.add_parser("add-next-versions", help="Add next version(s) based on released version")
+    add_parser.add_argument("version", help="Version that was released (e.g., 1.2.3)")
 
     args = parser.parse_args()
 
@@ -148,9 +168,9 @@ def main():
     try:
         helper = NightlyBuildHelper()
 
-        if args.command == 'remove-version':
+        if args.command == "remove-version":
             helper.remove_version(args.version)
-        elif args.command == 'add-next-versions':
+        elif args.command == "add-next-versions":
             helper.add_next_versions(args.version)
         else:
             print(f"Unknown command: {args.command}")
@@ -159,6 +179,7 @@ def main():
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
+
 
 if __name__ == "__main__":
     main()
