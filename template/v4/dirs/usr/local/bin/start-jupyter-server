@@ -15,17 +15,14 @@ else
     cp /etc/sagemaker/jupyter/server/jupyter_server_config.d/zzz_sagemaker_overrides.json /opt/conda/etc/jupyter/jupyter_server_config.d/
 
     # Prevent SMUS lab extensions from loading
-    for ext in \
-        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-data-explorer-jl-plugin \
-        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-connection-magics-jlextension \
-        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-studio-jupyter-scheduler \
-        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-ui-doc-manager-jl-plugin \
-        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-ui-theme-jlplugin \
-        /opt/conda/share/jupyter/labextensions/sagemaker_sparkmonitor \
-        /opt/conda/share/jupyter/labextensions/@pyviz/jupyterlab_pyviz \
-        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker_post_startup_notification_plugin; do
-      [ -f "$ext/package.json" ] && mv "$ext/package.json" "$ext/package.json.disabled"
-    done
+    rm -f /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-data-explorer-jl-plugin/package.json \
+        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-connection-magics-jlextension/package.json \
+        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-studio-jupyter-scheduler/package.json \
+        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-ui-doc-manager-jl-plugin/package.json \
+        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker-ui-theme-jlplugin/package.json \
+        /opt/conda/share/jupyter/labextensions/sagemaker_sparkmonitor/package.json \
+        /opt/conda/share/jupyter/labextensions/@pyviz/jupyterlab_pyviz/package.json \
+        /opt/conda/share/jupyter/labextensions/@amzn/sagemaker_post_startup_notification_plugin/package.json
 fi
 
 # Setup skills and subagent for SMAI private spaces only
