@@ -1,0 +1,10 @@
+{
+  "disabledExtensions": {
+    "@amzn/sagemaker-data-explorer-jl-plugin:plugin": true,
+    "@amzn/sagemaker-connection-magics-jlextension:plugin": true,
+    "@amzn/sagemaker-studio-jupyter-scheduler:plugin": true,
+    "@amzn/sagemaker-ui-doc-manager-jl-plugin:plugin": true,
+    "@amzn/sagemaker-ui-theme-jlplugin:plugin": true,
+    "sagemaker_sparkmonitor:plugin": true
+  }
+}
