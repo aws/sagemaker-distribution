@@ -51,8 +51,8 @@ pyhive|0.7.0|0.7.0
 python-gssapi|1.11.1|1.11.1
 python-lsp-server|1.14.0|1.14.0
 s3fs|2026.4.0|2026.4.0
-sagemaker-code-editor|1.9.7|1.9.7
-sagemaker-gen-ai-jupyterlab-extension|1.0.16|1.0.16
+sagemaker-code-editor|1.9.8|1.9.8
+sagemaker-gen-ai-jupyterlab-extension|1.0.17|1.0.17
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.4.3|0.4.3
 sagemaker-jupyterlab-extension|0.5.9|0.5.9
@@ -70,5 +70,5 @@ strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.19.1|2.19.1
-uv|0.11.23|0.11.23
+uv|0.11.24|0.11.24
 py-xgboost-cpu| |2.1.4
