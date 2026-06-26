@@ -1,0 +1,1 @@
+conda-forge::aws-smus-cicd-cli[version='>=1.0.5,<2.0.0']
