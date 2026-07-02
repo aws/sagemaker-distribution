@@ -1,0 +1,15 @@
+{
+  "argv": [
+    "/opt/conda/bin/python",
+    "-m",
+    "sagemaker_kernel_wrapper.sm_gis_wrapper",
+    "-m",
+    "aws_glue_interactive_sessions_kernel.glue_spark.GlueKernel",
+    "-f",
+    "{connection_file}"
+  ],
+  "display_name": "Glue Spark",
+  "env": {"request_origin": "SageMakerStudioSparkNotebook", "glue_version": "3.0"},
+  "language": "python"
+}
+
