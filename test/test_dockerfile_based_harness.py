@@ -83,6 +83,7 @@ _docker_client = docker.from_env()
         ("sagemaker_studio.integ.Dockerfile", ["sagemaker_studio"]),
         ("strands.test.Dockerfile", ["strands-agents"]),
         ("aws-smus-cicd-cli.test.Dockerfile", ["aws-smus-cicd-cli"]),
+        ("ray.test.Dockerfile", ["ray-default"]),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -169,6 +170,7 @@ def test_dockerfiles_for_cpu(
         ("sagemaker_studio.integ.Dockerfile", ["sagemaker_studio"]),
         ("strands.test.Dockerfile", ["strands-agents"]),
         ("aws-smus-cicd-cli.test.Dockerfile", ["aws-smus-cicd-cli"]),
+        ("ray.test.Dockerfile", ["ray-default"]),
     ],
 )
 def test_dockerfiles_for_gpu(
