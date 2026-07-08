@@ -107,6 +107,72 @@ Follow these steps for sending out a pull request for adding new packages:
 
    Also Note: We might ask you to include the test results as part of the PR.
 
+## Modifying the Dockerfile or dirs/ (static files)
+
+Each minor version has its own template directory under `template/v{major}/v{major}.{minor}/` containing a `Dockerfile` and a `dirs/` folder. These are the static files that get copied into every new patch release of that minor version.
+
+### Template directory structure
+
+```
+template/
+├── v2/
+│   ├── v2.13/
+│   │   ├── Dockerfile
+│   │   └── dirs/
+│   └── v2.14/
+│       ├── Dockerfile
+│       └── dirs/
+├── v3/
+│   ├── v3.8/
+│   │   ├── Dockerfile
+│   │   └── dirs/
+│   └── v3.9/
+│       ├── Dockerfile
+│       └── dirs/
+└── v4/
+    ├── v4.0/
+    ├── v4.1/
+    ├── v4.2/
+    └── v4.3/
+```
+
+### Adding a new feature to a specific minor version
+
+If the change should only apply to a specific minor version (e.g., v4.3), edit only that minor's template:
+
+```
+template/v4/v4.3/Dockerfile
+template/v4/v4.3/dirs/
+```
+
+Other old minor versions(4.0, 4.1 or 4.2) are unaffected. Their next patch release will continue using their own frozen template.
+
+Note: Since future minor versions (e.g., v4.4) are created by copying from the previous minor's template (v4.3), any change made to v4.3's template will also be inherited by v4.4 and beyond when they are created.
+
+### Applying a security fix or infrastructure change across all active minor versions
+
+If the change must propagate to all supported minor versions (e.g., a Dockerfile security patch), apply it to each per-minor template explicitly:
+
+```
+template/v4/v4.0/Dockerfile
+template/v4/v4.1/Dockerfile
+template/v4/v4.2/Dockerfile
+template/v4/v4.3/Dockerfile
+```
+
+This is intentional — it makes the scope of the fix auditable and prevents accidental feature leakage.
+
+### How new minor versions are created
+
+When `create-minor-version-artifacts` is run (e.g., creating v4.4 from v4.3.x), the tooling automatically copies the previous minor's template to create the new one:
+
+```
+template/v4/v4.3/  →  template/v4/v4.4/
+```
+
+You can then edit `template/v4/v4.4/` to add or remove features specific to the new minor version before building it.
+
+
 ## Finding contributions to work on
 Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any 'help wanted' issues is a great place to start.
 
