@@ -75,22 +75,21 @@ def _delete_all_files_except_additional_packages_input_files(base_version_dir, v
 
 
 def _ensure_minor_template_exists(version: Version):
-    """Create the per-minor template directory for a new minor/major version.
+    """Ensure the per-minor template directory exists for a new minor/major version.
 
-    Copies Dockerfile and dirs/ from the previous minor's template directory
-    (e.g. template/v4/v4.2/ -> template/v4/v4.3/). This is the snapshot that
-    all future patch releases of this minor will use.
+    If the directory already exists (e.g. a contributor pre-created it with
+    feature changes), it is left as-is. Otherwise, copies from the previous
+    minor's template (e.g. template/v4/v4.2/ -> template/v4/v4.3/).
 
-    For the first minor of a new major version (minor == 0), the caller must
-    ensure template/v{major}/v{major}.0/ is set up manually since there is no
-    previous minor to copy from.
+    For the first minor of a new major version (minor == 0), the directory must
+    be created manually since there is no previous minor to copy from.
     """
     major = version.major
     minor = version.minor
     minor_template_dir = f"template/v{major}/v{major}.{minor}"
 
     if os.path.exists(minor_template_dir):
-        shutil.rmtree(minor_template_dir)
+        return
 
     if minor == 0:
         raise Exception(

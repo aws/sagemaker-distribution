@@ -136,41 +136,59 @@ template/
     └── v4.3/
 ```
 
-### Adding a new feature to a specific minor version
+### Deciding where to make your change
 
-If the change should only apply to a specific minor version (e.g., v4.3), edit only that minor's template:
+First, identify the latest minor version's template (e.g., `template/v4/v4.3/`). Then check whether that minor version has already been released by looking for its `.0` patch in `build_artifacts/`:
 
+```shell
+# Example: checking if v4.3 has been released
+ls build_artifacts/v4/v4.3/v4.3.0/
 ```
-template/v4/v4.3/Dockerfile
-template/v4/v4.3/dirs/
+
+#### Adding a new feature (applies since upcoming new minor versions only)
+
+Find the latest minor version's template directory (e.g., `template/v4/v4.3/`). Then decide:
+
+- **If the latest minor version has NOT been released** (e.g., `build_artifacts/v4/v4.3/v4.3.0/` does not exist): edit the latest minor's template directly. It doesn't matter whether the template was created by you or by someone else — as long as v4.3.0 hasn't been released, all changes for the next minor go into `template/v4/v4.3/`.
+
+- **If the latest minor version has already been released** (e.g., `build_artifacts/v4/v4.3/v4.3.0/` exists): create a new minor version's template by copying from the latest, then make your changes there:
+
+  ```shell
+  cp -r template/v4/v4.3 template/v4/v4.4
+  # Now edit template/v4/v4.4/ as needed
+  ```
+
+  Include the new template directory in your PR.
+
+In either case, older minor versions (4.0, 4.1, 4.2) are unaffected. Their next patch release will continue using their own frozen template.
+
+Note: Since future minor versions are created by copying from the previous minor's template, any change made to the latest unreleased minor's template will also be inherited by subsequent minor versions when they are created.
+
+#### Applying a security fix or infrastructure change (applies to all supported minor versions)
+
+If the latest minor version has already been released, first create the next minor version's template:
+
+```shell
+cp -r template/v4/v4.3 template/v4/v4.4
 ```
 
-Other old minor versions(4.0, 4.1 or 4.2) are unaffected. Their next patch release will continue using their own frozen template.
-
-Note: Since future minor versions (e.g., v4.4) are created by copying from the previous minor's template (v4.3), any change made to v4.3's template will also be inherited by v4.4 and beyond when they are created.
-
-### Applying a security fix or infrastructure change across all active minor versions
-
-If the change must propagate to all supported minor versions (e.g., a Dockerfile security patch), apply it to each per-minor template explicitly:
+Then apply the fix to **all** supported minor version templates (including the newly created one):
 
 ```
 template/v4/v4.0/Dockerfile
 template/v4/v4.1/Dockerfile
 template/v4/v4.2/Dockerfile
 template/v4/v4.3/Dockerfile
+template/v4/v4.4/Dockerfile
 ```
 
-This is intentional — it makes the scope of the fix auditable and prevents accidental feature leakage.
+If the latest minor version has NOT been released yet, simply apply the fix to all existing supported minor version templates.
 
-### How new minor versions are created
+This approach is intentional — it makes the scope of the fix auditable and prevents accidental feature leakage.
 
-When `create-minor-version-artifacts` is run (e.g., creating v4.4 from v4.3.x), the tooling automatically copies the previous minor's template to create the new one:
+### How new minor version templates are auto-created at build time
 
-```
-template/v4/v4.3/  →  template/v4/v4.4/
-```
-
-You can then edit `template/v4/v4.4/` to add or remove features specific to the new minor version before building it.
+If no one creates the template directory before `create-minor-version-artifacts` runs, the tooling will automatically copy it from the previous minor's template (e.g., v4.3 → v4.4). This means any change in v4.3's template will be inherited by v4.4 if its template hasn't been pre-created.
 
 
 ## Finding contributions to work on
