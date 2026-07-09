@@ -17,7 +17,6 @@ from changelog_generator import generate_change_log
 from config import (
     EXTERNAL_LIB_CACHE_S3_BUCKET,
     _image_generator_configs,
-    _minor_versions_read_from_previous_patch,
 )
 from dependency_upgrader import (
     _MAJOR,
@@ -75,6 +74,39 @@ def _delete_all_files_except_additional_packages_input_files(base_version_dir, v
                 print("Failed to delete %s. Reason: %s" % (file_path, e))
 
 
+def _ensure_minor_template_exists(version: Version):
+    """Ensure the per-minor template directory exists for a new minor/major version.
+
+    If the directory already exists (e.g. a contributor pre-created it with
+    feature changes), it is left as-is. Otherwise, copies from the previous
+    minor's template (e.g. template/v4/v4.2/ -> template/v4/v4.3/).
+
+    For the first minor of a new major version (minor == 0), the directory must
+    be created manually since there is no previous minor to copy from.
+    """
+    major = version.major
+    minor = version.minor
+    minor_template_dir = f"template/v{major}/v{major}.{minor}"
+
+    if os.path.exists(minor_template_dir):
+        return
+
+    if minor == 0:
+        raise Exception(
+            f"Cannot auto-create template for v{major}.0 — no previous minor exists. "
+            f"Please create {minor_template_dir}/ manually with a Dockerfile and dirs/."
+        )
+
+    prev_minor_template_dir = f"template/v{major}/v{major}.{minor - 1}"
+    if not os.path.exists(prev_minor_template_dir):
+        raise Exception(
+            f"Previous minor template {prev_minor_template_dir}/ does not exist. "
+            f"Cannot create template for v{major}.{minor}."
+        )
+
+    shutil.copytree(prev_minor_template_dir, minor_template_dir)
+
+
 def _create_new_version_artifacts(args):
     runtime_version_upgrade_type = args.runtime_version_upgrade_type
 
@@ -98,6 +130,9 @@ def _create_new_version_artifacts(args):
     if args.pre_release_identifier:
         next_version = next_version.replace(prerelease=args.pre_release_identifier)
 
+    if runtime_version_upgrade_type in (_MINOR, _MAJOR):
+        _ensure_minor_template_exists(next_version)
+
     base_version_dir = get_dir_for_version(base_patch_version)
     new_version_dir = create_and_get_semver_dir(next_version, args.force)
 
@@ -111,15 +146,12 @@ def _create_new_version_artifacts(args):
         new_version_dir,
         str(next_version.major),
         str(next_version.minor),
-        runtime_version_upgrade_type,
     )
     with open(f"{new_version_dir}/source-version.txt", "w") as f:
         f.write(args.base_patch_version)
 
 
-def _copy_static_files(
-    base_version_dir, new_version_dir, new_version_major, new_version_minor, runtime_version_upgrade_type
-):
+def _copy_static_files(base_version_dir, new_version_dir, new_version_major, new_version_minor):
     for f in glob.glob(f"{base_version_dir}/gpu.arg_based_env.in"):
         shutil.copy2(f, new_version_dir)
     for f in glob.glob(f"{base_version_dir}/cpu.pinned_env.in"):
@@ -129,28 +161,14 @@ def _copy_static_files(
     for f in glob.glob(f"{base_version_dir}/patch_*"):
         shutil.copy2(f, new_version_dir)
 
-    # Determine where to read the Dockerfile + dirs/ from.
-    #
-    # Default: template/v{major}/. This picks up the latest template state for every build.
-    #
-    # Exception: for patch bumps in a minor version listed in
-    # _minor_versions_read_from_previous_patch, read from the previous patch's
-    # build_artifacts/ directory instead. This "freezes" the static files for that
-    # minor version so later template changes don't leak into its patches.
-    #
-    # TODO: remove the frozen-minor branch once no minors are in the set
-    # (i.e. once 4.0 is deprecated).
-    if (
-        runtime_version_upgrade_type == _PATCH
-        and (
-            int(new_version_major),
-            int(new_version_minor),
-        )
-        in _minor_versions_read_from_previous_patch
-    ):
-        base_path = base_version_dir
-    else:
-        base_path = f"template/v{new_version_major}"
+    # Read the Dockerfile + dirs/ from the per-minor template directory.
+    # Each minor version has its own frozen template so that:
+    #   - Patch bumps never accidentally gain/lose features from template edits
+    #     meant for newer minors.
+    #   - Security fixes can be applied to specific minor templates explicitly.
+    #   - New minor/major versions get their template created at version-creation time
+    #     (copied from the top-level template/v{major}/ directory).
+    base_path = f"template/v{new_version_major}/v{new_version_major}.{new_version_minor}"
 
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
         shutil.copy2(f, new_version_dir)
