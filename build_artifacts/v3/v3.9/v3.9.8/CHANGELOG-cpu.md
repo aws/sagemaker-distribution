@@ -1,4 +1,4 @@
-# Change log: 3.9.8 (gpu)
+# Change log: 3.9.8 (cpu)
 
 This page lists all package changes since the previous release (3.9.7).
 
@@ -23,8 +23,6 @@ sagemaker-gen-ai-jupyterlab-extension|1.0.16|1.0.18|patch
 
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
-libsystemd0|260.2|261.1|major
-libudev1|260.2|261.1|major
 fastcore|1.13.6|2.0.1|major
 smart_open|7.6.1|8.0.0|major
 smart-open|7.6.1|8.0.0|major
