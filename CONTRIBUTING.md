@@ -107,6 +107,82 @@ Follow these steps for sending out a pull request for adding new packages:
 
    Also Note: We might ask you to include the test results as part of the PR.
 
+## Modifying the Dockerfile or dirs/ (static files)
+
+Each minor version has its own template directory under `template/v{major}/v{major}.{minor}/` containing a `Dockerfile` and a `dirs/` folder. These are the static files that get copied into every new patch release of that minor version.
+
+### Template directory structure
+
+```
+template/
+├── v2/
+│   ├── v2.13/
+│   │   ├── Dockerfile
+│   │   └── dirs/
+│   └── v2.14/
+│       ├── Dockerfile
+│       └── dirs/
+├── v3/
+│   ├── v3.8/
+│   │   ├── Dockerfile
+│   │   └── dirs/
+│   └── v3.9/
+│       ├── Dockerfile
+│       └── dirs/
+└── v4/
+    ├── v4.0/
+    ├── v4.1/
+    ├── v4.2/
+    └── v4.3/
+```
+
+### Deciding where to make your change
+
+Find the latest minor version that has a template directory (e.g., `template/v4/v4.3/`). Then check whether any build artifact exists for that minor version:
+
+```shell
+# Example: checking if v4.3 has any released patch version
+ls build_artifacts/v4/v4.3/
+```
+
+There are two possible states:
+
+- **Template exists, but NO build artifact exists** (e.g., `template/v4/v4.3/` exists but `build_artifacts/v4/v4.3/` is empty or does not exist): this minor version has not been released yet. Make your changes directly in `template/v4/v4.3/`.
+
+- **Template exists AND build artifacts exist** (e.g., both `template/v4/v4.3/` and `build_artifacts/v4/v4.3/v4.3.0/` exist): this minor version has already been released. Create the next minor version's template by copying from it, then make your changes in the new template:
+
+  ```shell
+  cp -r template/v4/v4.3 template/v4/v4.4
+  # Now edit template/v4/v4.4/ as needed
+  ```
+
+  Include the new template directory in your PR.
+
+#### Adding a new feature (applies to upcoming minor versions only)
+
+Follow the decision above to identify the correct unreleased minor template, and make your changes there. Older released minor versions are unaffected — their next patch release will continue using their own frozen template.
+
+Since future minor versions are created by copying from the previous minor's template, any change made to an unreleased minor's template will also be inherited by subsequent minor versions when they are created (If you make change to template/v4/v4.4/, template/v4/v4.5/ and template/v4/v4.6/ will also get the change).
+
+#### Applying a security fix or infrastructure change (applies to all supported minor versions)
+
+Follow the decision above — if the latest minor has been released, create the next minor version's template first. Then apply the fix to **all** supported minor version templates (including the newly created one):
+
+```
+template/v4/v4.0/Dockerfile
+template/v4/v4.1/Dockerfile
+template/v4/v4.2/Dockerfile
+template/v4/v4.3/Dockerfile
+template/v4/v4.4/Dockerfile
+```
+
+This approach is intentional — it makes the scope of the fix auditable and prevents accidental feature leakage.
+
+### How new minor version templates are auto-created at build time
+
+If no one creates the template directory before `create-minor-version-artifacts` runs, the tooling will automatically copy it from the previous minor's template (e.g., v4.3 → v4.4). This means any change in v4.3's template will be inherited by v4.4 if its template hasn't been pre-created.
+
+
 ## Finding contributions to work on
 Looking at the existing issues is a great way to find something to contribute on. As our projects, by default, use the default GitHub issue labels (enhancement/bug/duplicate/help wanted/invalid/question/wontfix), looking at any 'help wanted' issues is a great place to start.
 
