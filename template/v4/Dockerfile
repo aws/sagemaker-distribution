@@ -104,6 +104,14 @@ RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     rm -rf ${DIRECTORY_TREE_STAGE_DIR} && \
     # Clone skills from manifest config (must run after COPY dirs/ + rsync which provides skills-manifest.json)
     bash /etc/sagemaker/skills/clone_skills.sh && \
+    # Clone SMUS-specific skills (data analytics)
+    mkdir -p /etc/sagemaker-ui/skills && \
+    git clone --depth 1 https://github.com/awslabs/agent-plugins.git /tmp/smus-skill-repo-1 && \
+    cp -r /tmp/smus-skill-repo-1/plugins/sagemaker-ai/skills/* /etc/sagemaker-ui/skills/ && \
+    rm -rf /tmp/smus-skill-repo-1 && \
+    git clone --depth 1 https://github.com/aws/agent-toolkit-for-aws.git /tmp/smus-skill-repo-2 && \
+    cp -r /tmp/smus-skill-repo-2/plugins/aws-data-analytics/skills/* /etc/sagemaker-ui/skills/ && \
+    rm -rf /tmp/smus-skill-repo-2 && \
 # CodeEditor - download the extensions
     mkdir -p /etc/code-editor/extensions /etc/code-editor/extensions-sagemaker-ui && \
     while IFS= read -r url || [ -n "$url" ]; do \

@@ -1,5 +1,14 @@
 {
   "@jupyterlab/apputils-extension:themes": {
     "theme": "Amazon SageMaker Unified Studio Dark"
+  },
+  "@jupyterlab/application-extension:shell": {
+    "layout": {
+      "multiple": {
+        "JupyterlabChat:sidepanel": {
+          "area": "left"
+        }
+      }
+    }
   }
 }
