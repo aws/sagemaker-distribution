@@ -1,0 +1,81 @@
+# Change log: 4.1.6 (gpu)
+
+This page lists all package changes since the previous release (4.1.5).
+
+## Direct dependencies
+
+> [!NOTE]
+> These packages are explicitly included in the image. Their updates follow SageMaker Distribution's [versioning strategy](https://github.com/aws/sagemaker-distribution#versioning-strategy).
+
+### Changed
+
+Package | Previous Version | Current Version | Change Type
+---|---|---|---
+sagemaker-jupyterlab-extension-common|0.4.5|0.4.6|patch
+amazon_sagemaker_sql_editor|0.2.5|0.2.6|patch
+jupyter-ai|3.0.0|3.0.1|patch
+sagemaker-code-editor|1.9.8|1.9.9|patch
+sagemaker-gen-ai-jupyterlab-extension|1.0.17|1.0.18|patch
+uv|0.11.24|0.11.28|patch
+
+## Indirect dependencies
+
+> [!NOTE]
+> These packages are pulled in automatically to satisfy the requirements of the direct dependencies. Their versions may vary between releases.
+
+### Changed
+
+Package | Previous Version | Current Version | Change Type
+---|---|---|---
+setuptools|82.0.1|83.0.0|major
+fastcore|1.13.7|2.0.1|major
+smart_open|7.6.1|8.0.0|major
+smart-open|7.6.1|8.0.0|major
+absl-py|2.4.0|2.5.0|minor
+typing_extensions|4.15.0|4.16.0|minor
+typing-extensions|4.15.0|4.16.0|minor
+python-tzdata|2026.2|2026.3|minor
+aiohappyeyeballs|2.6.2|2.7.1|minor
+narwhals|2.22.1|2.23.0|minor
+opentelemetry-api|1.42.1|1.43.0|minor
+opentelemetry-sdk|1.42.1|1.43.0|minor
+ray-core|2.53.0|2.55.1|minor
+virtualenv|21.5.1|21.6.0|minor
+ray-default|2.53.0|2.55.1|minor
+ray-tune|2.53.0|2.55.1|minor
+regex|2026.5.9|2026.6.28|minor
+coverage|7.14.3|7.15.0|minor
+rich-rst|2.0.2|2.1.0|minor
+cyclopts|4.19.0|4.20.0|minor
+databricks-sdk|0.119.0|0.120.0|minor
+websockets|16.0|16.1|minor
+uuid-utils|0.16.1|0.17.0|minor
+langsmith|0.9.2|0.10.2|minor
+panel-material-ui|0.11.2|0.14.0|minor
+sagemaker-core|2.14.0|2.15.0|minor
+trino-python-client|0.337.0|0.338.0|minor
+slack-sdk|3.42.0|3.43.0|minor
+slack-bolt|1.28.0|1.29.0|minor
+libsqlite|3.53.2|3.53.3|patch
+filelock|3.29.4|3.29.7|patch
+charset-normalizer|3.4.7|3.4.9|patch
+tqdm|4.68.3|4.68.4|patch
+libtiff|4.7.1|4.7.2|patch
+greenlet|3.5.2|3.5.3|patch
+mistune|3.3.2|3.3.3|patch
+wcwidth|0.8.1|0.8.2|patch
+scramp|1.4.9|1.4.12|patch
+apsw|3.53.2.0|3.53.3.0|patch
+joserfc|1.7.1|1.7.3|patch
+pyasn1|0.6.3|0.6.4|patch
+python-discovery|1.4.2|1.4.4|patch
+python-fasthtml|0.14.3|0.14.5|patch
+fastapi-cli|0.0.27|0.0.29|patch
+fastmcp-slim|3.4.2|3.4.4|patch
+fastmcp|3.4.2|3.4.4|patch
+jupyter-ai-persona-manager|0.0.11|0.0.12|patch
+tzlocal|5.4.3|5.4.4|patch
+opentelemetry-semantic-conventions|0.63b1|0.64b0|
+opentelemetry-exporter-prometheus|0.63b1|0.64b0|
+opentelemetry-instrumentation|0.63b1|0.64b0|
+opentelemetry-instrumentation-threading|0.63b1|0.64b0|

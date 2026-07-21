@@ -66,7 +66,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(new_version_dir)
 
             # Call the function
-            _copy_static_files(base_version_dir, new_version_dir, "2", "0", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "2", "0")
 
             # Verify that copy2 was called for Amazon Q script
             copy_calls = [call[0][0] for call in mock_copy.call_args_list]
@@ -98,17 +98,18 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(new_version_dir)
 
             # Call the function - should not raise exception
-            _copy_static_files(base_version_dir, new_version_dir, "2", "0", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "2", "0")
 
             # Verify that copy2 was not called for Amazon Q script
             copy_calls = [call[0][0] for call in mock_copy.call_args_list]
             amazon_q_calls = [call for call in copy_calls if "download_amazon_q_agentic_chat_artifacts.sh" in call]
             assert len(amazon_q_calls) == 0
 
+    @patch("glob.glob")
     @patch("shutil.copy2")
     @patch("shutil.copytree")
     @patch("os.path.exists")
-    def test_copy_static_files_v1_and_above(self, mock_exists, mock_copytree, mock_copy):
+    def test_copy_static_files_v1_and_above(self, mock_exists, mock_copytree, mock_copy, mock_glob):
         """Test that dirs directory is copied for v1 and above."""
 
         # Mock file existence checks
@@ -117,11 +118,18 @@ class TestMainAmazonQAgenticChatIntegration:
                 return True
             elif path.endswith("download_amazon_q_agentic_chat_artifacts.sh"):
                 return True
-            elif path.endswith("dirs"):
-                return True
             return False
 
         mock_exists.side_effect = exists_side_effect
+
+        def glob_side_effect(pattern):
+            if "dirs" in pattern:
+                return ["template/v1/v1.0/dirs"]
+            if "Dockerfile" in pattern:
+                return ["template/v1/v1.0/Dockerfile"]
+            return []
+
+        mock_glob.side_effect = glob_side_effect
 
         with tempfile.TemporaryDirectory() as temp_dir:
             base_version_dir = os.path.join(temp_dir, "base")
@@ -130,7 +138,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(new_version_dir)
 
             # Test with major version >= 1
-            _copy_static_files(base_version_dir, new_version_dir, "1", "0", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "1", "0")
 
             # Verify that copytree was called for dirs
             assert mock_copytree.called
@@ -138,10 +146,11 @@ class TestMainAmazonQAgenticChatIntegration:
             dirs_calls = [call for call in copytree_calls if any("dirs" in str(arg) for arg in call)]
             assert len(dirs_calls) > 0
 
+    @patch("glob.glob")
     @patch("shutil.copy2")
     @patch("shutil.copytree")
     @patch("os.path.exists")
-    def test_copy_static_files_v0(self, mock_exists, mock_copytree, mock_copy):
+    def test_copy_static_files_v0(self, mock_exists, mock_copytree, mock_copy, mock_glob):
         """Test that dirs directory is not copied for v0."""
 
         # Mock file existence checks
@@ -150,11 +159,16 @@ class TestMainAmazonQAgenticChatIntegration:
                 return True
             elif path.endswith("download_amazon_q_agentic_chat_artifacts.sh"):
                 return True
-            elif path.endswith("dirs"):
-                return True
             return False
 
         mock_exists.side_effect = exists_side_effect
+
+        def glob_side_effect(pattern):
+            if "Dockerfile" in pattern:
+                return ["template/v0/v0.0/Dockerfile"]
+            return []
+
+        mock_glob.side_effect = glob_side_effect
 
         with tempfile.TemporaryDirectory() as temp_dir:
             base_version_dir = os.path.join(temp_dir, "base")
@@ -163,7 +177,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(new_version_dir)
 
             # Test with major version 0
-            _copy_static_files(base_version_dir, new_version_dir, "0", "0", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "0", "0")
 
             # Verify that copytree was not called (dirs should not be copied for v0)
             assert not mock_copytree.called
@@ -192,7 +206,7 @@ class TestMainAmazonQAgenticChatIntegration:
             os.makedirs(base_version_dir)
             os.makedirs(new_version_dir)
 
-            _copy_static_files(base_version_dir, new_version_dir, "2", "0", "minor")
+            _copy_static_files(base_version_dir, new_version_dir, "2", "0")
 
             # Verify relpath was called for the Amazon Q script
             relpath_calls = [call[0][0] for call in mock_relpath.call_args_list]
