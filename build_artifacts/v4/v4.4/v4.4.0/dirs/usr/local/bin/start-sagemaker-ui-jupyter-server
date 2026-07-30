@@ -10,11 +10,6 @@ if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
 else
     # Activate conda environment 'base' which is the default for Cosmos
     micromamba activate base
-    micromamba remove -y jupyter_server_documents
-
-    # Enable RTC to allow async Q file updates
-    jupyter labextension enable @jupyter/docprovider-extension
-    jupyter server extension enable jupyter_server_ydoc
 fi
 
 sudo cp -r /etc/sagemaker-ui/kernels/. /opt/conda/share/jupyter/kernels/
@@ -43,6 +38,16 @@ fi
 # Enable S3 Access Grant plugin by default
 export BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin
 echo BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin >> ~/.bashrc
+
+# Setup skills and subagent for SMUS spaces
+bash /etc/sagemaker/skills/sync_skills.sh /etc/sagemaker-ui/skills 2>&1 || echo "Warning: skills sync failed, continuing..."
+bash /etc/sagemaker/sync_agent.sh 2>&1 || echo "Warning: agent config sync failed, continuing..."
+
+# Sync SMUS steering rules
+if [ -d "/etc/sagemaker-ui/steering" ]; then
+  mkdir -p "$HOME/.kiro/steering"
+  cp -r /etc/sagemaker-ui/steering/. "$HOME/.kiro/steering/"
+fi
 
 if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
   # Disabling collaboration and identity_provider_class flags for recovery mode
