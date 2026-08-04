@@ -233,7 +233,12 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     # Configure RTC - disable jupyter_collaboration by default
     jupyter labextension disable @jupyter/collaboration-extension && \
     # Disable docprovider-extension for v3 and above images
-    jupyter labextension disable @jupyter/docprovider-extension
+    jupyter labextension disable @jupyter/docprovider-extension && \
+    # Disable the Amazon Q gen-AI JupyterLab experience
+    # Server-ext disable stops _load_jupyter_server_extension -> initialize_lsp_server()
+    jupyter server extension disable sagemaker_gen_ai_jupyterlab_extension && \
+    # Labext disable removes the chat panel from the sidebar
+    jupyter labextension disable @amzn/sagemaker_gen_ai_jupyterlab_extension
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
