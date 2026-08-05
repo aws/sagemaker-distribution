@@ -84,6 +84,14 @@ _docker_client = docker.from_env()
         ("strands.test.Dockerfile", ["strands-agents"]),
         ("aws-smus-cicd-cli.test.Dockerfile", ["aws-smus-cicd-cli"]),
         ("ray.test.Dockerfile", ["ray-default"]),
+        (
+            "toolkit-for-ray-on-sagemaker-ai.test.Dockerfile",
+            ["toolkit-for-ray-on-sagemaker-ai"],
+        ),
+        (
+            "extension-ray-jupyterlab-sagemaker-ai.test.Dockerfile",
+            ["extension-ray-jupyterlab-sagemaker-ai"],
+        ),
     ],
 )
 def test_dockerfiles_for_cpu(
@@ -171,6 +179,14 @@ def test_dockerfiles_for_cpu(
         ("strands.test.Dockerfile", ["strands-agents"]),
         ("aws-smus-cicd-cli.test.Dockerfile", ["aws-smus-cicd-cli"]),
         ("ray.test.Dockerfile", ["ray-default"]),
+        (
+            "toolkit-for-ray-on-sagemaker-ai.test.Dockerfile",
+            ["toolkit-for-ray-on-sagemaker-ai"],
+        ),
+        (
+            "extension-ray-jupyterlab-sagemaker-ai.test.Dockerfile",
+            ["extension-ray-jupyterlab-sagemaker-ai"],
+        ),
     ],
 )
 def test_dockerfiles_for_gpu(
