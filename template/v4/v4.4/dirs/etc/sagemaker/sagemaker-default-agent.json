@@ -8,6 +8,8 @@
   "allowedTools": [
     "@jupyter_mcp_server/read_notebook",
     "@jupyter_mcp_server/read_notebook_cells",
+    "@jupyter_mcp_server/read_cell",
+    "@jupyter_mcp_server/get_cell_id_from_index",
     "@jupyter_mcp_server/open_file",
     "@jupyter_mcp_server/select_cell",
     "@jupyter_mcp_server/get_active_notebook",
