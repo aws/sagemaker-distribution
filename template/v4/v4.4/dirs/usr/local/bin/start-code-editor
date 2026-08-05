@@ -87,6 +87,7 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
       --base-path "/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
       --server-data-dir $recovery_mode_settings_folder \
       --extensions-dir ${recovery_mode_settings_folder}/extensions \
+      --disable-extension amazonwebservices.amazon-q-vscode \
       --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
   else
     override_machine_settings
@@ -98,6 +99,7 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
       --base-path "/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
       --server-data-dir $persistent_settings_folder \
       --extensions-dir ${persistent_settings_folder}/extensions \
+      --disable-extension amazonwebservices.amazon-q-vscode \
       --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
   fi
 else
@@ -105,5 +107,6 @@ else
     --without-connection-token \
     --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data \
     --extension-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions \
+    --disable-extension amazonwebservices.amazon-q-vscode \
     --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 fi
