@@ -100,11 +100,13 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
     --base-path "/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
     --server-data-dir $persistent_ebs_server_data_folder \
     --extensions-dir ${persistent_ebs_server_data_folder}/extensions \
+    --disable-extension amazonwebservices.amazon-q-vscode \
     --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 else
   sagemaker-code-editor --host 0.0.0.0 --port 8888 \
     --without-connection-token \
     --server-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data \
     --extension-dir /opt/amazon/sagemaker/sagemaker-code-editor-server-data/extensions \
+    --disable-extension amazonwebservices.amazon-q-vscode \
     --user-data-dir /opt/amazon/sagemaker/sagemaker-code-editor-user-data
 fi
