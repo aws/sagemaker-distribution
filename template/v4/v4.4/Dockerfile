@@ -104,14 +104,6 @@ RUN rsync -a ${DIRECTORY_TREE_STAGE_DIR}/ / && \
     rm -rf ${DIRECTORY_TREE_STAGE_DIR} && \
     # Clone skills from manifest config (must run after COPY dirs/ + rsync which provides skills-manifest.json)
     bash /etc/sagemaker/skills/clone_skills.sh && \
-    # Clone SMUS-specific skills (data analytics)
-    mkdir -p /etc/sagemaker-ui/skills && \
-    git clone --depth 1 https://github.com/awslabs/agent-plugins.git /tmp/smus-skill-repo-1 && \
-    cp -r /tmp/smus-skill-repo-1/plugins/sagemaker-ai/skills/* /etc/sagemaker-ui/skills/ && \
-    rm -rf /tmp/smus-skill-repo-1 && \
-    git clone --depth 1 https://github.com/aws/agent-toolkit-for-aws.git /tmp/smus-skill-repo-2 && \
-    cp -r /tmp/smus-skill-repo-2/plugins/aws-data-analytics/skills/* /etc/sagemaker-ui/skills/ && \
-    rm -rf /tmp/smus-skill-repo-2 && \
 # CodeEditor - download the extensions
     mkdir -p /etc/code-editor/extensions /etc/code-editor/extensions-sagemaker-ui && \
     while IFS= read -r url || [ -n "$url" ]; do \
@@ -233,12 +225,7 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     # Configure RTC - disable jupyter_collaboration by default
     jupyter labextension disable @jupyter/collaboration-extension && \
     # Disable docprovider-extension for v3 and above images
-    jupyter labextension disable @jupyter/docprovider-extension && \
-    # Disable the Amazon Q gen-AI JupyterLab experience
-    # Server-ext disable stops _load_jupyter_server_extension -> initialize_lsp_server()
-    jupyter server extension disable sagemaker_gen_ai_jupyterlab_extension && \
-    # Labext disable removes the chat panel from the sidebar
-    jupyter labextension disable @amzn/sagemaker_gen_ai_jupyterlab_extension
+    jupyter labextension disable @jupyter/docprovider-extension
 
 # Patch glue kernels to use kernel wrapper
 COPY patch_glue_pyspark.json /opt/conda/share/jupyter/kernels/glue_pyspark/kernel.json
@@ -283,7 +270,7 @@ RUN mkdir -p $SAGEMAKER_LOGGING_DIR && \
 
 # Explicitly disable BuildKit for SM Studio Docker functionality
 ENV DOCKER_BUILDKIT=0
-ENV PATH="/etc/sagemaker-inference-server:/opt/conda/bin:/opt/conda/condabin:$PATH:/home/${NB_USER}/.local/bin"
+ENV PATH="/etc/sagemaker-inference-server:/opt/conda/bin:/opt/conda/condabin:$PATH"
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
 ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/

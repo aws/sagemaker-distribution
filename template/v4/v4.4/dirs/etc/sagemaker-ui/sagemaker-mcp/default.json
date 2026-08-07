@@ -2,7 +2,15 @@
   "name": "default-agent",
   "version": "1.0.0",
   "description": "Default agent configuration",
-  "mcpServers": {},
+  "mcpServers": {
+    "smus-local-mcp": {
+      "command": "python",
+      "args": [
+        "/etc/sagemaker-ui/sagemaker-mcp/smus-mcp.py"
+      ],
+      "env": {}
+    }
+  },
   "tools": [
     "fsRead",
     "fsWrite",
@@ -10,8 +18,8 @@
     "listDirectory",
     "fileSearch",
     "executeBash",
-    "@smus-spark-upgrade",
-    "@aws-mcp"
+    "@smus-local-mcp",
+    "@smus-spark-upgrade"
   ],
   "allowedTools": [
     "fsRead",
