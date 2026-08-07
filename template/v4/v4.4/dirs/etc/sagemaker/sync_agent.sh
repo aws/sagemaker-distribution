@@ -1,5 +1,5 @@
 #!/bin/bash
-# Syncs agent config (subagent, default agent settings).
+# Syncs agent config (subagent, default agent settings) for SMAI spaces.
 set -eu
 
 AGENT_CONFIG_SRC="/etc/sagemaker/sagemaker-default-agent.json"
