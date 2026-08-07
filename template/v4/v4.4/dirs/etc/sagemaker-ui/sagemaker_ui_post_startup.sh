@@ -345,13 +345,6 @@ if [ -f "$source_file" ]; then
         # Replace AWS_REGION_NAME placeholder with actual region name
         echo "Updating MCP configuration with AWS Region $REGION_NAME..."
         sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$mcp_target_file"
-        # Replace AWS_MCP_REGION with the appropriate aws-mcp endpoint region
-        # EU regions use eu-central-1, all others use us-east-1
-        case "$REGION_NAME" in
-            eu-*) AWS_MCP_REGION="eu-central-1" ;;
-            *)    AWS_MCP_REGION="us-east-1" ;;
-        esac
-        sed -i "s/AWS_MCP_REGION/$AWS_MCP_REGION/g" "$mcp_target_file"
         echo "Successfully added AWS Region $REGION_NAME to $mcp_target_file"
     done
     echo "Successfully configured MCP for SageMaker"
@@ -416,12 +409,6 @@ if [ -f "$agents_source_file" ]; then
                 # Replace AWS_REGION_NAME placeholder with actual region name
                 echo "Updating MCP configuration with AWS Region $REGION_NAME..."
                 sed -i "s/AWS_REGION_NAME/$REGION_NAME/g" "$target_file"
-                # Replace AWS_MCP_REGION with the appropriate aws-mcp endpoint region
-                case "$REGION_NAME" in
-                    eu-*) AWS_MCP_REGION="eu-central-1" ;;
-                    *)    AWS_MCP_REGION="us-east-1" ;;
-                esac
-                sed -i "s/AWS_MCP_REGION/$AWS_MCP_REGION/g" "$target_file"
                 echo "Successfully added AWS Region $REGION_NAME to $target_file"
                 echo "Successfully added missing mcpServers and tools from default.json to agents configuration"
             else
