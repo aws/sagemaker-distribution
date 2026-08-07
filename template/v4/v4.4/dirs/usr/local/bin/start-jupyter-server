@@ -10,6 +10,13 @@ if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
 else
     # Activate conda environment 'base'
     micromamba activate base
+
+    # Disable the Amazon Q gen-AI JupyterLab experience
+    # Server-ext disable stops _load_jupyter_server_extension -> initialize_lsp_server()
+    jupyter server extension disable sagemaker_gen_ai_jupyterlab_extension
+    # Labext disable removes the chat panel from the sidebar
+    jupyter labextension disable @amzn/sagemaker_gen_ai_jupyterlab_extension
+
     # Disable SMUS server extensions
     cp /etc/sagemaker/jupyter/server/jupyter_server_config.d/zzz_sagemaker_overrides.json /opt/conda/etc/jupyter/jupyter_server_config.d/
 
