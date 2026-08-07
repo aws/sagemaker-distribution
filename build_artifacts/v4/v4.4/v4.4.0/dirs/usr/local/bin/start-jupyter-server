@@ -11,12 +11,6 @@ else
     # Activate conda environment 'base'
     micromamba activate base
 
-    # Disable the Amazon Q gen-AI JupyterLab experience
-    # Server-ext disable stops _load_jupyter_server_extension -> initialize_lsp_server()
-    jupyter server extension disable sagemaker_gen_ai_jupyterlab_extension
-    # Labext disable removes the chat panel from the sidebar
-    jupyter labextension disable @amzn/sagemaker_gen_ai_jupyterlab_extension
-
     # Disable SMUS server extensions
     cp /etc/sagemaker/jupyter/server/jupyter_server_config.d/zzz_sagemaker_overrides.json /opt/conda/etc/jupyter/jupyter_server_config.d/
 
@@ -29,6 +23,9 @@ else
         /opt/conda/share/jupyter/labextensions/sagemaker_sparkmonitor/package.json \
         /opt/conda/share/jupyter/labextensions/@pyviz/jupyterlab_pyviz/package.json \
         /opt/conda/share/jupyter/labextensions/@amzn/sagemaker_post_startup_notification_plugin/package.json
+
+    # Disable the Amazon Q gen-AI lab extension (chat panel) in SMAI
+    rm -f /opt/conda/share/jupyter/labextensions/@amzn/sagemaker_gen_ai_jupyterlab_extension/package.json
 fi
 
 # Setup skills and subagent for SMAI private spaces only
