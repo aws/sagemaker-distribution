@@ -1,0 +1,9 @@
+{
+  "ServerApp": {
+    "jpserver_extensions": {
+      "sagemaker_studio_jupyter_scheduler": false,
+      "sagemaker_jupyter_server_extension": false,
+      "panel.io.jupyter_server_extension": false
+    }
+  }
+}
