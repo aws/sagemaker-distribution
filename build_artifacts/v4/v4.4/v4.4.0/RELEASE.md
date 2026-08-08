@@ -74,5 +74,5 @@ strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 tensorflow|2.19.1|2.19.1
 toolkit-for-ray-on-sagemaker-ai|1.0.3|1.0.3
-uv|0.12.2|0.12.2
+uv|0.12.3|0.12.3
 py-xgboost-cpu| |2.1.4

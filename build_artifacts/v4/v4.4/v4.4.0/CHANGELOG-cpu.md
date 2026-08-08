@@ -22,7 +22,7 @@ mlflow|3.13.0|3.15.1|minor
 python-lsp-server|1.14.0|1.15.0|minor
 sagemaker-jupyterlab-emr-extension|0.4.3|0.5.0|minor
 sagemaker-jupyterlab-extension|0.5.10|0.6.1|minor
-uv|0.11.30|0.12.2|minor
+uv|0.11.30|0.12.3|minor
 jupyter-scheduler|2.12.0|2.12.1|patch
 jupyter-collaboration|4.4.0|4.4.2|patch
 jupyterlab-git|0.54.0|0.54.1|patch
@@ -77,11 +77,13 @@ nbformat|5.10.4|5.11.0|minor
 prometheus_client|0.25.0|0.26.0|minor
 h2|4.3.0|4.4.1|minor
 jedi|0.19.2|0.20.0|minor
+nspr|4.38|4.40|minor
 python-fasthtml|0.12.50|0.14.11|minor
 boltons|26.0.0|26.1.0|minor
 databricks-sdk|0.122.0|0.125.0|minor
 uvicorn-standard|0.51.0|0.52.1|minor
 fastapi-core|0.139.2|0.141.1|minor
+pydantic-settings|2.14.2|2.15.0|minor
 google-cloud-bigquery-core|3.42.2|3.43.0|minor
 pycrdt|0.12.50|0.13.1|minor
 jupyter_ydoc|3.4.1|3.5.0|minor
@@ -131,9 +133,9 @@ jupyter-docprovider|2.4.1|2.4.2|patch
 pycrdt-store|0.1.3|0.1.4|patch
 pycrdt-websocket|0.16.0|0.16.2|patch
 jupyter_server_ydoc|2.4.0|2.4.2|patch
-jupyter-ai-router|0.0.5|0.0.6|patch
+jupyter-ai-router|0.0.5|0.0.7|patch
 jupyterlab-git-core|0.54.0|0.54.1|patch
-langsmith|0.10.9|0.10.16|patch
+langsmith|0.10.9|0.10.17|patch
 panel-material-ui|0.14.0|0.14.1|patch
 sqlalchemy-bigquery|1.17.0|1.17.2|patch
 
