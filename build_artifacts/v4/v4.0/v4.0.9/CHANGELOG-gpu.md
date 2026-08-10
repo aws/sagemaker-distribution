@@ -15,7 +15,7 @@ jupyter-scheduler|2.12.0|2.12.1|patch
 sagemaker-gen-ai-jupyterlab-extension|1.0.18|1.0.19|patch
 sagemaker-studio|1.1.26|1.1.29|patch
 sagemaker-studio-dataengineering-extensions|1.3.12|1.3.13|patch
-sagemaker-studio-dataengineering-sessions|1.3.21|1.3.22|patch
+sagemaker-studio-dataengineering-sessions|1.3.21|1.3.23|patch
 uv|0.11.30|0.11.33|patch
 
 ## Indirect dependencies
@@ -32,6 +32,7 @@ libstdcxx|15.2.0|16.1.0|major
 libgcc-ng|15.2.0|16.1.0|major
 libstdcxx-ng|15.2.0|16.1.0|major
 psutil|5.9.8|7.1.3|major
+setuptools|83.0.0|84.0.0|major
 websockets|16.1.1|17.0.1|major
 libgfortran5|15.2.0|16.1.0|major
 libgfortran|15.2.0|16.1.0|major
@@ -41,17 +42,21 @@ certifi|2026.6.17|2026.7.22|minor
 tqdm|4.69.0|4.70.0|minor
 lerc|4.1.0|4.2.0|minor
 mako|1.3.12|1.4.1|minor
-alembic|1.18.5|1.19.0|minor
+alembic|1.18.5|1.19.1|minor
 libfaiss|1.10.0|1.14.3|minor
 faiss|1.10.0|1.14.3|minor
 faiss-cpu|1.10.0|1.14.3|minor
 traitlets|5.15.1|5.16.1|minor
 h2|4.3.0|4.4.1|minor
 annotated-types|0.7.0|0.8.0|minor
+pydantic-settings|2.14.2|2.15.0|minor
 python-fastjsonschema|2.21.2|2.22.1|minor
 nbformat|5.10.4|5.11.0|minor
 prometheus_client|0.25.0|0.26.0|minor
-starlette|1.3.1|1.4.1|minor
+onnxruntime|1.26.0|1.28.0|minor
+nspr|4.38|4.40|minor
+fastcore|2.1.4|2.2.10|minor
+starlette|1.3.1|1.6.0|minor
 boltons|26.0.0|26.1.0|minor
 databricks-sdk|0.122.0|0.125.0|minor
 google-cloud-bigquery-core|3.42.2|3.43.0|minor
@@ -64,32 +69,36 @@ fontconfig|2.18.1|2.18.2|patch
 aiohttp|3.14.2|3.14.3|patch
 greenlet|3.5.3|3.5.4|patch
 prompt-toolkit|3.0.52|3.0.53|patch
-langsmith|0.10.9|0.10.16|patch
+tornado|6.5.7|6.5.8|patch
+typing-inspection|0.4.2|0.4.3|patch
+langsmith|0.10.9|0.10.17|patch
+platformdirs|4.11.0|4.11.1|patch
+soupsieve|2.9.1|2.9.2|patch
 mistune|3.3.3|3.3.4|patch
 pandoc|3.10|3.10.1|patch
 jupyter_scheduler|2.12.0|2.12.1|patch
 pyathena|3.35.2|3.35.4|patch
-scramp|1.4.12|1.4.15|patch
+scramp|1.4.12|1.4.17|patch
 annotated-doc|0.0.4|0.0.5|patch
 google-auth|2.56.0|2.56.3|patch
 proto-plus|1.28.1|1.28.2|patch
 python-discovery|1.5.0|1.5.1|patch
-virtualenv|21.7.0|21.7.1|patch
+virtualenv|21.7.0|21.7.3|patch
 datasets|5.0.0|5.0.1|patch
 markdown|3.10.2|3.10.3|patch
-fastcore|2.1.4|2.1.20|patch
 python-fasthtml|0.14.9|0.14.11|patch
 typer|0.27.0|0.27.1|patch
 prompt_toolkit|3.0.52|3.0.53|patch
 awswrangler|3.17.0|3.17.1|patch
 bokeh|3.9.1|3.9.2|patch
-coverage|7.15.2|7.15.3|patch
+coverage|7.15.2|7.15.4|patch
 gitpython|3.1.53|3.1.58|patch
 jupyter-collaboration-ui|2.4.1|2.4.2|patch
 jupyter-docprovider|2.4.1|2.4.2|patch
 jupyter_server_ydoc|2.4.1|2.4.2|patch
 sse-starlette|3.4.6|3.4.8|patch
 panel-material-ui|0.14.0|0.14.1|patch
+pylint|4.0.6|4.0.7|patch
 sqlalchemy-bigquery|1.17.0|1.17.2|patch
 
 ### Removed
