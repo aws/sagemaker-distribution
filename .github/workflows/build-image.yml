@@ -80,7 +80,10 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add ./build_artifacts
+          # For minor/major releases, a new per-minor template dir (e.g. template/v4/v4.5/)
+          # is created during artifact generation. Stage ./template so it is persisted to the
+          # release branch; otherwise it is discarded when the runner is torn down.
+          git add ./build_artifacts ./template
           git diff-index --quiet HEAD || git commit -m 'chore: Generate build artifacts for ${{ steps.calc_target.outputs.target_version }} release'
           git push --set-upstream origin release-${{ steps.calc_target.outputs.target_version }}
       - name: Create or fetch release PR
