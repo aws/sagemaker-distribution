@@ -12,8 +12,6 @@ else
     micromamba activate base
     micromamba remove -y jupyter_server_documents
 
-    # Enable RTC to allow async Q file updates
-    jupyter labextension enable @jupyter/docprovider-extension
     jupyter server extension enable jupyter_server_ydoc
 fi
 
