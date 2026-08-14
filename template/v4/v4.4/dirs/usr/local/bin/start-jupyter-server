@@ -50,11 +50,14 @@ if [ -n "$TRUSTED_IDENTITY_PROPOGATION_ENABLED" ]; then
     echo BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin >> ~/.bashrc
 fi
 
-jupyter labextension enable @jupyter/collaboration-extension
-jupyter labextension enable @jupyter/docprovider-extension
-
 # Start Jupyter server in rtc mode for shared spaces (skip in recovery mode)
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ] && [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
+  # Remove JSD and Jupyter AI, then re-enable native Jupyter Collaboration
+  micromamba remove -y jupyter-ai jupyter_server_documents jupyterlab-chat
+  # Enable real-time collaboration extensions for shared spaces only
+  jupyter labextension enable @jupyter/collaboration-extension
+  jupyter labextension enable @jupyter/docprovider-extension
+  jupyter server extension enable jupyter_server_ydoc
   # Disable chat icon in shared spaces
   jupyter labextension disable jupyterlab-chat-extension
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
@@ -71,6 +74,9 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
 
 # Start Jupyter server
 elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+  if [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
+    micromamba remove -y jupyter-ai jupyter_server_documents jupyter-collaboration jupyterlab-chat
+  fi
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   exec jupyter lab --ip 0.0.0.0 --port 8888 \
