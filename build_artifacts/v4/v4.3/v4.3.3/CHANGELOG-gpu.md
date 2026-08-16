@@ -11,6 +11,7 @@ This page lists all package changes since the previous release (4.3.2).
 
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
+sagemaker-jupyterlab-extension-common|0.4.7|0.4.8|patch
 aws-smus-cicd-cli|1.0.5|1.0.6|patch
 sagemaker-studio|1.1.29|1.1.30|patch
 sagemaker-studio-dataengineering-extensions|1.3.13|1.3.14|patch
@@ -34,12 +35,13 @@ libudev1|261.1|261.2|minor
 pcre2|10.46|10.44|minor
 libglib|2.86.2|2.84.0|minor
 gdk-pixbuf|2.44.4|2.42.12|minor
+python-json-logger|4.1.0|4.2.0|minor
 dbus|1.16.2|1.13.6|minor
 wheel|0.47.0|0.48.0|minor
 glib-tools|2.86.2|2.84.0|minor
 orjson|3.11.9|3.12.0|minor
 backports.zstd|1.6.0|1.7.0|minor
-databricks-sdk|0.125.0|0.129.0|minor
+databricks-sdk|0.125.0|0.130.0|minor
 uncalled-for|0.3.2|0.4.0|minor
 langsmith|0.10.17|0.11.0|minor
 sagemaker-core|2.18.0|2.20.0|minor
@@ -51,6 +53,7 @@ typing-inspection|0.4.3|0.4.4|patch
 greenlet|3.5.4|3.5.5|patch
 sqlalchemy|2.0.51|2.0.52|patch
 platformdirs|4.11.1|4.11.3|patch
+python-fastjsonschema|2.22.1|2.22.2|patch
 pandoc|3.10.1|3.10.2|patch
 fastcore|2.2.10|2.2.12|patch
 libdrm|2.4.127|2.4.129|patch
