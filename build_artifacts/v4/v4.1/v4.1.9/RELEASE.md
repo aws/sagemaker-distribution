@@ -13,7 +13,7 @@ ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.1|2.3.1
 jupyterlab|4.5.10|4.5.10
 boto3|1.42.97|1.42.97
-sagemaker-jupyterlab-extension-common|0.4.7|0.4.7
+sagemaker-jupyterlab-extension-common|0.4.8|0.4.8
 amazon-sagemaker-jupyter-scheduler|3.2.2|3.2.2
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
 jupyterlab-lsp|5.0.3|5.0.3
