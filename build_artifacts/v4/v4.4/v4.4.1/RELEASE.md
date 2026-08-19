@@ -12,7 +12,7 @@ jupyter-scheduler|2.12.1|2.12.1
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.1|2.3.1
 jupyterlab|4.5.10|4.5.10
-boto3|1.43.46|1.43.46
+boto3|1.43.56|1.43.56
 sagemaker-jupyterlab-extension-common|0.5.1|0.5.1
 amazon-sagemaker-jupyter-scheduler|3.2.2|3.2.2
 amazon-sagemaker-sql-magic|0.1.4|0.1.4
@@ -27,7 +27,7 @@ pip|26.2.1|26.2.1
 torchvision|0.24.0|0.24.0
 uvicorn|0.52.3|0.52.3
 autogluon|1.5.0|1.5.0
-ipywidgets|8.1.8|8.1.8
+ipywidgets|8.1.9|8.1.9
 notebook|7.5.7|7.5.7
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
@@ -62,11 +62,11 @@ sagemaker-jupyterlab-extension|0.6.1|0.6.1
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.5.0|0.5.0
 sagemaker-python-sdk|3.12.0|3.12.0
-sagemaker-studio|1.1.29|1.1.29
+sagemaker-studio|1.1.30|1.1.30
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
-sagemaker-studio-dataengineering-extensions|1.3.13|1.3.13
-sagemaker-studio-dataengineering-sessions|1.3.23|1.3.23
+sagemaker-studio-dataengineering-extensions|1.3.14|1.3.14
+sagemaker-studio-dataengineering-sessions|1.3.24|1.3.24
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
