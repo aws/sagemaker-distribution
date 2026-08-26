@@ -160,6 +160,14 @@ case "$auth_mode" in
         # Split ARN by / and return the last field
         username=$(echo "$arn" | awk -F'/' '{print $NF}')
         email="$arn"
+        # For git identity, use session name if available (matches Git Compute image behavior)
+        session_name=$(echo "$response" | jq -r '.details.iam.sessionName // empty')
+        if [ -n "$session_name" ]; then
+            git_username="$session_name"
+        else
+            git_username="$username"
+        fi
+        git_email="$git_username"
         ;;
     "SSO"|"SAML")
         # For SSO and SAML user, extract username and email if present in response.
@@ -169,6 +177,8 @@ case "$auth_mode" in
         if [ -z "$email" ] || [ "$email" = "null" ]; then
             email="$username"
         fi
+        git_username="$username"
+        git_email="$email"
         ;;
     *)
         echo "Unknown authentication mode: $auth_mode"
@@ -229,9 +239,9 @@ if [ $is_s3_storage_flag -ne 0 ]; then
   echo "Starting execution of Git Cloning script"
   bash /etc/sagemaker-ui/git_clone.sh
 
-  # Setting up the Git identity for the user .
-  git config --global user.email "$email"
-  git config --global user.name "$username"
+  # Setting up the Git identity for the user.
+  git config --global user.email "$git_email"
+  git config --global user.name "$git_username"
   if [ -d "$HOME/shared" ]; then
     echo "Git project with /shared folder detected, creating README"
     bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
@@ -239,6 +249,12 @@ if [ $is_s3_storage_flag -ne 0 ]; then
     echo "Git project without /shared folder, skipping README creation"
   fi
 else
+  # New Git v2 / S3 project: configure credential helper and identity so that
+  # git push/pull works for repos cloned by the SMUS Git backend into ~/shared/repos/.
+  git config --global user.email "$git_email"
+  git config --global user.name "$git_username"
+  git config --global credential.helper "!aws codecommit credential-helper --ignore-host-check \$@"
+  git config --global credential.UseHttpPath true
   echo "Project is using Non-Git storage, skipping git repository setup and ~/src dir creation and creating README"
   bash /etc/sagemaker-ui/project-storage/create-storage-readme.sh
 fi
