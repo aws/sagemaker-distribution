@@ -72,6 +72,10 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
 
 # Start Jupyter server
 elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+  # Remove real-time collaboration in private spaces
+  if [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
+    micromamba remove -y jupyter-collaboration
+  fi
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   exec jupyter lab --ip 0.0.0.0 --port 8888 \
