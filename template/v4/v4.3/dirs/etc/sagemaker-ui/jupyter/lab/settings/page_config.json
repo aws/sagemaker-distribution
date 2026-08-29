@@ -10,14 +10,14 @@
       "@sagemaker-studio:EmrCluster": true,
       "@jupyter/collaboration-extension": true,
       "jupyterlab-chat-extension": true,
-      "@jupyter-ai/jupyternaut": true,
       "@jupyter-ai/router": true,
       "@jupyter-ai/persona-manager": true,
       "@jupyter-ai/acp-client": true,
       "@jupyter-ai/chat-commands": true,
       "jupyterlab-commands-toolkit": true,
-      "jupyterlab-notebook-awareness": true,
-      "jupyterlab-eventlistener": true,
-      "@jupyter-ai-contrib/server-documents": true
+      "jupyterlab-ai-commands": true,
+      "@jupyter-ai-contrib/live-content": true,
+      "jupyterlab-diff": true,
+      "jupyterlab-cell-input-footer-extension": true
     }
 }

@@ -52,14 +52,7 @@ fi
 
 # Start Jupyter server in rtc mode for shared spaces (skip in recovery mode)
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ] && [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
-  # Remove JSD and Jupyter AI, then re-enable native Jupyter Collaboration
-  micromamba remove -y jupyter-ai jupyter_server_documents jupyterlab-chat
-  # Enable real-time collaboration extensions for shared spaces only
-  jupyter labextension enable @jupyter/collaboration-extension
-  jupyter labextension enable @jupyter/docprovider-extension
-  jupyter server extension enable jupyter_server_ydoc
-  # Disable chat icon in shared spaces
-  jupyter labextension disable jupyterlab-chat-extension
+  # Jupyter AI stays enabled; Jupyter Collaboration is enabled by default for shared spaces.
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   # SAGEMAKER_SPACE_TYPE_LOWERCASE flag is used to determine if the server should start
@@ -74,8 +67,10 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
 
 # Start Jupyter server
 elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+  # Jupyter AI stays enabled; disable Jupyter Collaboration in private (single-user) spaces.
   if [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
-    micromamba remove -y jupyter-ai jupyter_server_documents jupyter-collaboration jupyterlab-chat
+    cp /etc/sagemaker/collaboration-disabled/page_config.json /opt/conda/share/jupyter/lab/settings/page_config.json
+    cp /etc/sagemaker/collaboration-disabled/zzz_disable_collaboration.json /opt/conda/etc/jupyter/jupyter_server_config.d/
   fi
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
