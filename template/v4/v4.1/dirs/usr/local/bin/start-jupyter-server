@@ -52,8 +52,9 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
   jupyter labextension enable @jupyter/collaboration-extension
   jupyter labextension enable @jupyter/docprovider-extension
   jupyter server extension enable jupyter_server_ydoc
-  # Disable chat icon in shared spaces
-  jupyter labextension disable jupyterlab-chat-extension
+  # Jupyter AI is not intended for SMAI shared spaces.
+  micromamba remove -y jupyter-ai jupyter-ai-router jupyter-ai-persona-manager \
+    jupyter-ai-acp-client jupyter-ai-chat-commands jupyter-ai-tools jupyterlab-chat
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   # SAGEMAKER_SPACE_TYPE_LOWERCASE flag is used to determine if the server should start
