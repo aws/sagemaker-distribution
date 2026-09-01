@@ -9,6 +9,7 @@
       "@amzn/amazon_sagemaker_sql_editor": true,
       "@sagemaker-studio:EmrCluster": true,
       "@jupyter/collaboration-extension": true,
-      "@jupyter/docprovider-extension": true
+      "@jupyter/docprovider-extension": true,
+      "@jupyter-ai-contrib/server-documents": true
     }
 }

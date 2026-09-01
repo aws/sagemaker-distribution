@@ -1,15 +1,6 @@
 {
     "ServerApp": {
         "jpserver_extensions": {
-            "jupyter_ai": true,
-            "jupyter_ai_acp_client": true,
-            "jupyter_ai_tools": true,
-            "jupyter_ai_persona_manager": true,
-            "jupyter_ai_router": true,
-            "jupyter_ai_jupyternaut": true,
-            "jupyter_ai_chat_commands": true,
-            "jupyter_server_mcp": true,
-            "jupyterlab_chat": true,
             "jupyter_server_ydoc": false,
             "jupyter_server_documents": false
         }
