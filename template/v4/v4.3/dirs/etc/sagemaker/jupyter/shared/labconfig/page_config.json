@@ -1,7 +1,5 @@
 {
     "disabledExtensions": {
-        "@jupyter/collaboration-extension": false,
-        "@jupyter/docprovider-extension": false,
         "jupyterlab-chat-extension": true,
         "@jupyter-ai/router": true,
         "@jupyter-ai/persona-manager": true,
