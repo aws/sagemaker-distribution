@@ -48,13 +48,9 @@ fi
 
 # Start Jupyter server in rtc mode for shared spaces (skip in recovery mode)
 if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE" == "shared" ] && [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
-  # Remove JSD and Jupyter AI, then re-enable native Jupyter Collaboration
-  micromamba remove -y jupyter-ai jupyter_server_documents jupyterlab-chat
-  jupyter labextension enable @jupyter/collaboration-extension
-  jupyter labextension enable @jupyter/docprovider-extension
-  jupyter server extension enable jupyter_server_ydoc
-  # Disable chat icon in shared spaces
-  jupyter labextension disable jupyterlab-chat-extension
+  # SMAI shared: enable RTC and disable Jupyter AI via static config.
+  cp /etc/sagemaker/jupyter/shared/labconfig/page_config.json /opt/conda/share/jupyter/lab/settings/page_config.json
+  cp /etc/sagemaker/jupyter/shared/jupyter_server_config.d/zzz_disable_jai.json /opt/conda/etc/jupyter/jupyter_server_config.d/
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
   # SAGEMAKER_SPACE_TYPE_LOWERCASE flag is used to determine if the server should start
@@ -69,8 +65,10 @@ if [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ] && [ "$SAGEMAKER_SPACE_TYPE_LOWERCASE"
 
 # Start Jupyter server
 elif [ -n "$SAGEMAKER_APP_TYPE_LOWERCASE" ]; then
+  # Disable real-time collaboration in private spaces via static config.
   if [ -z "$SAGEMAKER_RECOVERY_MODE" ]; then
-    micromamba remove -y jupyter-ai jupyter_server_documents jupyter-collaboration jupyterlab-chat
+    cp /etc/sagemaker/jupyter/private/labconfig/page_config.json /opt/conda/share/jupyter/lab/settings/page_config.json
+    cp /etc/sagemaker/jupyter/private/jupyter_server_config.d/zzz_disable_rtc.json /opt/conda/etc/jupyter/jupyter_server_config.d/
   fi
   # SAGEMAKER_APP_TYPE is set, indicating the server is running within a SageMaker
   # app. Configure the base url to be `/<app-type-in-lower-case>/default`.
