@@ -1,9 +1,5 @@
 {
   "mcpServers": {
-    "smus-local-mcp": {
-      "command": "python",
-      "args": ["/etc/sagemaker-ui/sagemaker-mcp/smus-mcp.py"]
-    },
     "smus-spark-upgrade": {
       "type": "stdio",
       "command": "uvx",
@@ -18,6 +14,16 @@
         "180"
       ],
       "timeout": 180000
+    },
+    "aws-mcp": {
+      "type": "stdio",
+      "command": "uvx",
+      "args": [
+        "mcp-proxy-for-aws@1.6.4",
+        "https://aws-mcp.AWS_MCP_REGION.api.aws/mcp",
+        "--metadata",
+        "INSTALL_SOURCE=sagemaker-distribution"
+      ]
     }
   }
 }
