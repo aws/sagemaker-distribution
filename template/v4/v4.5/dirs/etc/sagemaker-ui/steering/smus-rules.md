@@ -19,8 +19,9 @@ This workspace is running on an Amazon SageMaker Unified Studio Space.
 - Environment variables `SAGEMAKER_SPACE_DOMAIN_ID` and `SAGEMAKER_SPACE_NAME` identify the current project context.
 
 ## Workspace Folders
-- The **root folder** (`/home/sagemaker-user/`) and all subfolders (except `shared/`) are the user's **personal local folder** — private, visible only in this space, ideal for frequent file access.
+- The **root folder** (`/home/sagemaker-user/`) and all subfolders (except `/home/sagemaker-user/shared` and `/home/sagemaker-user/src`) are the user's **personal local folder** — private, visible only in this space, ideal for frequent file access.
 - The **`shared/`** folder is S3-backed and visible to all project members across all tools. Not suited for heavy read/write workloads due to S3 latency and potential costs.
+- The **`/home/sagemaker-user/src`** folder holds git-based projects. It is not automatically synced (unlike the S3-backed `shared/` folder); manage its contents with git.
 - To share files with other project members, copy or move them to `shared/` when ready.
 - **Do not save sensitive files (credentials, chat logs) to `shared/`** — they would be visible to all project members.
 
