@@ -1,4 +1,4 @@
-# Change log: 4.4.3 (cpu)
+# Change log: 4.4.3 (gpu)
 
 This page lists all package changes since the previous release (4.4.2).
 
@@ -28,6 +28,7 @@ uv|0.12.5|0.12.9|patch
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 llvm-openmp|22.1.8|23.1.0|major
+rdma-core|63.1|64.0|major
 wrapt|1.17.3|2.4.0|major
 isort|8.0.1|9.0.1|major
 anyio|4.14.2|4.15.0|minor
