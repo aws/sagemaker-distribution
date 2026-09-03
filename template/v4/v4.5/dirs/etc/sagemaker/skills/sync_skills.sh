@@ -37,13 +37,13 @@ set_lock_source() {
     mv "$LOCK_FILE.tmp" "$LOCK_FILE"
 }
 
-# List managed skill names recorded in the lock (the old world's skills).
+# List skill names recorded in the lock (the old agent-plugins skills).
 list_locked_skills() {
     [ -f "$LOCK_FILE" ] || return 0
     jq -r '.skills | keys[]' "$LOCK_FILE" 2>/dev/null || true
 }
 
-# Remove a managed skill from EBS, its agent symlinks, and the lock entry.
+# Remove a agent-plugins skill from EBS, its agent symlinks, and the lock entry.
 remove_managed_skill() {
     local name="$1"
     local ebs_skill="$EBS_SKILLS_DIR/$name"
@@ -69,7 +69,7 @@ managed_skills_are_clean() {
     while IFS= read -r name; do
         [ -n "$name" ] || continue
         local ebs_skill="$EBS_SKILLS_DIR/$name"
-        [ -d "$ebs_skill" ] || continue          # missing => not user-modified
+        [ -d "$ebs_skill" ] || continue          # missing == not user-modified
         recorded=$(get_locked_checksum "$name")
         current=$(compute_checksum "$ebs_skill")
         [ "$current" = "$recorded" ] || return 1
@@ -78,19 +78,19 @@ managed_skills_are_clean() {
 }
 
 # Run the one-time migration. Sets MIGRATION_BLOCKS_SYNC=1 when the normal sync
-# loop must be skipped (Case 2), leaves it 0 otherwise.
+# loop must be skipped, leaves it 0 otherwise.
 MIGRATION_BLOCKS_SYNC=0
 STAMP_SOURCE_AFTER_SYNC=0
 run_migration() {
     local current_source
     current_source=$(get_lock_source)
 
-    # Already migrated -> nothing to do; normal loop maintains the unified skill.
+    # Already migrated; normal loop maintains the unified skill.
     if [ "$current_source" = "$TOOLKIT_SOURCE" ]; then
         return 0
     fi
 
-    # No managed skills recorded => brand-new user (or nothing to migrate).
+    # No managed skills recorded (or nothing to migrate).
     # Fall through to the normal loop to install the unified skill, and stamp
     # source afterwards so future runs short-circuit.
     if [ -z "$(list_locked_skills)" ]; then
@@ -100,8 +100,6 @@ run_migration() {
 
     # Existing legacy user: gate on whether they modified any managed skill.
     if managed_skills_are_clean; then
-        # Case 1: delete old managed skills, then let the normal loop install
-        # the unified skill, then stamp source.
         local name
         while IFS= read -r name; do
             [ -n "$name" ] || continue
@@ -110,7 +108,6 @@ run_migration() {
         done < <(list_locked_skills)
         STAMP_SOURCE_AFTER_SYNC=1
     else
-        # Case 2: user modified skills -> keep them, do not install unified.
         echo "Migration: user-modified skills detected; keeping existing skills, skipping unified skills."
         MIGRATION_BLOCKS_SYNC=1
     fi
