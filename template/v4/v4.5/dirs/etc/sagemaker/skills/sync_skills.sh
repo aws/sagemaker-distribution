@@ -24,7 +24,7 @@ set_locked_checksum() {
 }
 
 # Migration to the unified agent-toolkit-for-aws skills.
-
+TOOLKIT_SOURCE="agent-toolkit-for-aws"
 
 get_lock_source() {
     [ -f "$LOCK_FILE" ] || return 0
