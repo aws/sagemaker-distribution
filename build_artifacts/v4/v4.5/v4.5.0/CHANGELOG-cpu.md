@@ -11,7 +11,6 @@ This page lists all package changes since the previous release (4.4.2).
 
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
-amzn-sagemaker-aiops-jupyterlab-extension|1.0.6|1.1.2|minor
 jupyter-ai|3.1.3|3.2.0|minor
 s3fs|2026.6.0|2026.7.0|minor
 sagemaker-jupyterlab-extension-common|0.5.2|0.5.3|patch
@@ -41,6 +40,7 @@ pandoc|3.10.2|3.11|minor
 authlib|1.7.2|1.8.0|minor
 joblib|1.5.3|1.6.0|minor
 google-auth|2.56.3|2.57.0|minor
+google-api-core|2.29.0|2.33.0|minor
 opentelemetry-api|1.43.0|1.44.0|minor
 opentelemetry-sdk|1.43.0|1.44.0|minor
 python-discovery|1.5.3|1.6.0|minor
@@ -52,7 +52,7 @@ python-build|1.5.0|1.6.0|minor
 coverage|7.15.4|7.16.0|minor
 websockets|17.0.1|17.1|minor
 google-resumable-media|2.8.0|2.10.2|minor
-google-cloud-bigquery-core|3.43.0|3.44.0|minor
+google-cloud-bigquery-core|3.43.0|3.18.0|minor
 jiter|0.15.0|0.16.0|minor
 jupyterlab-chat|0.23.2|0.25.0|minor
 jupyter-ai-router|0.0.7|0.1.1|minor
@@ -65,7 +65,8 @@ langsmith|0.11.1|0.12.1|minor
 linkify-it-py|2.1.1|2.2.0|minor
 mmh3|5.2.1|5.3.0|minor
 sagemaker-core|2.20.0|2.21.0|minor
-slack-sdk|3.43.0|3.44.0|minor
+sqlalchemy-bigquery|1.17.2|1.16.0|minor
+slack-sdk|3.43.0|3.44.1|minor
 libuuid|2.42.2|2.42.3|patch
 filelock|3.32.4|3.32.5|patch
 pydantic-core|2.46.4|2.46.5|patch
@@ -113,5 +114,6 @@ jupyter-live-content|0.1.1
 
 Package | Last Version
 ---|---
+google-api-core-grpc|2.29.0
 jupyter_server_documents|0.3.3
 jupyterlab-notebook-awareness|0.2.0
