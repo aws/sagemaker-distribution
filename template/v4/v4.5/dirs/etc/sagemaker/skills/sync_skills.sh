@@ -23,11 +23,111 @@ set_locked_checksum() {
     mv "$LOCK_FILE.tmp" "$LOCK_FILE"
 }
 
+# Migration to the unified agent-toolkit-for-aws skills.
+
+
+get_lock_source() {
+    [ -f "$LOCK_FILE" ] || return 0
+    jq -r '.source // empty' "$LOCK_FILE" 2>/dev/null || true
+}
+
+set_lock_source() {
+    [ -f "$LOCK_FILE" ] || echo '{"skills":{}}' > "$LOCK_FILE"
+    jq --arg v "$1" '.source = $v' "$LOCK_FILE" > "$LOCK_FILE.tmp"
+    mv "$LOCK_FILE.tmp" "$LOCK_FILE"
+}
+
+# List managed skill names recorded in the lock (the old world's skills).
+list_locked_skills() {
+    [ -f "$LOCK_FILE" ] || return 0
+    jq -r '.skills | keys[]' "$LOCK_FILE" 2>/dev/null || true
+}
+
+# Remove a managed skill from EBS, its agent symlinks, and the lock entry.
+remove_managed_skill() {
+    local name="$1"
+    local ebs_skill="$EBS_SKILLS_DIR/$name"
+    for agent_dir in "${AGENT_SKILLS_DIRS[@]}"; do
+        local link="$agent_dir/$name"
+        # Only remove the symlink if it still points at the EBS copy we manage,
+        # so a symlink the user re-pointed elsewhere is left alone.
+        if [ -L "$link" ] && [ "$(readlink "$link")" = "$ebs_skill" ]; then
+            rm -f "$link"
+        fi
+    done
+    rm -rf "$ebs_skill"
+    if [ -f "$LOCK_FILE" ]; then
+        jq --arg s "$name" 'del(.skills[$s])' "$LOCK_FILE" > "$LOCK_FILE.tmp"
+        mv "$LOCK_FILE.tmp" "$LOCK_FILE"
+    fi
+}
+
+# Returns 0 (clean) if every lock-named skill still matches its recorded
+# checksum (a missing EBS folder counts as clean); 1 if any was modified.
+managed_skills_are_clean() {
+    local name recorded current
+    while IFS= read -r name; do
+        [ -n "$name" ] || continue
+        local ebs_skill="$EBS_SKILLS_DIR/$name"
+        [ -d "$ebs_skill" ] || continue          # missing => not user-modified
+        recorded=$(get_locked_checksum "$name")
+        current=$(compute_checksum "$ebs_skill")
+        [ "$current" = "$recorded" ] || return 1
+    done < <(list_locked_skills)
+    return 0
+}
+
+# Run the one-time migration. Sets MIGRATION_BLOCKS_SYNC=1 when the normal sync
+# loop must be skipped (Case 2), leaves it 0 otherwise.
+MIGRATION_BLOCKS_SYNC=0
+STAMP_SOURCE_AFTER_SYNC=0
+run_migration() {
+    local current_source
+    current_source=$(get_lock_source)
+
+    # Already migrated -> nothing to do; normal loop maintains the unified skill.
+    if [ "$current_source" = "$TOOLKIT_SOURCE" ]; then
+        return 0
+    fi
+
+    # No managed skills recorded => brand-new user (or nothing to migrate).
+    # Fall through to the normal loop to install the unified skill, and stamp
+    # source afterwards so future runs short-circuit.
+    if [ -z "$(list_locked_skills)" ]; then
+        STAMP_SOURCE_AFTER_SYNC=1
+        return 0
+    fi
+
+    # Existing legacy user: gate on whether they modified any managed skill.
+    if managed_skills_are_clean; then
+        # Case 1: delete old managed skills, then let the normal loop install
+        # the unified skill, then stamp source.
+        local name
+        while IFS= read -r name; do
+            [ -n "$name" ] || continue
+            remove_managed_skill "$name"
+            echo "Migration: removed old skill '$name'"
+        done < <(list_locked_skills)
+        STAMP_SOURCE_AFTER_SYNC=1
+    else
+        # Case 2: user modified skills -> keep them, do not install unified.
+        echo "Migration: user-modified skills detected; keeping existing skills, skipping unified skills."
+        MIGRATION_BLOCKS_SYNC=1
+    fi
+    return 0
+}
+
 mkdir -p "$EBS_SKILLS_DIR"
 for dir in "${AGENT_SKILLS_DIRS[@]}"; do mkdir -p "$dir"; done
 
 if [ ! -d "$IMAGE_SKILLS_DIR" ]; then
     echo "No bundled skills found at $IMAGE_SKILLS_DIR, skipping."
+    exit 0
+fi
+
+run_migration
+if [ "$MIGRATION_BLOCKS_SYNC" -eq 1 ]; then
+    echo "Skills sync complete."
     exit 0
 fi
 
@@ -68,5 +168,10 @@ for skill_path in "$IMAGE_SKILLS_DIR"/*/; do
         fi
     done
 done
+
+if [ "$STAMP_SOURCE_AFTER_SYNC" -eq 1 ]; then
+    set_lock_source "$TOOLKIT_SOURCE"
+    echo "Migration: stamped source=$TOOLKIT_SOURCE"
+fi
 
 echo "Skills sync complete."
