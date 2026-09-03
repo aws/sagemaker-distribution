@@ -1,0 +1,8 @@
+{
+    "ServerApp": {
+        "jpserver_extensions": {
+            "jupyter_server_ydoc": false,
+            "jupyter_server_documents": false
+        }
+    }
+}
