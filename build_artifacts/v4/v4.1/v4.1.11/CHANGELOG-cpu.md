@@ -59,7 +59,7 @@ jupyter-server-mcp|0.2.1|0.3.0|minor
 langsmith|0.11.1|0.12.1|minor
 linkify-it-py|2.1.1|2.2.0|minor
 mmh3|5.2.1|5.3.0|minor
-slack-sdk|3.43.0|3.44.0|minor
+slack-sdk|3.43.0|3.44.1|minor
 libuuid|2.42.2|2.42.3|patch
 filelock|3.32.4|3.32.5|patch
 pydantic-core|2.46.4|2.46.5|patch
