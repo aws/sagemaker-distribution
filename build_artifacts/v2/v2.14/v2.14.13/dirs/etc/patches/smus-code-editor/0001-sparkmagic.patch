@@ -1,0 +1,10 @@
+--- /opt/conda/lib/python3.11/site-packages/sparkmagic/livyclientlib/command.py
++++ /opt/conda/lib/python3.11/site-packages/sparkmagic/livyclientlib/command.py
+@@ -54,6 +54,7 @@
+         try:
+             session.wait_for_idle()
+             data = {"code": self.code}
++            data["kind"] = session.kind
+             response = session.http_client.post_statement(session.id, data)
+             statement_id = response["id"]
+             output = self._get_statement_output(session, statement_id)
