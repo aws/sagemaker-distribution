@@ -1,0 +1,16 @@
+#!/bin/bash
+
+set -e
+
+# Generate and execute the shell code to modifies shell variables to include
+# micromamba commands (e.g. using `micromamba activate` to activate environments)
+eval "$(micromamba shell hook --shell=bash)"
+
+# Activate conda environment 'base', where supervisord is installed
+micromamba activate base
+
+# Set up SAGEMAKER_APP_TYPE_LOWERCASE based on SAGEMAKER_APP_TYPE
+export SAGEMAKER_APP_TYPE_LOWERCASE=$(echo $SAGEMAKER_APP_TYPE | tr '[:upper:]' '[:lower:]')
+
+mkdir -p $STUDIO_LOGGING_DIR/$SAGEMAKER_APP_TYPE_LOWERCASE/supervisord
+exec supervisord -c /etc/supervisor/conf.d/supervisord-code-editor.conf -n
