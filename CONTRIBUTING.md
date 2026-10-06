@@ -138,49 +138,59 @@ template/
 
 ### Deciding where to make your change
 
-Find the latest minor version that has a template directory (e.g., `template/v4/v4.3/`). Then check whether any build artifact exists for that minor version:
+Where you put a template change determines how far forward it reaches. The key fact: a given minor's template feeds **all future patches of that same minor**, but a *new* minor's template is created by copying the previous minor's template only once (see "How new minor version templates are auto-created at build time" below). So **to reach future minor/major versions, your change must live in the newest minor template** — if the current newest minor is already released, that means creating the next minor's template and putting the change there.
+
+First, find the latest minor version that has a template directory (the highest `v4.N`):
 
 ```shell
-# Example: checking if v4.3 has any released patch version
-ls build_artifacts/v4/v4.3/
+ls -d template/v4/v4.*/
+```
+
+Then check whether a build artifact already exists for that minor version:
+
+```shell
+# Example: checking if v4.6 has any released patch version
+ls build_artifacts/v4/v4.6/
 ```
 
 There are two possible states:
 
-- **Template exists, but NO build artifact exists** (e.g., `template/v4/v4.3/` exists but `build_artifacts/v4/v4.3/` is empty or does not exist): this minor version has not been released yet. Make your changes directly in `template/v4/v4.3/`.
+- **Template exists, but NO build artifact exists yet** (e.g., `template/v4/v4.6/` exists but `build_artifacts/v4/v4.6/` is empty or does not exist): this minor version has not been released. **Update `template/v4/v4.6/` directly** — it is both the next patch and the newest minor, so the change reaches 4.6.0 and every minor created after it.
 
-- **Template exists AND build artifacts exist** (e.g., both `template/v4/v4.3/` and `build_artifacts/v4/v4.3/v4.3.0/` exist): this minor version has already been released. Create the next minor version's template by copying from it, then make your changes in the new template:
+- **Template exists AND a build artifact exists** (e.g., both `template/v4/v4.6/` and `build_artifacts/v4/v4.6/v4.6.0/` exist): this minor version has already been released. What you do depends on how far forward you want the change to reach:
+  - To reach only **future patches of this same minor** (4.6.1, 4.6.2, …), edit `template/v4/v4.6/` directly. The change will *not* reach any later minor/major version.
+  - To reach **future minor/major versions** (4.7.0, 5.0.0, …), you must create the next minor version's template by copying from it, then make your change there:
 
-  ```shell
-  cp -r template/v4/v4.3 template/v4/v4.4
-  # Now edit template/v4/v4.4/ as needed
-  ```
+    ```shell
+    cp -r template/v4/v4.6 template/v4/v4.7
+    # Now edit template/v4/v4.7/ with your change
+    ```
 
-  Include the new template directory in your PR.
+    (If you want it in both the current minor's future patches *and* future minors, apply the change to `template/v4/v4.6/` and the new `template/v4/v4.7/`.)
 
-#### Adding a new feature (applies to upcoming minor versions only)
+Include every template directory you created or edited in your PR, and open the PR against `main`. Because a new minor's template is created by copying the previous minor's template, landing your change in the newest minor template is what carries it into every minor created afterward.
 
-Follow the decision above to identify the correct unreleased minor template, and make your changes there. Older released minor versions are unaffected — their next patch release will continue using their own frozen template.
+> **Why this rule exists:** templates are copied forward only **once** — at the moment a new minor version is first created (see "How new minor version templates are auto-created at build time" below). After that, each minor's template is an independent, frozen snapshot. So editing an *already-released* minor's template does not reach any newer minor. A common past mistake was editing v4.5 while v4.6 was already in flight: the change landed only in the v4.5 line and never reached v4.6+. Following the rule above avoids this — you always land the change on the newest minor template, creating it first if the current newest is already released.
 
-Since future minor versions are created by copying from the previous minor's template, any change made to an unreleased minor's template will also be inherited by subsequent minor versions when they are created (If you make change to template/v4/v4.4/, template/v4/v4.5/ and template/v4/v4.6/ will also get the change).
+A CI check (`check_template_propagation`) backs this up: if your PR edits an older minor's template file while a newer minor template exists, it fails unless the same file is also changed in the newest minor template. For a change that is intentionally scoped to older minor lines only (e.g. a targeted backport), add the line `template-propagation: scoped` to your PR description to opt out.
 
 #### Applying a security fix or infrastructure change (applies to all supported minor versions)
 
-Follow the decision above — if the latest minor has been released, create the next minor version's template first. Then apply the fix to **all** supported minor version templates (including the newly created one):
+A security or infrastructure fix must reach **every supported minor line**, not just future ones. Apply the same fix to the templates of all supported minor versions, including the newest minor template (and, if the newest is already released and the fix must also reach future minors, a newly created next-minor template):
 
 ```
 template/v4/v4.0/Dockerfile
 template/v4/v4.1/Dockerfile
-template/v4/v4.2/Dockerfile
-template/v4/v4.3/Dockerfile
-template/v4/v4.4/Dockerfile
+...
+template/v4/v4.6/Dockerfile   # through the newest minor template
+template/v4/v4.7/Dockerfile   # including any next-minor template you just created
 ```
 
-This approach is intentional — it makes the scope of the fix auditable and prevents accidental feature leakage.
+Applying the fix to each template explicitly (rather than relying on copy-forward) is intentional — it makes the scope of the fix auditable and prevents accidental feature leakage.
 
 ### How new minor version templates are auto-created at build time
 
-If no one creates the template directory before `create-minor-version-artifacts` runs, the tooling will automatically copy it from the previous minor's template (e.g., v4.3 → v4.4). This means any change in v4.3's template will be inherited by v4.4 if its template hasn't been pre-created.
+If no one creates the template directory before `create-minor-version-artifacts` runs, the tooling will automatically copy it from the previous minor's template (e.g., v4.6 → v4.7). This copy happens exactly **once per minor**, when that minor's template is first created, and only ever copies from the immediately-preceding minor. There is no ongoing sync: once a minor's template exists, later edits to an older minor's template are never propagated into it. That is exactly why the rule above has you land your change on the newest minor template.
 
 
 ## Finding contributions to work on
