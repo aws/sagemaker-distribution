@@ -5,17 +5,23 @@ interpreter instead of the sagemaker-distribution conda environment.
 
 Commands:
 
+    python src/template_tools.py create --version 4.7
+        Create template/v4/v4.7/ by copying template/v4/v4.6/.
+
     python src/template_tools.py check --base <sha> --head <sha> [--pr-body-file <path>]
         Check a pull request's template changes. See find_problems() for the rules.
 
-Why the check exists: a new minor's template is a one-time copy of the previous minor's template.
-Nothing carries later template changes forward, so a change merged to an older minor's template
-after the copy skips the newer minor unless it is made there too (4.6.0 missed #1343 this way).
+Why templates are created this way: a new minor's template is a one-time copy of the previous
+minor's template. It used to be made during the minor's first build, which saved it only on the
+release branch. Main never saw it, so template changes merged to main afterwards skipped the new
+minor (4.6.0 missed #1343 this way). The copy now lands on main, through a pull request, before the
+first build, and the build refuses to make one itself.
 """
 
 import argparse
 import os
 import re
+import shutil
 import subprocess
 import sys
 
@@ -27,6 +33,36 @@ _DECLARED_DIVERGENCE = re.compile(r"^\s*template-divergence:\s*(\S+)\s*$", re.MU
 
 def minor_template_dir(major, minor):
     return f"template/v{major}/v{major}.{minor}"
+
+
+def require_minor_template(major, minor, root="."):
+    """Raise unless template/vX/vX.Y/ exists. The build calls this for new minor and major versions."""
+    path = minor_template_dir(major, minor)
+    if os.path.isdir(os.path.join(root, path)):
+        return
+    if minor == 0:
+        hint = f"Create {path}/ (a Dockerfile and dirs/) by hand in a pull request to main."
+    else:
+        hint = (
+            "Create it on main first: merge the pull request the 'Create Next Minor Template' workflow opened "
+            f"when {major}.{minor - 1}.0 was released, or run `python src/template_tools.py create "
+            f"--version {major}.{minor}` and open that pull request yourself."
+        )
+    raise Exception(f"{path}/ does not exist. {hint}")
+
+
+def create_minor_template(major, minor, root="."):
+    """Create template/vX/vX.Y/ by copying the immediately preceding minor's template."""
+    path = minor_template_dir(major, minor)
+    if minor == 0:
+        raise Exception(f"{path}/ is the first minor of a new major version; create it by hand.")
+    if os.path.exists(os.path.join(root, path)):
+        raise Exception(f"{path}/ already exists.")
+    previous = minor_template_dir(major, minor - 1)
+    if not os.path.isdir(os.path.join(root, previous)):
+        raise Exception(f"{previous}/ does not exist, so there is nothing to copy into {path}/.")
+    shutil.copytree(os.path.join(root, previous), os.path.join(root, path))
+    return path
 
 
 def parse_minor_template_path(path):
@@ -166,15 +202,27 @@ def run_check(base, head, pr_body):
     return 1
 
 
+def _parse_version(text):
+    match = re.fullmatch(r"(\d+)\.(\d+)", text.strip())
+    if not match:
+        raise argparse.ArgumentTypeError(f"expected <major>.<minor>, got {text!r}")
+    return int(match.group(1)), int(match.group(2))
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     commands = parser.add_subparsers(dest="command", required=True)
+    create = commands.add_parser("create", help="Create a minor template by copying the previous minor's.")
+    create.add_argument("--version", required=True, type=_parse_version, help="<major>.<minor>, e.g. 4.7")
     check = commands.add_parser("check", help="Check a pull request's template changes.")
     check.add_argument("--base", required=True, help="Commit the pull request merges into.")
     check.add_argument("--head", required=True, help="The pull request merged with --base.")
     check.add_argument("--pr-body-file", help="File containing the pull request description.")
     args = parser.parse_args(argv)
 
+    if args.command == "create":
+        print(f"Created {create_minor_template(*args.version)}/")
+        return 0
     pr_body = ""
     if args.pr_body_file:
         with open(args.pr_body_file) as f:

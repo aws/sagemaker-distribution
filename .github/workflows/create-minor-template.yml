@@ -1,0 +1,102 @@
+name: Create Next Minor Template
+# When X.y.0 is released, the nightly starts building X.(y+1).0 (see add-nightly-builds.yml). That build
+# reads template/vX/vX.(y+1)/ from main and will not create it, so this opens the pull request that does:
+# a plain copy of template/vX/vX.y/. Merging it lets the X.(y+1).0 build start.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Minor version to create the template for (x.y), e.g. 4.7'
+        required: true
+        type: string
+jobs:
+  open-template-pr:
+    name: Open template pull request
+    runs-on: ubuntu-latest
+    # Release tags look like 4.6.0-cpu and 4.6.0-gpu. Act once per X.y.0 release, on the cpu tag.
+    if: |
+      github.repository == 'aws/sagemaker-distribution' &&
+      (github.event_name == 'workflow_dispatch' || endsWith(github.event.release.tag_name, '.0-cpu'))
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: main
+          sparse-checkout: |
+            src
+            template
+      - name: Work out the version
+        id: target
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "release" ]; then
+            released="${RELEASE_TAG%-cpu}"          # e.g. 4.6.0
+            major="${released%%.*}"
+            rest="${released#*.}"
+            version="$major.$(( ${rest%%.*} + 1 ))"  # e.g. 4.7
+          else
+            version="$INPUT_VERSION"
+          fi
+          if ! [[ "$version" =~ ^[0-9]+\.[0-9]+$ ]]; then
+            echo "::error::Expected <major>.<minor>, got '$version'."
+            exit 1
+          fi
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+          echo "major=${version%%.*}" >> "$GITHUB_OUTPUT"
+          echo "previous=${version%%.*}.$(( ${version#*.} - 1 ))" >> "$GITHUB_OUTPUT"
+      - name: Copy the previous minor's template
+        id: copy
+        env:
+          VERSION: ${{ steps.target.outputs.version }}
+          MAJOR: ${{ steps.target.outputs.major }}
+        run: |
+          set -euo pipefail
+          branch="template-v$VERSION"
+          if [ -d "template/v$MAJOR/v$VERSION" ]; then
+            echo "template/v$MAJOR/v$VERSION/ is already on main. Nothing to do."
+          elif git ls-remote --exit-code --heads origin "$branch" > /dev/null; then
+            echo "Branch $branch already exists. Nothing to do."
+          else
+            python3 src/template_tools.py create --version "$VERSION"
+            echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Open the pull request
+        if: steps.copy.outputs.branch != ''
+        env:
+          # Pull requests opened with the default GITHUB_TOKEN do not trigger pull_request workflows, so the
+          # required "Check template propagation" check would never run on this one. Use a token that does.
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+          BRANCH: ${{ steps.copy.outputs.branch }}
+          VERSION: ${{ steps.target.outputs.version }}
+          MAJOR: ${{ steps.target.outputs.major }}
+          PREVIOUS: ${{ steps.target.outputs.previous }}
+        run: |
+          set -euo pipefail
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git checkout -b "$BRANCH"
+          git add "template/v$MAJOR/v$VERSION"
+          git commit -m "template: Create v$VERSION template from v$PREVIOUS"
+          git push origin "$BRANCH"
+          cat > "$RUNNER_TEMP/body.md" <<EOF
+          Creates \`template/v$MAJOR/v$VERSION/\` as a copy of \`template/v$MAJOR/v$PREVIOUS/\`, ahead of the first $VERSION.0 build.
+
+          The nightly starts building $VERSION.0 once $PREVIOUS.0 is released, and the build no longer creates a missing minor template, so that build fails until this merges.
+
+          If $VERSION needs to differ from $PREVIOUS, push the change to this branch and list each changed path on its own line in this description:
+
+          template-divergence: template/v$MAJOR/v$VERSION/<path>
+
+          "Check template propagation" compares this copy with the latest \`template/v$MAJOR/v$PREVIOUS/\` when the pull request merges.
+          EOF
+          gh pr create --base main --head "$BRANCH" \
+            --title "template: Create v$VERSION template from v$PREVIOUS" \
+            --body-file "$RUNNER_TEMP/body.md"

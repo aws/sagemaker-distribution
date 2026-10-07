@@ -30,6 +30,7 @@ from package_report import (
     generate_package_staleness_report,
 )
 from release_notes_generator import generate_release_notes
+from template_tools import require_minor_template
 from utils import (
     get_dir_for_version,
     get_match_specs,
@@ -75,36 +76,12 @@ def _delete_all_files_except_additional_packages_input_files(base_version_dir, v
 
 
 def _ensure_minor_template_exists(version: Version):
-    """Ensure the per-minor template directory exists for a new minor/major version.
+    """Fail unless the per-minor template directory for a new minor/major version exists.
 
-    If the directory already exists (e.g. a contributor pre-created it with
-    feature changes), it is left as-is. Otherwise, copies from the previous
-    minor's template (e.g. template/v4/v4.2/ -> template/v4/v4.3/).
-
-    For the first minor of a new major version (minor == 0), the directory must
-    be created manually since there is no previous minor to copy from.
+    The template must already be on main. Copying it here put the copy only on the release
+    branch, so later template changes on main skipped the new minor. See template_tools.py.
     """
-    major = version.major
-    minor = version.minor
-    minor_template_dir = f"template/v{major}/v{major}.{minor}"
-
-    if os.path.exists(minor_template_dir):
-        return
-
-    if minor == 0:
-        raise Exception(
-            f"Cannot auto-create template for v{major}.0 — no previous minor exists. "
-            f"Please create {minor_template_dir}/ manually with a Dockerfile and dirs/."
-        )
-
-    prev_minor_template_dir = f"template/v{major}/v{major}.{minor - 1}"
-    if not os.path.exists(prev_minor_template_dir):
-        raise Exception(
-            f"Previous minor template {prev_minor_template_dir}/ does not exist. "
-            f"Cannot create template for v{major}.{minor}."
-        )
-
-    shutil.copytree(prev_minor_template_dir, minor_template_dir)
+    require_minor_template(version.major, version.minor)
 
 
 def _create_new_version_artifacts(args):
@@ -166,8 +143,8 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, new
     #   - Patch bumps never accidentally gain/lose features from template edits
     #     meant for newer minors.
     #   - Security fixes can be applied to specific minor templates explicitly.
-    #   - New minor/major versions get their template created at version-creation time
-    #     (copied from the top-level template/v{major}/ directory).
+    #   - A new minor's template is copied from the previous minor's on main before the
+    #     minor's first build (see template_tools.py); the build never creates one.
     base_path = f"template/v{new_version_major}/v{new_version_major}.{new_version_minor}"
 
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):

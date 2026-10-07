@@ -5,11 +5,13 @@ import pytest
 pytestmark = pytest.mark.unit
 
 from template_tools import (
+    create_minor_template,
     find_copy_problems,
     find_legacy_path_problems,
     find_problems,
     find_propagation_problems,
     parse_minor_template_path,
+    require_minor_template,
     run_check,
 )
 
@@ -102,6 +104,27 @@ def test_pr_description_opt_out():
     changed = ["template/v4/v4.5/dirs/a.sh"]
     assert find_problems(changed, set(head), head, "") != []
     assert find_problems(changed, set(head), head, "Backport only.\n\ntemplate-propagation: scoped\n") == []
+
+
+def test_create_minor_template_copies_the_previous_minor(tmp_path):
+    (tmp_path / "template/v4/v4.6/dirs").mkdir(parents=True)
+    (tmp_path / "template/v4/v4.6/Dockerfile").write_text("FROM x\n")
+    assert create_minor_template(4, 7, root=str(tmp_path)) == "template/v4/v4.7"
+    assert (tmp_path / "template/v4/v4.7/Dockerfile").read_text() == "FROM x\n"
+    assert (tmp_path / "template/v4/v4.7/dirs").is_dir()
+    with pytest.raises(Exception, match="already exists"):
+        create_minor_template(4, 7, root=str(tmp_path))
+    with pytest.raises(Exception, match="nothing to copy"):
+        create_minor_template(4, 9, root=str(tmp_path))
+    with pytest.raises(Exception, match="by hand"):
+        create_minor_template(5, 0, root=str(tmp_path))
+
+
+def test_require_minor_template(tmp_path):
+    with pytest.raises(Exception, match="template/v4/v4.7/ does not exist"):
+        require_minor_template(4, 7, root=str(tmp_path))
+    (tmp_path / "template/v4/v4.7").mkdir(parents=True)
+    require_minor_template(4, 7, root=str(tmp_path))
 
 
 def test_run_check_reads_the_git_trees(tmp_path, monkeypatch, capsys):
