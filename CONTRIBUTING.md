@@ -138,42 +138,67 @@ template/
 
 ### Deciding where to make your change
 
-A minor's template feeds every future patch of that minor. A new minor's template is a one-time copy of the previous minor's template, made on `main` before the new minor's first build (see "How new minor version templates are created" below). Nothing carries template changes forward after that, so where you make a change decides how far it reaches.
+Where you put a template change determines how far forward it reaches. The key fact: a given minor's template feeds **all future patches of that same minor**, but a *new* minor's template is created by copying the previous minor's template only once (see "How new minor version templates are created" below). So **to reach future minor/major versions, your change must live in the newest minor template** — if the current newest minor is already released, that means creating the next minor's template and putting the change there.
 
-The newest template for a major version (the highest `template/v4/v4.N/`) is always the next minor to be released. It is created on `main` as soon as the minor before it ships.
+First, find the latest minor version that has a template directory (the highest `v4.N`):
 
-- **To reach future minor and major versions,** change the newest minor template. That covers the next minor, whether or not its release branch exists yet, and every minor copied from it later.
-- **To also reach future patches of minors that are already released,** change their templates in the same pull request.
-- **For a change meant only for older minors,** such as a targeted backport, add the line `template-propagation: scoped` to the pull request description.
+```shell
+ls -d template/v4/v4.*/
+```
 
-Open template pull requests against `main`. Don't edit templates on release branches. The build merges `main` into an existing release branch, so the branch picks up the change from `main`.
+Then check whether a build artifact already exists for that minor version:
 
-> **Why this rule exists:** templates are copied forward only **once**. A change merged to an older minor's template after the copy never reaches the newer minor unless it is also made there. That is how 4.6.0 missed the 4.5 skills change in #1343.
+```shell
+# Example: checking if v4.6 has any released patch version
+ls build_artifacts/v4/v4.6/
+```
 
-The required "Check template propagation" check enforces this on every pull request to `main`:
+There are two possible states:
 
-- Changing a file in an older minor's template fails unless the same file also changes in the newest minor's template, or the description contains `template-propagation: scoped`.
-- Adding a new minor template fails unless it is an exact copy of the previous minor's template, apart from paths listed in the description as `template-divergence: <path>` lines. The merge queue runs this against the latest `main`, so a change to the previous minor that lands while the copy is in review can't be lost.
-- Editing the old per-major paths, such as `template/v4/dirs/`, fails, because the build only reads `template/v4/v4.<minor>/`.
+- **Template exists, but NO build artifact exists yet** (e.g., `template/v4/v4.6/` exists but `build_artifacts/v4/v4.6/` is empty or does not exist): this minor version has not been released. **Update `template/v4/v4.6/` directly** — it is both the next patch and the newest minor, so the change reaches 4.6.0 and every minor created after it.
+
+- **Template exists AND a build artifact exists** (e.g., both `template/v4/v4.6/` and `build_artifacts/v4/v4.6/v4.6.0/` exist): this minor version has already been released. What you do depends on how far forward you want the change to reach:
+  - To reach only **future patches of this same minor** (4.6.1, 4.6.2, …), edit `template/v4/v4.6/` directly. The change will *not* reach any later minor/major version.
+  - To reach **future minor/major versions** (4.7.0, 5.0.0, …), you must create the next minor version's template by copying from it, then make your change there:
+
+    ```shell
+    cp -r template/v4/v4.6 template/v4/v4.7
+    # Now edit template/v4/v4.7/ with your change
+    ```
+
+    (If you want it in both the current minor's future patches *and* future minors, apply the change to `template/v4/v4.6/` and the new `template/v4/v4.7/`.)
+
+Include every template directory you created or edited in your PR, and open the PR against `main`. Because a new minor's template is created by copying the previous minor's template, landing your change in the newest minor template is what carries it into every minor created afterward.
+
+> **Why this rule exists:** templates are copied forward only **once** — at the moment a new minor version is first created (see "How new minor version templates are created" below). After that, each minor's template is an independent, frozen snapshot. So editing an *already-released* minor's template does not reach any newer minor. A common past mistake was editing v4.5 while v4.6 was already in flight: the change landed only in the v4.5 line and never reached v4.6+. Following the rule above avoids this — you always land the change on the newest minor template, creating it first if the current newest is already released.
+
+The "Check template propagation" check backs this up on every pull request to `main`: if your PR changes a file in an older minor's template, it fails unless the same file also changes in the newest minor's template. The failure lists each file that is missing the change. For a change that is intentionally scoped to older minor lines only (e.g. a targeted backport), ask a maintainer to add the `template-propagation-scoped` label to your PR; the check reruns and passes. The check only confirms that the newest minor's file changed too, so reviewers still need to confirm it changed the same way.
 
 #### Applying a security fix or infrastructure change (applies to all supported minor versions)
 
-A security or infrastructure fix must reach **every supported minor line**, not just future ones. Apply the same fix to the templates of all supported minor versions, through the newest minor template:
+A security or infrastructure fix must reach **every supported minor line**, not just future ones. Apply the same fix to the templates of all supported minor versions, including the newest minor template (and, if the newest is already released and the fix must also reach future minors, a newly created next-minor template):
 
 ```
 template/v4/v4.0/Dockerfile
 template/v4/v4.1/Dockerfile
 ...
 template/v4/v4.6/Dockerfile   # through the newest minor template
+template/v4/v4.7/Dockerfile   # including any next-minor template you just created
 ```
 
 Applying the fix to each template explicitly (rather than relying on copy-forward) is intentional — it makes the scope of the fix auditable and prevents accidental feature leakage.
 
 ### How new minor version templates are created
 
-When `X.Y.0` is released, the "Create Next Minor Template" workflow opens a pull request that copies `template/vX/vX.Y/` to `template/vX/vX.(Y+1)/` on `main`. Merge it before the first `X.(Y+1).0` build. `create-minor-version-artifacts` no longer creates a missing template: it fails and points to that pull request.
+A new minor's template is created on `main`, by copying the previous minor's template, before that minor's first build. When `X.Y.0` is released, open a pull request to `main` that only does this:
 
-To create one yourself, run `python src/template_tools.py create --version X.(Y+1)` and open the pull request against `main`. The first minor of a new major version (`X.0`) is still created by hand.
+```shell
+cp -r template/vX/vX.Y template/vX/vX.(Y+1)
+```
+
+Merge it before the first `X.(Y+1).0` build. `create-minor-version-artifacts` does not create a missing template; it fails and prints this command. Before merging, check that the copy is still exact (`diff -r template/vX/vX.Y template/vX/vX.(Y+1)` prints nothing), because a change to `vX.Y` merged while the copy is in review would otherwise be lost. Make changes specific to the new minor in a separate pull request after the copy merges. The first minor of a new major version (`X.0`) is created by hand.
+
+The copy happens exactly **once per minor**. There is no ongoing sync: once a minor's template exists, later edits to an older minor's template are never propagated into it. That is why the rule above has you land your change on the newest minor template. Open template pull requests against `main`, never against a release branch; the build merges `main` into the release branch.
 
 
 ## Finding contributions to work on

@@ -30,7 +30,6 @@ from package_report import (
     generate_package_staleness_report,
 )
 from release_notes_generator import generate_release_notes
-from template_tools import require_minor_template
 from utils import (
     get_dir_for_version,
     get_match_specs,
@@ -76,12 +75,30 @@ def _delete_all_files_except_additional_packages_input_files(base_version_dir, v
 
 
 def _ensure_minor_template_exists(version: Version):
-    """Fail unless the per-minor template directory for a new minor/major version exists.
+    """Fail unless the per-minor template directory for a new minor/major version exists on main.
 
-    The template must already be on main. Copying it here put the copy only on the release
-    branch, so later template changes on main skipped the new minor. See template_tools.py.
+    The build used to copy the previous minor's template here, but that saved the copy only on the
+    release branch, so template changes merged to main afterwards skipped the new minor (4.6.0 missed
+    #1343 this way). A new minor's template is now copied on main before its first build.
     """
-    require_minor_template(version.major, version.minor)
+    major = version.major
+    minor = version.minor
+    minor_template_dir = f"template/v{major}/v{major}.{minor}"
+
+    if os.path.exists(minor_template_dir):
+        return
+
+    if minor == 0:
+        raise Exception(
+            f"{minor_template_dir}/ does not exist. Create it (a Dockerfile and dirs/) "
+            f"in a pull request to main before building v{major}.0."
+        )
+
+    raise Exception(
+        f"{minor_template_dir}/ does not exist. Copy the previous minor's template in a pull request "
+        f"to main before building v{major}.{minor}.0: "
+        f"cp -r template/v{major}/v{major}.{minor - 1} {minor_template_dir}"
+    )
 
 
 def _create_new_version_artifacts(args):
@@ -144,7 +161,7 @@ def _copy_static_files(base_version_dir, new_version_dir, new_version_major, new
     #     meant for newer minors.
     #   - Security fixes can be applied to specific minor templates explicitly.
     #   - A new minor's template is copied from the previous minor's on main before the
-    #     minor's first build (see template_tools.py); the build never creates one.
+    #     minor's first build; the build never creates one (see _ensure_minor_template_exists).
     base_path = f"template/v{new_version_major}/v{new_version_major}.{new_version_minor}"
 
     for f in glob.glob(os.path.relpath(f"{base_path}/Dockerfile")):
