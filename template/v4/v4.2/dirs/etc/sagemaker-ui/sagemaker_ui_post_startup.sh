@@ -465,6 +465,12 @@ if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" 
 
     # Install sm-spark-cli
     bash /etc/sagemaker-ui/workflows/sm-spark-cli-install.sh || echo "Warning: sm-spark-cli installation failed, continuing..."
+
+    # Install Teradata driver (non-blocking; not available via conda-forge).
+    # timeout + limited retries bound the delay for environments with no
+    # internet egress (e.g. fully isolated VpcOnly), where pip's default
+    # retry/backoff can otherwise take several minutes to fail out.
+    timeout 15 pip install --retries 1 teradatasql teradatasqlalchemy || echo "Warning: teradata driver installation failed or timed out, continuing..."
 fi
 
 # Execute network validation script, to check if any required AWS Services are unreachable
