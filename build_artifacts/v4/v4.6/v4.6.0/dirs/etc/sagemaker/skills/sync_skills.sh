@@ -23,8 +23,6 @@ set_locked_checksum() {
     mv "$LOCK_FILE.tmp" "$LOCK_FILE"
 }
 
-<<<<<<< HEAD
-=======
 # Migration to the unified agent-toolkit-for-aws skills.
 TOOLKIT_SOURCE="agent-toolkit-for-aws"
 
@@ -116,7 +114,6 @@ run_migration() {
     return 0
 }
 
->>>>>>> main
 mkdir -p "$EBS_SKILLS_DIR"
 for dir in "${AGENT_SKILLS_DIRS[@]}"; do mkdir -p "$dir"; done
 
@@ -125,15 +122,12 @@ if [ ! -d "$IMAGE_SKILLS_DIR" ]; then
     exit 0
 fi
 
-<<<<<<< HEAD
-=======
 run_migration
 if [ "$MIGRATION_BLOCKS_SYNC" -eq 1 ]; then
     echo "Skills sync complete."
     exit 0
 fi
 
->>>>>>> main
 for skill_path in "$IMAGE_SKILLS_DIR"/*/; do
     [ -d "$skill_path" ] || continue
     skill_name=$(basename "$skill_path")
@@ -172,12 +166,9 @@ for skill_path in "$IMAGE_SKILLS_DIR"/*/; do
     done
 done
 
-<<<<<<< HEAD
-=======
 if [ "$STAMP_SOURCE_AFTER_SYNC" -eq 1 ]; then
     set_lock_source "$TOOLKIT_SOURCE"
     echo "Migration: stamped source=$TOOLKIT_SOURCE"
 fi
 
->>>>>>> main
 echo "Skills sync complete."
