@@ -1,0 +1,46 @@
+name: Check template propagation
+# Meant to be a required status check on main, set by a ruleset with no bypass list. See the
+# "Modifying the Dockerfile or dirs/" section of CONTRIBUTING.md and src/template_tools.py.
+on:
+  # No paths filter: a required check that never reports leaves the pull request stuck as pending.
+  # The check exits straight away when a pull request changes no template files.
+  pull_request:
+    branches: [main]
+    # `edited` reruns the check when someone adds an opt-out line to the description.
+    types: [opened, synchronize, reopened, edited]
+  merge_group:
+jobs:
+  check:
+    name: Check template propagation
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          filter: blob:none
+      - name: Save the pull request description
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT_NAME: ${{ github.event_name }}
+          # Passed through the environment, never interpolated into the script.
+          PR_BODY: ${{ github.event.pull_request.body }}
+          QUEUE_REF: ${{ github.event.merge_group.head_ref }}
+        run: |
+          set -euo pipefail
+          if [ "$EVENT_NAME" = "merge_group" ]; then
+            # Queue refs look like refs/heads/gh-readonly-queue/main/pr-1363-<sha>.
+            pr="$(sed -nE 's#.*/pr-([0-9]+)-[0-9a-f]+$#\1#p' <<< "$QUEUE_REF")"
+            gh pr view "$pr" --repo "$GITHUB_REPOSITORY" --json body --jq .body > "$RUNNER_TEMP/pr-body.txt"
+          else
+            printf '%s' "$PR_BODY" > "$RUNNER_TEMP/pr-body.txt"
+          fi
+      - name: Check
+        env:
+          # For pull_request, github.sha is the pull request merged into main, so the check sees the latest
+          # main as of this run. Merge queue (or "require branches to be up to date") keeps it current.
+          BASE: ${{ github.event.merge_group.base_sha || github.event.pull_request.base.sha }}
+          HEAD: ${{ github.event.merge_group.head_sha || github.sha }}
+        run: python3 src/template_tools.py check --base "$BASE" --head "$HEAD" --pr-body-file "$RUNNER_TEMP/pr-body.txt"
