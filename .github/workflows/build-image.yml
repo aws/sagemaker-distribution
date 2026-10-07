@@ -59,6 +59,10 @@ jobs:
       - name: Create or merge release branch
         # Note - CodeBuild depends on this branch name. Don't change without corresponding backend change.
         id: check_branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BRANCH: release-${{ steps.calc_target.outputs.target_version }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
@@ -68,8 +72,19 @@ jobs:
             # Stop on a conflict. This shell does not exit on errors, so an unfinished merge used to be
             # committed, conflict markers included, by "Commit .in artifacts to branch" below.
             if ! git merge main; then
-              echo "::error::Merging main into release-${{ steps.calc_target.outputs.target_version }} conflicted. Resolve it in a pull request into that branch, then rerun."
+              CONFLICTS=$(git diff --name-only --diff-filter=U)
               git merge --abort
+              echo "::error::Merging main into $BRANCH conflicted. Resolve it in a pull request into that branch, then rerun."
+              # Nothing was pushed, so the release PR shows no sign of this. Say so there, where maintainers look.
+              {
+                echo "Merging \`main\` into \`$BRANCH\` conflicted, so this build stopped and pushed nothing."
+                echo
+                echo "Conflicting files:"
+                echo "$CONFLICTS" | sed 's/^/- /'
+                echo
+                echo "Resolve the conflict in a pull request into \`$BRANCH\`, merge it, then re-run the failed jobs: $RUN_URL"
+              } > "$RUNNER_TEMP/merge-conflict.md"
+              gh pr comment "$BRANCH" --body-file "$RUNNER_TEMP/merge-conflict.md" || echo "::warning::Could not comment on the release PR."
               exit 1
             fi
             git push
