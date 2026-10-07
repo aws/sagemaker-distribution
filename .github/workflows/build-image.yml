@@ -65,7 +65,13 @@ jobs:
           if git ls-remote --exit-code --heads origin release-${{ steps.calc_target.outputs.target_version }}; then
             echo "Branch exists, merging latest changes in"
             git checkout release-${{ steps.calc_target.outputs.target_version }}
-            git merge main
+            # Stop on a conflict. This shell does not exit on errors, so an unfinished merge used to be
+            # committed, conflict markers included, by "Commit .in artifacts to branch" below.
+            if ! git merge main; then
+              echo "::error::Merging main into release-${{ steps.calc_target.outputs.target_version }} conflicted. Resolve it in a pull request into that branch, then rerun."
+              git merge --abort
+              exit 1
+            fi
             git push
           else
             echo "Branch doesn't exist, creating now..."
