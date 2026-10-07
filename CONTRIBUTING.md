@@ -172,11 +172,7 @@ Include every template directory you created or edited in your PR, and open the 
 
 > **Why this rule exists:** templates are copied forward only **once** — at the moment a new minor version is first created (see "How new minor version templates are auto-created at build time" below). After that, each minor's template is an independent, frozen snapshot. So editing an *already-released* minor's template does not reach any newer minor. A common past mistake was editing v4.5 while v4.6 was already in flight: the change landed only in the v4.5 line and never reached v4.6+. Following the rule above avoids this — you always land the change on the newest minor template, creating it first if the current newest is already released.
 
-The "Check template propagation" check (`src/template_tools.py check`) backs this up on every pull request to `main`:
-
-- Changing a file in an older minor's template fails unless the same file also changes in the newest minor's template. For a change that is intentionally scoped to older minor lines only (e.g. a targeted backport), add the line `template-propagation: scoped` to your PR description to opt out.
-- Adding a new minor template fails unless it is an exact copy of the previous minor's template, apart from paths listed in the description as `template-divergence: <path>` lines.
-- Editing the old per-major paths, such as `template/v4/dirs/`, fails, because the build only reads `template/v4/v4.<minor>/`.
+The "Check template propagation" check backs this up on every pull request to `main`: if your PR changes a file in an older minor's template, it fails unless the same file also changes in the newest minor's template. The failure lists each file that is missing the change. For a change that is intentionally scoped to older minor lines only (e.g. a targeted backport), ask a maintainer to add the `template-propagation-scoped` label to your PR; the check reruns and passes. The check only confirms that the newest minor's file changed too, so reviewers still need to confirm it changed the same way.
 
 #### Applying a security fix or infrastructure change (applies to all supported minor versions)
 

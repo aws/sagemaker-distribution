@@ -17,6 +17,12 @@ Does this change need to be included in patch version releases? By default, any 
 If yes, please explain why:
 [Explain the criticality of this change and why it should be included in patch releases]
 
+## Template Changes
+A change to `template/` reaches future minor versions only if it is also made in the newest minor's template (the highest `template/vX/vX.Y/`). See "Deciding where to make your change" in CONTRIBUTING.md.
+- [ ] N/A (no template changes)
+- [ ] The change is also made in the newest minor's template
+- [ ] The change is deliberately limited to older minors (a maintainer adds the `template-propagation-scoped` label)
+
 ## How Has This Been Tested?
 [Describe the tests you ran]
 
