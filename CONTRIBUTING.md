@@ -172,8 +172,6 @@ Include every template directory you created or edited in your PR, and open the 
 
 > **Why this rule exists:** templates are copied forward only **once** — at the moment a new minor version is first created (see "How new minor version templates are auto-created at build time" below). After that, each minor's template is an independent, frozen snapshot. So editing an *already-released* minor's template does not reach any newer minor. A common past mistake was editing v4.5 while v4.6 was already in flight: the change landed only in the v4.5 line and never reached v4.6+. Following the rule above avoids this — you always land the change on the newest minor template, creating it first if the current newest is already released.
 
-A CI check (`check_template_propagation`) backs this up: if your PR edits an older minor's template file while a newer minor template exists, it fails unless the same file is also changed in the newest minor template. For a change that is intentionally scoped to older minor lines only (e.g. a targeted backport), add the line `template-propagation: scoped` to your PR description to opt out.
-
 #### Applying a security fix or infrastructure change (applies to all supported minor versions)
 
 A security or infrastructure fix must reach **every supported minor line**, not just future ones. Apply the same fix to the templates of all supported minor versions, including the newest minor template (and, if the newest is already released and the fix must also reach future minors, a newly created next-minor template):
