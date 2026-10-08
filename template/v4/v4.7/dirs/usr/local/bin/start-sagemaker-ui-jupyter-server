@@ -1,0 +1,90 @@
+#!/bin/bash
+set -e
+
+eval "$(micromamba shell hook --shell=bash)"
+
+# Activate conda environment depending on if we are in Recovery or Standard mode.
+if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
+    # Activate conda environment `sagemaker-recovery-mode`
+    micromamba activate sagemaker-recovery-mode
+else
+    # Activate conda environment 'base' which is the default for Cosmos
+    micromamba activate base
+
+    # Disable the Amazon Q gen-AI JupyterLab experience for SMUS (replaced by Kiro Chat)
+    # Server-ext disable stops _load_jupyter_server_extension -> initialize_lsp_server()
+    jupyter server extension disable sagemaker_gen_ai_jupyterlab_extension
+    # Labext disable removes the chat panel from the sidebar
+    jupyter labextension disable @amzn/sagemaker_gen_ai_jupyterlab_extension
+fi
+
+sudo cp -r /etc/sagemaker-ui/kernels/. /opt/conda/share/jupyter/kernels/
+sudo cp /etc/sagemaker-ui/jupyter/server/jupyter_server_config.py /opt/conda/etc/jupyter/
+sudo cp /etc/sagemaker-ui/jupyter/server/jupyter_server_config.d/zzz_sagemaker_ui_overrides.json /opt/conda/etc/jupyter/jupyter_server_config.d/
+
+mkdir -p /opt/conda/share/jupyter/lab/settings
+cp -r /etc/sagemaker-ui/jupyter/lab/settings/. /opt/conda/share/jupyter/lab/settings
+
+if [[ $(jupyter kernelspec list | grep pysparkkernel) ]]; then
+  jupyter-kernelspec remove -f -y pysparkkernel
+fi
+
+if [[ $(jupyter kernelspec list | grep sparkkernel) ]]; then
+  jupyter-kernelspec remove -f -y sparkkernel
+fi
+
+if [[ $(jupyter kernelspec list | grep glue_spark) ]]; then
+  jupyter-kernelspec remove -f -y glue_spark
+fi
+
+if [[ $(jupyter kernelspec list | grep glue_pyspark) ]]; then
+  jupyter-kernelspec remove -f -y glue_pyspark
+fi
+
+# Enable S3 Access Grant plugin by default
+export BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin
+echo BOTOCORE_EXPERIMENTAL__PLUGINS=S3AccessGrantsPlugin=aws_s3_access_grants_boto3_plugin.s3_access_grants_plugin >> ~/.bashrc
+
+# Setup skills and subagent for SMUS spaces
+bash /etc/sagemaker/skills/sync_skills.sh /etc/sagemaker-ui/skills 2>&1 || echo "Warning: skills sync failed, continuing..."
+bash /etc/sagemaker/sync_agent.sh 2>&1 || echo "Warning: agent config sync failed, continuing..."
+
+# Override the default agent prompt/description with SMUS-specific wording (SMUS spaces only).
+# sync_agent.sh installs the shared (SMAI-worded) config; here we patch the installed copy in place
+# so SMAI (which uses start-jupyter-server) is unaffected.
+AGENT_CFG="$HOME/.kiro/agents/sagemaker-default-agent.json"
+if [ -f "$AGENT_CFG" ]; then
+    SMUS_DESC="SageMaker Unified Studio assistant with pre-installed skills for data analytics, connecting to data sources, and building with Glue, Athena, Redshift, and Spark."
+    SMUS_PROMPT="You are a specialized AI assistant for Amazon SageMaker Unified Studio. You can help with general purpose tasks, but you also have expertise in SageMaker Unified Studio projects, data connections, the data catalog, and analytics workflows using Glue, Athena, Redshift, and Spark."
+    jq --arg d "$SMUS_DESC" --arg p "$SMUS_PROMPT" '.description = $d | .prompt = $p' "$AGENT_CFG" > "$AGENT_CFG.tmp" \
+        && mv "$AGENT_CFG.tmp" "$AGENT_CFG" \
+        && echo "Applied SMUS-specific agent prompt/description" \
+        || echo "Warning: failed to apply SMUS agent prompt, continuing..."
+fi
+
+# Sync SMUS steering rules
+if [ -d "/etc/sagemaker-ui/steering" ]; then
+    mkdir -p "$HOME/.kiro/steering"
+    cp -r /etc/sagemaker-ui/steering/. "$HOME/.kiro/steering/"
+fi
+
+if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
+  # Disabling collaboration and identity_provider_class flags for recovery mode
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*' \
+    --SchedulerApp.db_url='sqlite:////tmp/.jupyter_scheduler_do_not_delete.sqlite' \
+    --SQLiteYStore.db_path='/tmp/.ydoc_db_do_not_delete.sqlite' \
+    --ArbitraryFileIdManager.db_path='/tmp/.fileid_do_not_delete.sqlite'
+else
+  jupyter lab --ip 0.0.0.0 --port 8888 \
+    --ServerApp.base_url="/$SAGEMAKER_APP_TYPE_LOWERCASE/default" \
+    --ServerApp.token='' \
+    --ServerApp.allow_origin='*' \
+    --SchedulerApp.db_url='sqlite:////tmp/.jupyter_scheduler_do_not_delete.sqlite' \
+    --collaborative \
+    --ServerApp.identity_provider_class='sagemaker_jupyter_server_extension.identity.SageMakerIdentityProvider' \
+    --SQLiteYStore.db_path='/tmp/.ydoc_db_do_not_delete.sqlite' \
+    --ArbitraryFileIdManager.db_path='/tmp/.fileid_do_not_delete.sqlite'
+fi
