@@ -1,6 +1,8 @@
 import json
+import os
 import re
 import sys
+import tempfile
 
 # Matches a whole string literal (so its contents are never treated as a
 # comment/trailing-comma below), or a "//"/"/* */" comment.
@@ -68,9 +70,25 @@ def main():
     # Merge the data (simple update)
     merged_data = {**data1, **data2}
 
-    # Write the merged data to a new file
-    with open(file1, "w") as f:
-        json.dump(merged_data, f)
+    # Write to a temp file in the same directory and atomically replace
+    # file1 only once the write fully succeeds, so a failure partway
+    # through (e.g. disk full) can't leave file1 truncated/corrupted --
+    # "leaving file1 unchanged" below only holds if this is true.
+    try:
+        fd, tmp_path = tempfile.mkstemp(dir=os.path.dirname(file1) or ".")
+        try:
+            with os.fdopen(fd, "w") as f:
+                json.dump(merged_data, f)
+            os.replace(tmp_path, file1)
+        except OSError:
+            os.unlink(tmp_path)
+            raise
+    except OSError as e:
+        print(
+            f"merge-settings-util: failed to write merged settings ({e}); leaving {file1} unchanged",
+            file=sys.stderr,
+        )
+        return
 
     if had_comments:
         print(

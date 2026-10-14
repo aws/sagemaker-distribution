@@ -244,6 +244,52 @@ class TestMain:
             os.unlink(file1)
             os.unlink(file2)
 
+    def test_write_failure_leaves_file1_truly_unchanged_and_does_not_raise(self, capsys):
+        # Merging into a file whose containing directory isn't writable
+        # must fail before any bytes of file1 are touched (via a temp
+        # file + atomic replace), not leave it truncated/corrupted.
+        tmp_dir = tempfile.mkdtemp()
+        original_content = '{"a": 1}'
+        file1 = os.path.join(tmp_dir, "file1.json")
+        with open(file1, "w") as f:
+            f.write(original_content)
+        file2 = _write('{"b": 2}')
+        os.chmod(tmp_dir, 0o555)
+        try:
+            import sys
+
+            sys.argv = ["merge-settings-util.py", file1, file2]
+            merge_settings_util.main()  # must not raise
+            with open(file1) as f:
+                assert f.read() == original_content
+            assert "failed to write merged settings" in capsys.readouterr().err
+            assert os.listdir(tmp_dir) == ["file1.json"]  # no leftover temp file
+        finally:
+            os.chmod(tmp_dir, 0o755)
+            os.unlink(file1)
+            os.unlink(file2)
+            os.rmdir(tmp_dir)
+
+    def test_write_succeeds_when_only_file1_itself_is_read_only(self):
+        # Writing via a temp file + os.replace only needs the containing
+        # directory to be writable, not file1 itself -- unlike an
+        # in-place open(file1, "w"), a read-only file1 doesn't block the
+        # merge.
+        file1 = _write('{"a": 1}')
+        file2 = _write('{"b": 2}')
+        os.chmod(file1, 0o444)
+        try:
+            import sys
+
+            sys.argv = ["merge-settings-util.py", file1, file2]
+            merge_settings_util.main()
+            with open(file1) as f:
+                assert json.load(f) == {"a": 1, "b": 2}
+        finally:
+            os.chmod(file1, 0o644)
+            os.unlink(file1)
+            os.unlink(file2)
+
 
 class TestAllTemplateCopiesAreIdentical:
     """merge-settings-util.py has no single canonical source location; it's
