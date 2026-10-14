@@ -24,11 +24,11 @@ def _strip_jsonc(text):
 
     def _drop_comment(m):
         nonlocal had_comment
-        text = m.group()
-        if text[0] == "/":
+        matched = m.group()
+        if matched[0] == "/":
             had_comment = True
             return ""
-        return text
+        return matched
 
     text = _STRING_OR_COMMENT.sub(_drop_comment, text)
     text = _STRING_OR_TRAILING_COMMA.sub(lambda m: m.group(1) or m.group(), text)
