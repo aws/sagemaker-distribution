@@ -191,6 +191,59 @@ class TestMain:
         finally:
             os.unlink(file1)
 
+    @pytest.mark.parametrize("non_dict_content", ["[1, 2]", "null", "42", '"a string"', "true"])
+    def test_non_dict_json_leaves_file1_unchanged_and_does_not_raise(self, non_dict_content, capsys):
+        # Valid JSON that isn't an object can't be merged via dict
+        # unpacking ({**data1, **data2} raises TypeError for a list/None/etc).
+        file1 = _write(non_dict_content)
+        file2 = _write('{"b": 2}')
+        try:
+            import sys
+
+            sys.argv = ["merge-settings-util.py", file1, file2]
+            merge_settings_util.main()  # must not raise
+            with open(file1) as f:
+                assert f.read() == non_dict_content
+            assert "must both be JSON objects" in capsys.readouterr().err
+        finally:
+            os.unlink(file1)
+            os.unlink(file2)
+
+    def test_non_dict_file2_leaves_file1_unchanged_and_does_not_raise(self, capsys):
+        original_content = '{"a": 1}'
+        file1 = _write(original_content)
+        file2 = _write("[1, 2]")
+        try:
+            import sys
+
+            sys.argv = ["merge-settings-util.py", file1, file2]
+            merge_settings_util.main()  # must not raise
+            with open(file1) as f:
+                assert f.read() == original_content
+            assert "must both be JSON objects" in capsys.readouterr().err
+        finally:
+            os.unlink(file1)
+            os.unlink(file2)
+
+    def test_invalid_utf8_leaves_file1_unchanged_and_does_not_raise(self, capsys):
+        original_content = b'{"a": 1, "bad": "\xff\xfe"}'
+        f1 = tempfile.NamedTemporaryFile(mode="wb", suffix=".json", delete=False)
+        f1.write(original_content)
+        f1.close()
+        file1 = f1.name
+        file2 = _write('{"b": 2}')
+        try:
+            import sys
+
+            sys.argv = ["merge-settings-util.py", file1, file2]
+            merge_settings_util.main()  # must not raise
+            with open(file1, "rb") as f:
+                assert f.read() == original_content
+            assert "failed to merge settings" in capsys.readouterr().err
+        finally:
+            os.unlink(file1)
+            os.unlink(file2)
+
 
 class TestAllTemplateCopiesAreIdentical:
     """merge-settings-util.py has no single canonical source location; it's

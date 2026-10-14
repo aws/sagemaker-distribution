@@ -47,9 +47,20 @@ def main():
     try:
         data1, had_comments = _load_jsonc(file1)
         data2, _ = _load_jsonc(file2)
-    except (json.JSONDecodeError, OSError) as e:
+    except (ValueError, OSError) as e:
+        # ValueError covers json.JSONDecodeError and UnicodeDecodeError
+        # (invalid UTF-8), both subclasses of it.
         print(
             f"merge-settings-util: failed to merge settings ({e}); leaving {file1} unchanged",
+            file=sys.stderr,
+        )
+        return
+
+    if not isinstance(data1, dict) or not isinstance(data2, dict):
+        # Valid JSON that isn't an object (e.g. "[1,2]" or "null") can't be
+        # merged with dict unpacking below.
+        print(
+            f"merge-settings-util: {file1} and {file2} must both be JSON objects; leaving {file1} unchanged",
             file=sys.stderr,
         )
         return
