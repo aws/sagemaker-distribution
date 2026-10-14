@@ -107,7 +107,7 @@ class TestMain:
         # raise and (via `set -e` in start-code-editor) permanently broke
         # the Code Editor instance.
         file1 = _write(
-            '{\n'
+            "{\n"
             '    "python.terminal.activateEnvironment": false,\n'
             '    "python.defaultInterpreterPath": "/opt/conda/bin/python",\n'
             "}\n"
@@ -299,5 +299,7 @@ class TestAllTemplateCopiesAreIdentical:
     def test_all_supported_v4_templates_match_v4_7(self):
         canonical = _SCRIPT_PATH
         for minor in SUPPORTED_V4_MINOR_VERSIONS:
-            path = os.path.join(ROOT_DIR, "template", "v4", minor, "dirs", "usr", "local", "bin", "merge-settings-util.py")
+            path = os.path.join(
+                ROOT_DIR, "template", "v4", minor, "dirs", "usr", "local", "bin", "merge-settings-util.py"
+            )
             assert filecmp.cmp(canonical, path, shallow=False), f"{path} differs from {canonical}"
