@@ -1,80 +1,43 @@
 import json
+import re
 import sys
+
+# Matches a whole string literal (so its contents are never treated as a
+# comment/trailing-comma below), or a "//"/"/* */" comment.
+_STRING_OR_COMMENT = re.compile(r'"(?:[^"\\]|\\.)*"|//[^\n]*|/\*.*?\*/', re.DOTALL)
+# Matches a whole string literal, or a trailing comma before "}"/"]".
+_STRING_OR_TRAILING_COMMA = re.compile(r'"(?:[^"\\]|\\.)*"|,(\s*[}\]])')
 
 
 def _strip_jsonc(text):
     """Strip // and /* */ comments and trailing commas so VS Code-style
     settings.json (JSONC) can be parsed with the stdlib json module.
 
-    Scans character-by-character and tracks whether we're inside a string
-    literal, so occurrences of "//", "/*", or "," inside string values
-    (e.g. "http.proxy": "http://proxy:8080") are left untouched.
+    Both regexes also match a full string literal as their first
+    alternative, so a value like "http.proxy": "http://proxy:8080" or
+    "note": "a, b," is matched and re-emitted whole, never touched by the
+    comment/trailing-comma branch.
     """
-    out = []
-    i, n = 0, len(text)
-    in_string = False
-    pending_comma = False
+    had_comment = False
 
-    while i < n:
-        c = text[i]
+    def _drop_comment(m):
+        nonlocal had_comment
+        text = m.group()
+        if text[0] == "/":
+            had_comment = True
+            return ""
+        return text
 
-        if in_string:
-            out.append(c)
-            if c == "\\" and i + 1 < n:
-                out.append(text[i + 1])
-                i += 2
-                continue
-            if c == '"':
-                in_string = False
-            i += 1
-            continue
-
-        if c == '"':
-            if pending_comma:
-                out.append(",")
-                pending_comma = False
-            in_string = True
-            out.append(c)
-            i += 1
-            continue
-
-        if c == "/" and i + 1 < n and text[i + 1] == "/":
-            end = text.find("\n", i)
-            i = end if end != -1 else n
-            continue
-
-        if c == "/" and i + 1 < n and text[i + 1] == "*":
-            end = text.find("*/", i + 2)
-            i = end + 2 if end != -1 else n
-            continue
-
-        if c == ",":
-            pending_comma = True
-            i += 1
-            continue
-
-        if c in "}]":
-            pending_comma = False
-            out.append(c)
-            i += 1
-            continue
-
-        if not c.isspace() and pending_comma:
-            out.append(",")
-            pending_comma = False
-        out.append(c)
-        i += 1
-
-    if pending_comma:
-        out.append(",")
-
-    return "".join(out)
+    text = _STRING_OR_COMMENT.sub(_drop_comment, text)
+    text = _STRING_OR_TRAILING_COMMA.sub(lambda m: m.group(1) or m.group(), text)
+    return text, had_comment
 
 
 def _load_jsonc(path):
     with open(path, "r") as f:
         raw = f.read()
-    return json.loads(_strip_jsonc(raw))
+    stripped, had_comment = _strip_jsonc(raw)
+    return json.loads(stripped), had_comment
 
 
 # merges json files file1 and file2, keys in file2 overwriting any keys that already exist in file1
@@ -82,8 +45,8 @@ def main():
     file1, file2 = sys.argv[1], sys.argv[2]
 
     try:
-        data1 = _load_jsonc(file1)
-        data2 = _load_jsonc(file2)
+        data1, had_comments = _load_jsonc(file1)
+        data2, _ = _load_jsonc(file2)
     except (json.JSONDecodeError, OSError) as e:
         print(
             f"merge-settings-util: failed to merge settings ({e}); leaving {file1} unchanged",
@@ -97,6 +60,12 @@ def main():
     # Write the merged data to a new file
     with open(file1, "w") as f:
         json.dump(merged_data, f)
+
+    if had_comments:
+        print(
+            f"merge-settings-util: note: comments in {file1} were not preserved after merging",
+            file=sys.stderr,
+        )
 
 
 if __name__ == "__main__":

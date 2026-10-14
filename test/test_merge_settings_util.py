@@ -31,25 +31,35 @@ def _write(content):
 
 
 class TestStripJsonc:
-    """Tests for _strip_jsonc, the comment/trailing-comma stripper."""
+    """Tests for _strip_jsonc, the comment/trailing-comma stripper.
+
+    _strip_jsonc returns (stripped_text, had_comment); had_comment powers
+    the "comments were not preserved" warning in main().
+    """
 
     def test_line_comment_removed(self):
-        assert merge_settings_util._strip_jsonc('{\n  // comment\n  "a": 1\n}') == '{\n  \n  "a": 1\n}'
+        stripped, had_comment = merge_settings_util._strip_jsonc('{\n  // comment\n  "a": 1\n}')
+        assert json.loads(stripped) == {"a": 1}
+        assert had_comment is True
 
     def test_block_comment_removed(self):
-        assert merge_settings_util._strip_jsonc('{ /* comment */ "a": 1 }') == '{  "a": 1 }'
+        stripped, had_comment = merge_settings_util._strip_jsonc('{ /* comment */ "a": 1 }')
+        assert json.loads(stripped) == {"a": 1}
+        assert had_comment is True
 
     def test_trailing_comma_in_object_removed(self):
         # Asserts on the parsed value, not the exact stripped text: the
         # stripper may reposition whitespace around a dropped comma, which
         # is immaterial since json.loads doesn't care and the caller
         # re-serializes the result with json.dump anyway.
-        stripped = merge_settings_util._strip_jsonc('{"a": 1, "b": 2,}')
+        stripped, had_comment = merge_settings_util._strip_jsonc('{"a": 1, "b": 2,}')
         assert json.loads(stripped) == {"a": 1, "b": 2}
+        assert had_comment is False
 
     def test_trailing_comma_in_array_removed(self):
-        stripped = merge_settings_util._strip_jsonc("[1, 2, 3,]")
+        stripped, had_comment = merge_settings_util._strip_jsonc("[1, 2, 3,]")
         assert json.loads(stripped) == [1, 2, 3]
+        assert had_comment is False
 
     def test_url_value_with_double_slash_is_not_treated_as_comment(self):
         # Regression test: a naive "strip everything after //" approach
@@ -57,18 +67,21 @@ class TestStripJsonc:
         # e.g. "http.proxy": "http://proxy:8080" (very common in real
         # settings.json files: proxies, git remotes, extension URLs).
         text = '{"http.proxy": "http://proxy:8080"}'
-        stripped = merge_settings_util._strip_jsonc(text)
+        stripped, had_comment = merge_settings_util._strip_jsonc(text)
         assert json.loads(stripped) == {"http.proxy": "http://proxy:8080"}
+        assert had_comment is False
 
     def test_comma_inside_string_value_is_not_removed(self):
         text = '{"note": "a, b, c,"}'
-        stripped = merge_settings_util._strip_jsonc(text)
+        stripped, had_comment = merge_settings_util._strip_jsonc(text)
         assert json.loads(stripped) == {"note": "a, b, c,"}
+        assert had_comment is False
 
     def test_escaped_quote_does_not_confuse_string_tracking(self):
         text = '{"msg": "she said \\"hi // there\\", ok"}'
-        stripped = merge_settings_util._strip_jsonc(text)
+        stripped, had_comment = merge_settings_util._strip_jsonc(text)
         assert json.loads(stripped) == {"msg": 'she said "hi // there", ok'}
+        assert had_comment is False
 
 
 class TestMain:
@@ -112,6 +125,38 @@ class TestMain:
                 "python.defaultInterpreterPath": "/opt/conda/bin/python",
                 "editor.fontSize": 14,
             }
+        finally:
+            os.unlink(file1)
+            os.unlink(file2)
+
+    def test_comments_in_file1_trigger_not_preserved_warning(self, capsys):
+        # Comments are necessary to make the file parseable at all, but
+        # json.dump() has no way to write them back out. Merging succeeds
+        # (no crash), but the user should be told their comments are gone
+        # rather than silently losing them.
+        file1 = _write('{\n  // keep this setting commented for now\n  "a": 1\n}')
+        file2 = _write('{"b": 2}')
+        try:
+            import sys
+
+            sys.argv = ["merge-settings-util.py", file1, file2]
+            merge_settings_util.main()
+            with open(file1) as f:
+                assert json.load(f) == {"a": 1, "b": 2}
+            assert "were not preserved" in capsys.readouterr().err
+        finally:
+            os.unlink(file1)
+            os.unlink(file2)
+
+    def test_no_comments_in_file1_means_no_warning(self, capsys):
+        file1 = _write('{"a": 1}')
+        file2 = _write('{"b": 2}')
+        try:
+            import sys
+
+            sys.argv = ["merge-settings-util.py", file1, file2]
+            merge_settings_util.main()
+            assert capsys.readouterr().err == ""
         finally:
             os.unlink(file1)
             os.unlink(file2)
