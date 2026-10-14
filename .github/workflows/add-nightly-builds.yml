@@ -30,13 +30,24 @@ jobs:
         steps:
             - name: Set version
               id: version
+              # Pass event data via env vars rather than ${{ }} interpolation
+              # https://docs.github.com/en/actions/reference/security/secure-use#good-practices-for-mitigating-script-injection-attacks
+              env:
+                EVENT_NAME: ${{ github.event_name }}
+                TAG_NAME: ${{ github.event.release.tag_name }}
+                INPUT_VERSION: ${{ inputs.version }}
               run: |
-                if [ "${{ github.event_name }}" == "release" ]; then
-                    VERSION=$(echo "${{ github.event.release.tag_name }}" | sed 's/-cpu$//')
-                    echo "version=$VERSION" >> $GITHUB_OUTPUT
+                if [ "$EVENT_NAME" == "release" ]; then
+                    VERSION="${TAG_NAME%-cpu}"
                 else
-                    echo "version=${{ inputs.version }}" >> $GITHUB_OUTPUT
+                    VERSION="$INPUT_VERSION"
                 fi
+                # Fail fast on anything other than x.y.z so the output is safe to use downstream.
+                if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+                    echo "❌ Invalid version: '$VERSION' (expected x.y.z)"
+                    exit 1
+                fi
+                echo "version=$VERSION" >> "$GITHUB_OUTPUT"
             - name: Configure AWS Credentials
               uses: aws-actions/configure-aws-credentials@v6
               with:
@@ -45,14 +56,16 @@ jobs:
                 role-duration-seconds: 900
                 audience: https://sts.us-east-1.amazonaws.com
             - name: Start CodeBuild (with retry)
+              env:
+                VERSION: ${{ steps.version.outputs.version }}
               run: |
                 for i in $(seq 1 10); do
                   if aws codebuild start-build \
                     --project-name NightlyScheduleUpdater \
-                    --environment-variables-override "name=VERSION,value=${{ steps.version.outputs.version }},type=PLAINTEXT" \
+                    --environment-variables-override "name=VERSION,value=${VERSION},type=PLAINTEXT" \
                     --source-version main \
                     --query 'build.id' --output text; then
-                    echo "✅ Queued NightlyScheduleUpdater for version ${{ steps.version.outputs.version }}"
+                    echo "✅ Queued NightlyScheduleUpdater for version ${VERSION}"
                     exit 0
                   fi
                   echo "⏳ Attempt $i/10 failed, retrying in 60s..."
