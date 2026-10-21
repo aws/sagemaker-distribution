@@ -9,7 +9,7 @@ pytorch|2.12.0|2.12.0
 pandas|2.3.3|2.3.3
 altair|6.3.0|6.3.0
 jupyter-scheduler|2.12.1|2.12.1
-ipython|9.17.1|9.17.1
+ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.1|2.3.1
 jupyterlab|4.5.11|4.5.11
 boto3|1.43.106|1.43.106

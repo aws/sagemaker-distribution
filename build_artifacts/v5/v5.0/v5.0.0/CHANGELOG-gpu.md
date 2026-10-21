@@ -12,7 +12,6 @@ This page lists all package changes since the previous release (4.6.0).
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 numpy|1.26.4|2.2.6|major
-ipython|8.37.0|9.17.1|major
 xgboost|2.1.4|3.3.1|major
 langchain|0.3.27|1.4.6|major
 langchain-aws|0.2.35|1.9.0|major
@@ -229,7 +228,7 @@ onnxruntime|1.30.0|1.31.0|minor
 sagemaker-core|2.23.0|2.26.0|minor
 sagemaker-train|1.14.0|1.26.0|minor
 sagemaker-serve|1.12.0|1.26.0|minor
-sagemaker-mlops|1.12.0|1.25.0|minor
+sagemaker-mlops|1.12.0|1.26.0|minor
 sqlglot|30.21.0|30.23.0|minor
 llvm-openmp|23.1.2|23.1.4|patch
 absl-py|2.5.0|2.5.1|patch
@@ -318,7 +317,6 @@ libharfbuzz|14.6.0
 libharfbuzz-devel|14.6.0
 libpango|1.58.2
 libpango-devel|1.58.2
-ipython_pygments_lexers|1.1.1
 libraqm|0.11.0
 libllvm23|23.1.4
 libclang-cpp23.1|23.1.3
@@ -345,7 +343,6 @@ _py-xgboost-mutex|2.0
 libnsl|2.0.1
 _x86_64-microarch-level|4
 onemkl-license|2025.3.1
-pickleshare|0.7.5
 aom|3.9.1
 astunparse|1.6.3
 expat|2.8.5
