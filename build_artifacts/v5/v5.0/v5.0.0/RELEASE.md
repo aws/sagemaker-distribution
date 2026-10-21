@@ -33,7 +33,7 @@ notebook|7.5.8|7.5.8
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 aws-smus-cicd-cli|1.0.9|1.0.9
-conda|26.9.3|26.9.3
+conda|26.9.4|26.9.4
 docker-cli|29.9.0|29.9.0
 extension-ray-jupyterlab-sagemaker-ai|0.1.1|0.1.1
 fastapi|0.156.4|0.156.4

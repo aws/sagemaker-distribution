@@ -25,7 +25,7 @@ scikit-learn|1.7.2|1.9.1|minor
 matplotlib-base|3.10.9|3.11.2|minor
 torchvision|0.24.0|0.27.1|minor
 autogluon|1.5.0|1.6.2|minor
-conda|26.7.3|26.9.3|minor
+conda|26.7.3|26.9.4|minor
 docker-cli|29.8.2|29.9.0|minor
 fastapi|0.142.2|0.156.4|minor
 jupyterlab-git|0.54.1|0.55.0|minor
@@ -184,7 +184,7 @@ google-api-core|2.29.0|2.42.0|minor
 autogluon.core|1.5.0|1.6.2|minor
 python-slugify|9.0.0|9.1.3|minor
 lightning|2.5.6|2.6.6|minor
-nltk|3.9.4|3.10.3|minor
+nltk|3.9.4|3.10.4|minor
 tensorboard|2.19.0|2.21.0|minor
 autogluon.multimodal|1.5.0|1.6.2|minor
 glib-tools|2.84.0|2.90.0|minor
@@ -228,7 +228,7 @@ onnx|1.20.0|1.22.0|minor
 onnxruntime|1.30.0|1.31.0|minor
 sagemaker-core|2.23.0|2.26.0|minor
 sagemaker-train|1.14.0|1.26.0|minor
-sagemaker-serve|1.12.0|1.25.0|minor
+sagemaker-serve|1.12.0|1.26.0|minor
 sagemaker-mlops|1.12.0|1.25.0|minor
 sqlglot|30.21.0|30.23.0|minor
 llvm-openmp|23.1.2|23.1.4|patch
@@ -289,7 +289,7 @@ opentelemetry-exporter-otlp-proto-common|1.45.0|1.45.1|patch
 opentelemetry-exporter-otlp-proto-http|1.45.0|1.45.1|patch
 gitpython|3.2.0|3.2.1|patch
 iniconfig|2.3.0|2.3.1|patch
-jupyterlab-chat|0.25.1|0.25.2|patch
+jupyterlab-chat|0.25.1|0.25.3|patch
 jupyter-ai-acp-client|0.3.2|0.3.3|patch
 jupyter-live-content|0.1.1|0.1.2|patch
 langsmith|0.14.4|0.14.11|patch
