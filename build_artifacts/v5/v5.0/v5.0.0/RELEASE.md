@@ -2,10 +2,10 @@
 
 Package | gpu| cpu
 ---|---|---
-python|3.12.15|3.12.15
-numpy|2.1.3|1.26.4
+python|3.13.16|3.13.16
+numpy|2.2.6|2.2.6
 jinja2|3.1.6|3.1.6
-pytorch|2.9.1|2.9.1
+pytorch|2.12.0|2.12.0
 pandas|2.3.3|2.3.3
 altair|6.3.0|6.3.0
 jupyter-scheduler|2.12.1|2.12.1
@@ -19,14 +19,15 @@ amazon-sagemaker-sql-magic|0.2.0|0.2.0
 jupyterlab-lsp|5.0.3|5.0.3
 amazon_sagemaker_sql_editor|0.2.8|0.2.8
 amzn-sagemaker-aiops-jupyterlab-extension|1.0.6|1.0.6
-scipy|1.16.3|1.16.3
-matplotlib-base|3.10.9|3.10.9
+scipy|1.18.1|1.18.1
+scikit-learn|1.9.1|1.9.1
+matplotlib-base|3.11.2|3.11.2
 ray-default|2.55.1|2.55.1
-scikit-learn|1.7.2|1.7.2
 pip|26.2.2|26.2.2
-torchvision|0.24.1|0.24.1
+torchvision|0.27.1|0.27.1
 uvicorn|0.54.0|0.54.0
-autogluon|1.5.0|1.5.0
+xgboost|3.3.1|3.3.1
+autogluon|1.6.2|1.6.2
 ipywidgets|8.1.9|8.1.9
 notebook|7.5.8|7.5.8
 aws-glue-sessions|1.0.9|1.0.9
@@ -35,7 +36,7 @@ aws-smus-cicd-cli|1.0.9|1.0.9
 conda|26.9.3|26.9.3
 docker-cli|29.9.0|29.9.0
 extension-ray-jupyterlab-sagemaker-ai|0.1.1|0.1.1
-fastapi|0.154.0|0.154.0
+fastapi|0.156.4|0.156.4
 mcp|1.28.1|1.28.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
@@ -48,12 +49,10 @@ keras|3.15.1|3.15.1
 langchain|1.4.6|1.4.6
 langchain-aws|1.9.0|1.9.0
 langchain-openai|1.7.2|1.7.2
-mlflow|3.17.1|3.17.1
-py-xgboost-gpu|2.1.4| 
 pyhive|0.7.0|0.7.0
-python-gssapi|1.12.0|1.12.0
+python-gssapi|1.11.1|1.11.1
 python-lsp-server|1.15.0|1.15.0
-s3fs|2026.9.0|2026.9.0
+s3fs|2026.6.0|2026.6.0
 sagemaker-code-editor|1.10.3|1.10.3
 sagemaker-gen-ai-jupyterlab-extension|1.0.19|1.0.19
 sagemaker-headless-execution-driver|0.0.13|0.0.13
@@ -72,7 +71,5 @@ strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
-tensorflow|2.21.0|2.21.0
 toolkit-for-ray-on-sagemaker-ai|1.0.3|1.0.3
 uv|0.13.4|0.13.4
-py-xgboost-cpu| |2.1.4
