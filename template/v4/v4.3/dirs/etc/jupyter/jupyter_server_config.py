@@ -3,6 +3,7 @@
 
 c.ServerApp.terminado_settings = {"shell_command": ["/bin/bash"]}
 c.ServerApp.tornado_settings = {"compress_response": True}
+c.ContentsManager.files_handler_params = {"path": "/home/sagemaker-user", "allowed_symlink_directory": "/"}
 
 # Do not delete files to trash. Instead, permanently delete files.
 c.FileContentsManager.delete_to_trash = False
