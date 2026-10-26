@@ -2,7 +2,7 @@
 
 Package | gpu| cpu
 ---|---|---
-python|3.13.16|3.13.16
+python|3.13.18|3.13.18
 numpy|2.2.6|2.2.6
 jinja2|3.1.6|3.1.6
 pytorch|2.12.0|2.12.0
@@ -36,7 +36,7 @@ aws-smus-cicd-cli|1.0.9|1.0.9
 conda|26.9.4|26.9.4
 docker-cli|29.9.0|29.9.0
 extension-ray-jupyterlab-sagemaker-ai|0.1.1|0.1.1
-fastapi|0.156.4|0.156.4
+fastapi|0.162.0|0.162.0
 mcp|1.28.1|1.28.1
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
@@ -46,7 +46,7 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.6.0|4.6.0
 jupyterlab-git|0.55.0|0.55.0
 keras|3.15.1|3.15.1
-langchain|1.4.6|1.4.6
+langchain|1.4.7|1.4.7
 langchain-aws|1.9.0|1.9.0
 langchain-openai|1.7.2|1.7.2
 pyhive|0.7.0|0.7.0
@@ -60,7 +60,7 @@ sagemaker-jupyterlab-emr-extension|0.5.0|0.5.0
 sagemaker-jupyterlab-extension|0.6.1|0.6.1
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.5.0|0.5.0
-sagemaker-python-sdk|3.25.0|3.25.0
+sagemaker-python-sdk|3.26.0|3.26.0
 sagemaker-studio|1.1.35|1.1.35
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
@@ -72,4 +72,4 @@ strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 toolkit-for-ray-on-sagemaker-ai|1.0.3|1.0.3
-uv|0.13.4|0.13.4
+uv|0.13.5|0.13.5
