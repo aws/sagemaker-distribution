@@ -23,6 +23,12 @@ boto3|1.43.106|1.43.117|patch
 amazon_sagemaker_sql_editor|0.2.7|0.2.8|patch
 pip|26.2.1|26.2.2|patch
 
+### Removed
+
+Package | Last Version
+---|---
+sagemaker-gen-ai-jupyterlab-extension|1.0.19
+
 ## Indirect dependencies
 
 > [!NOTE]
@@ -33,10 +39,14 @@ pip|26.2.1|26.2.2|patch
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 multidict|6.7.1|7.2.1|major
+smart_open|8.0.3|9.0.0|major
+smart-open|8.0.3|9.0.0|major
 libexpat|2.8.5|2.9.0|minor
 ca-certificates|2026.7.22|2026.10.23|minor
 certifi|2026.7.22|2026.10.23|minor
 setuptools|84.0.0|84.2.1|minor
+python-tzdata|2026.5|2026.6|minor
+libnghttp2|1.68.1|1.70.0|minor
 aiobotocore|3.9.2|3.10.0|minor
 narwhals|2.27.1|2.28.0|minor
 pycparser|3.11|3.12|minor
@@ -45,8 +55,10 @@ webencodings|0.5.1|0.6.1|minor
 mistune|3.3.4|3.4.0|minor
 pandoc|3.12.1|3.13|minor
 expat|2.8.5|2.9.0|minor
+fonttools|4.67.0|4.68.0|minor
 qt6-main|6.8.3|6.9.0|minor
 pyside6|6.8.3|6.9.0|minor
+google-api-core|2.29.0|2.33.0|minor
 python-slugify|9.0.0|9.1.3|minor
 starlette|1.8.0|1.10.0|minor
 beartype|0.22.9|0.23.1|minor
@@ -63,6 +75,7 @@ websockets|17.2|17.3|minor
 fastapi-core|0.142.4|0.162.0|minor
 griffelib|2.3.2|2.4.1|minor
 sse-starlette|3.5.0|3.6.0|minor
+google-cloud-bigquery-core|3.46.1|3.18.0|minor
 huey|3.4.0|3.5.3|minor
 jiter|0.17.0|0.18.0|minor
 jupyterlab-git-core|0.54.1|0.55.0|minor
@@ -71,10 +84,12 @@ mlflow-skinny|3.16.1|3.17.2|minor
 mlflow-ui|3.16.1|3.17.2|minor
 panel-core|1.9.4|1.10.0|minor
 panel|1.9.4|1.10.0|minor
+pytest|9.1.1|9.2.0|minor
 sagemaker-core|2.25.0|2.27.0|minor
 sagemaker-train|1.25.0|1.26.0|minor
 sagemaker-serve|1.25.0|1.26.0|minor
 sagemaker-mlops|1.25.0|1.26.0|minor
+sqlalchemy-bigquery|1.17.3|1.16.0|minor
 sqlglot|30.23.0|30.25.0|minor
 llvm-openmp|23.1.3|23.1.4|patch
 cpython|3.12.15|3.12.16|patch
@@ -86,11 +101,12 @@ libbrotlidec|1.1.0|1.1.1|patch
 libbrotlienc|1.1.0|1.1.1|patch
 xorg-libx11|1.8.13|1.8.14|patch
 xorg-libxrender|0.9.12|0.9.13|patch
+libjpeg-turbo|3.2.0|3.2.1|patch
 botocore|1.43.106|1.43.117|patch
 caio|0.12.9|0.12.10|patch
 zipp|4.1.1|4.1.2|patch
 alembic|1.20.0|1.20.1|patch
-platformdirs|4.13.0|4.13.6|patch
+platformdirs|4.13.0|4.13.7|patch
 soupsieve|3.0.3|3.0.4|patch
 wcwidth|0.9.2|0.9.4|patch
 nest-asyncio2|1.7.3|1.7.4|patch
@@ -104,20 +120,18 @@ brotli-bin|1.1.0|1.1.1|patch
 brotli|1.1.0|1.1.1|patch
 pyasn1|0.6.4|0.6.5|patch
 msgpack-python|1.2.3|1.2.4|patch
-smart_open|8.0.3|8.0.4|patch
 distlib|0.4.3|0.4.4|patch
-python-discovery|1.6.2|1.6.5|patch
+python-discovery|1.6.2|1.6.7|patch
 markdown|3.11.1|3.11.2|patch
 fastcore|2.2.33|2.2.35|patch
 python-fasthtml|0.14.13|0.14.14|patch
 confection|1.3.3|1.3.4|patch
 murmurhash|1.0.15|1.0.16|patch
 srsly|2.5.3|2.5.5|patch
-smart-open|8.0.3|8.0.4|patch
 weasel|1.0.0|1.0.1|patch
 cachetools|7.2.2|7.2.6|patch
 libsolv|0.7.40|0.7.41|patch
-pydantic-settings|2.16.0|2.16.1|patch
+pydantic-settings|2.16.0|2.16.2|patch
 jupyterlab-chat|0.25.2|0.25.3|patch
 jupyter-ai-acp-client|0.3.3|0.3.4|patch
 langsmith|0.14.9|0.14.14|patch
@@ -125,3 +139,9 @@ panel-material-ui|0.16.3|0.16.6|patch
 pyspnego|0.12.2|0.12.4|patch
 tzlocal|5.4.4|5.4.5|patch
 tzdata|2026c|2026e|
+
+### Removed
+
+Package | Last Version
+---|---
+google-api-core-grpc|2.29.0
