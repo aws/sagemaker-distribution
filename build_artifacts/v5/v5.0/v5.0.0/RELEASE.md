@@ -12,7 +12,7 @@ jupyter-scheduler|2.12.1|2.12.1
 ipython|8.37.0|8.37.0
 jupyter-lsp|2.3.1|2.3.1
 jupyterlab|4.5.11|4.5.11
-boto3|1.43.106|1.43.106
+boto3|1.43.117|1.43.117
 sagemaker-jupyterlab-extension-common|0.5.3|0.5.3
 amazon-sagemaker-jupyter-scheduler|3.2.2|3.2.2
 amazon-sagemaker-sql-magic|0.2.0|0.2.0
@@ -37,7 +37,7 @@ conda|26.9.4|26.9.4
 docker-cli|29.9.0|29.9.0
 extension-ray-jupyterlab-sagemaker-ai|0.1.1|0.1.1
 fastapi|0.162.0|0.162.0
-mcp|1.28.1|1.28.1
+mcp|1.30.0|1.30.0
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.2|0.3.2
 jupyter-ai|3.2.0|3.2.0
@@ -47,14 +47,13 @@ jupyter-server-proxy|4.6.0|4.6.0
 jupyterlab-git|0.55.0|0.55.0
 keras|3.15.1|3.15.1
 langchain|1.4.7|1.4.7
-langchain-aws|1.9.0|1.9.0
-langchain-openai|1.7.2|1.7.2
+langchain-aws|1.9.1|1.9.1
+langchain-openai|1.7.3|1.7.3
 pyhive|0.7.0|0.7.0
 python-gssapi|1.11.1|1.11.1
 python-lsp-server|1.15.0|1.15.0
 s3fs|2026.6.0|2026.6.0
 sagemaker-code-editor|1.10.3|1.10.3
-sagemaker-gen-ai-jupyterlab-extension|1.0.19|1.0.19
 sagemaker-headless-execution-driver|0.0.13|0.0.13
 sagemaker-jupyterlab-emr-extension|0.5.0|0.5.0
 sagemaker-jupyterlab-extension|0.6.1|0.6.1
@@ -72,4 +71,4 @@ strands-agents-mcp-server|0.1.2|0.1.2
 strands-agents-tools|0.1.9|0.1.9
 supervisor|4.3.0|4.3.0
 toolkit-for-ray-on-sagemaker-ai|1.0.3|1.0.3
-uv|0.13.5|0.13.5
+uv|0.13.6|0.13.6
