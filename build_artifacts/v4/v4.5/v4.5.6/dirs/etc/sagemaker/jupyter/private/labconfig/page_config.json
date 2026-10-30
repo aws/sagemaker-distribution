@@ -1,0 +1,6 @@
+{
+    "disabledExtensions": {
+        "@jupyter/collaboration-extension": true,
+        "@jupyter/docprovider-extension": true
+    }
+}
