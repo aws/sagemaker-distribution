@@ -268,6 +268,23 @@ else
   echo readonly LOGNAME >> ~/.bashrc
 fi
 
+# Setup Q CLI telemetry
+if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ]; then
+    q_cli_client_application="SMUS_JUPYTER_LAB"
+else
+    q_cli_client_application="SMUS_CODE_EDITOR"
+fi
+if [ "$is_express_mode" = "true" ]; then
+    q_cli_client_application="${q_cli_client_application}_EXPRESS"
+fi
+
+if grep -q "^export Q_CLI_CLIENT_APPLICATION=" ~/.bashrc; then
+    echo Q_CLI_CLIENT_APPLICATION is defined in the env
+else
+    echo export Q_CLI_CLIENT_APPLICATION=$q_cli_client_application >> ~/.bashrc
+    echo readonly Q_CLI_CLIENT_APPLICATION >> ~/.bashrc
+fi
+
 # Setup SageMaker MCP configuration
 echo "Setting up SageMaker MCP configuration..."
 source_file="/etc/sagemaker-ui/sagemaker-mcp/mcp.json"
