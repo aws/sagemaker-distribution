@@ -46,9 +46,9 @@ jupyter-dash|0.4.2|0.4.2
 jupyter-server-proxy|4.6.0|4.6.0
 jupyterlab-git|0.55.0|0.55.0
 keras|3.15.1|3.15.1
-langchain|1.4.8|1.4.8
+langchain|1.4.9|1.4.9
 langchain-aws|1.9.1|1.9.1
-langchain-openai|1.7.3|1.7.3
+langchain-openai|1.7.4|1.7.4
 pyhive|0.7.0|0.7.0
 python-gssapi|1.12.0|1.12.0
 python-lsp-server|1.15.0|1.15.0
@@ -59,12 +59,12 @@ sagemaker-jupyterlab-emr-extension|0.5.0|0.5.0
 sagemaker-jupyterlab-extension|0.6.1|0.6.1
 sagemaker-kernel-wrapper|0.0.6|0.0.6
 sagemaker-mlflow|0.5.0|0.5.0
-sagemaker-python-sdk|3.26.0|3.26.0
+sagemaker-python-sdk|3.29.0|3.29.0
 sagemaker-studio|1.1.35|1.1.35
 sagemaker-studio-analytics-extension|0.3.0|0.3.0
 sagemaker-studio-cli|1.0.7|1.0.7
 sagemaker-studio-dataengineering-extensions|1.3.15|1.3.15
-sagemaker-studio-dataengineering-sessions|1.3.27|1.3.27
+sagemaker-studio-dataengineering-sessions|1.3.28|1.3.28
 seaborn|0.13.2|0.13.2
 strands-agents|0.3.0|0.3.0
 strands-agents-mcp-server|0.1.2|0.1.2

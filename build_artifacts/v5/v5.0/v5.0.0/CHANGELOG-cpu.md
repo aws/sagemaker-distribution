@@ -13,9 +13,9 @@ Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 numpy|1.26.4|2.2.6|major
 xgboost|2.1.4|3.3.1|major
-langchain|0.3.27|1.4.8|major
+langchain|0.3.27|1.4.9|major
 langchain-aws|0.2.35|1.9.1|major
-langchain-openai|0.3.35|1.7.3|major
+langchain-openai|0.3.35|1.7.4|major
 python|3.12.15|3.13.18|minor
 pytorch|2.8.0|2.12.0|minor
 amazon-sagemaker-sql-magic|0.1.4|0.2.0|minor
@@ -31,7 +31,7 @@ mcp|1.28.1|1.30.0|minor
 jupyterlab-git|0.54.1|0.55.0|minor
 python-gssapi|1.11.1|1.12.0|minor
 s3fs|2026.9.0|2026.6.0|minor
-sagemaker-python-sdk|3.12.0|3.26.0|minor
+sagemaker-python-sdk|3.12.0|3.29.0|minor
 tensorflow|2.19.1|2.21.0|minor
 uv|0.12.21|0.13.7|minor
 boto3|1.43.106|1.43.117|patch
@@ -40,6 +40,7 @@ pip|26.2.1|26.2.2|patch
 jupyter-activity-monitor-extension|0.3.2|0.3.3|patch
 sagemaker-code-editor|1.10.2|1.10.3|patch
 sagemaker-studio|1.1.32|1.1.35|patch
+sagemaker-studio-dataengineering-sessions|1.3.27|1.3.28|patch
 
 ### Removed
 
@@ -81,7 +82,7 @@ multidict|6.7.1|7.2.1|major
 async-timeout|4.0.3|5.0.1|major
 cffi|1.17.1|2.1.1|major
 pyzmq|26.4.0|27.3.0|major
-soupsieve|2.10|4.0|major
+soupsieve|2.10|4.0.1|major
 cryptography|46.0.7|50.0.2|major
 lxml|5.4.0|6.1.3|major
 pyopenssl|25.3.0|26.4.0|major
@@ -99,7 +100,7 @@ libxgboost|2.1.4|3.3.1|major
 py-xgboost|2.1.4|3.3.1|major
 simdjson|4.0.7|5.1.1|major
 conda-rattler-solver|0.2.0|26.10.2|major
-langchain-core|0.3.81|1.7.5|major
+langchain-core|0.3.81|1.7.6|major
 openai|1.109.1|2.53.0|major
 libexpat|2.8.5|2.9.0|minor
 libpython|3.12.15|3.13.18|minor
@@ -138,7 +139,7 @@ azure-storage-files-datalake-cpp|12.12.0|12.16.0|minor
 libbrotlicommon|1.1.0|1.2.1|minor
 libbrotlidec|1.1.0|1.2.1|minor
 libbrotlienc|1.1.0|1.2.1|minor
-libgrpc|1.73.1|1.78.1|minor
+libgrpc|1.73.1|1.78.2|minor
 libopentelemetry-cpp-headers|1.21.0|1.27.0|minor
 libopentelemetry-cpp|1.21.0|1.27.0|minor
 orc|2.2.1|2.3.0|minor
@@ -148,14 +149,15 @@ lerc|4.2.0|4.3.0|minor
 gdk-pixbuf|2.42.12|2.44.8|minor
 pango|1.56.3|1.58.2|minor
 librsvg|2.58.4|2.62.4|minor
-pydantic-core|2.46.5|2.50.2|minor
-pydantic|2.13.5|2.14.2|minor
+pydantic-core|2.46.5|2.50.4|minor
+pydantic|2.13.5|2.14.3|minor
 aiobotocore|3.9.2|3.10.0|minor
 aiosqlite|0.19.0|0.22.1|minor
 narwhals|2.27.0|2.28.0|minor
 async-lru|2.3.0|2.4.0|minor
 pycparser|3.0|3.12|minor
-platformdirs|4.12.3|4.14.4|minor
+platformdirs|4.12.3|4.14.5|minor
+tornado|6.5.10|6.6|minor
 jsonpointer|3.1.1|3.8|minor
 webencodings|0.5.1|0.6.1|minor
 mistune|3.3.4|3.4.0|minor
@@ -168,7 +170,7 @@ pyathena|3.36.0|3.38.0|minor
 amazon-sagemaker-sql-execution|0.1.9|0.2.0|minor
 dbus|1.13.6|1.16.2|minor
 joserfc|1.7.5|1.8.0|minor
-authlib|1.8.0|1.9.3|minor
+authlib|1.8.0|1.9.5|minor
 autogluon.common|1.5.0|1.6.2|minor
 autogluon.features|1.5.0|1.6.2|minor
 contourpy|1.3.3|1.4.0|minor
@@ -181,12 +183,12 @@ libxkbcommon|1.11.0|1.13.2|minor
 qt6-main|6.9.0|6.11.3|minor
 pyside6|6.9.0|6.11.3|minor
 matplotlib|3.10.9|3.11.2|minor
-grpcio|1.73.1|1.78.1|minor
+grpcio|1.73.1|1.78.2|minor
 google-auth|2.60.0|2.62.1|minor
 protobuf|6.31.1|6.33.5|minor
 googleapis-common-protos|1.75.0|1.76.0|minor
 proto-plus|1.28.2|1.29.0|minor
-google-api-core|2.29.0|2.43.2|minor
+google-api-core|2.29.0|2.44.0|minor
 python-discovery|1.6.1|1.9.4|minor
 virtualenv|21.14.5|21.15.5|minor
 autogluon.core|1.5.0|1.6.2|minor
@@ -220,9 +222,9 @@ unearth|0.18.3|0.19.0|minor
 py-rattler|0.26.0|0.28.1|minor
 frozendict|2.4.7|2.5.0|minor
 pluggy|1.6.0|1.7.0|minor
-coverage|7.16.2|7.17.0|minor
+coverage|7.16.2|7.17.2|minor
 cyclopts|5.2.0|5.3.3|minor
-databricks-sdk|0.147.0|0.161.0|minor
+databricks-sdk|0.147.0|0.162.0|minor
 dnspython|2.8.0|2.9.1|minor
 pynacl|1.5.0|1.6.2|minor
 paramiko|5.0.0|5.1.0|minor
@@ -235,20 +237,21 @@ more-itertools|11.1.0|11.2.1|minor
 sse-starlette|3.5.0|3.6.0|minor
 flatbuffers|25.2.10|25.9.23|minor
 grpcio-status|1.73.1|1.78.1|minor
-google-api-core-grpc|2.29.0|2.43.2|minor
+google-api-core-grpc|2.29.0|2.44.0|minor
 google-cloud-core|2.5.0|2.8.0|minor
 google-crc32c|1.8.0|1.9.0|minor
 google-cloud-bigquery-core|3.46.1|3.47.0|minor
 huey|3.4.0|3.5.4|minor
 jiter|0.17.0|0.18.0|minor
+jsonpatch|1.33|1.41|minor
 jupyter_server_fileid|0.9.2|0.10.0|minor
 jupyterlab-git-core|0.54.1|0.55.0|minor
 ml_dtypes|0.5.4|0.6.0|minor
 libtensorflow_framework|2.19.1|2.21.0|minor
 libtensorflow_cc|2.19.1|2.21.0|minor
-mlflow-skinny|3.16.1|3.17.2|minor
-mlflow-ui|3.16.1|3.17.2|minor
-mlflow|3.16.1|3.17.2|minor
+mlflow-skinny|3.16.1|3.18.0|minor
+mlflow-ui|3.16.1|3.18.0|minor
+mlflow|3.16.1|3.18.0|minor
 onnx|1.20.0|1.22.0|minor
 onnxruntime|1.30.0|1.31.0|minor
 panel-core|1.9.4|1.10.0|minor
@@ -257,14 +260,14 @@ pykrb5|0.9.0|0.10.0|minor
 pymssql|2.3.13|2.4.6|minor
 pytest|9.1.1|9.2.0|minor
 python-rapidjson|1.25|1.26|minor
-sagemaker-core|2.23.0|2.28.0|minor
-sagemaker-train|1.14.0|1.26.0|minor
-sagemaker-serve|1.12.0|1.26.0|minor
-sagemaker-mlops|1.12.0|1.26.0|minor
-sqlglot|30.21.0|30.27.0|minor
+sagemaker-core|2.23.0|2.29.0|minor
+sagemaker-train|1.14.0|1.29.0|minor
+sagemaker-serve|1.12.0|1.29.0|minor
+sagemaker-mlops|1.12.0|1.29.0|minor
+sqlglot|30.21.0|30.29.0|minor
 slack-sdk|3.45.0|3.46.0|minor
 tensorflow-base|2.19.1|2.21.0|minor
-llvm-openmp|23.1.2|23.1.4|patch
+llvm-openmp|23.1.2|23.1.5|patch
 absl-py|2.5.0|2.5.1|patch
 aws-c-cal|0.9.2|0.9.14|patch
 aws-c-compression|0.3.1|0.3.2|patch
@@ -314,11 +317,11 @@ markdown|3.11|3.11.2|patch
 imageio|2.38.0|2.38.1|patch
 gtk3|3.24.43|3.24.52|patch
 catboost|1.2.7|1.2.10|patch
-fastcore|2.2.33|2.2.37|patch
+fastcore|2.2.33|2.2.39|patch
 truststore|0.10.4|0.10.5|patch
 oauthlib|4.0.0|4.0.1|patch
 python-multipart|0.0.32|0.0.33|patch
-python-fasthtml|0.14.13|0.14.18|patch
+python-fasthtml|0.14.13|0.14.19|patch
 confection|1.3.3|1.3.4|patch
 murmurhash|1.0.15|1.0.16|patch
 srsly|2.5.3|2.5.5|patch
@@ -385,7 +388,7 @@ ormsgpack|1.13.0
 langgraph-checkpoint|4.3.1
 langgraph-prebuilt|1.1.1
 langgraph-sdk|0.4.12
-langgraph|1.2.19
+langgraph|1.2.20
 
 ### Removed
 
