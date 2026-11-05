@@ -74,7 +74,8 @@ RUN apt-get update && apt-get upgrade -y && \
     echo "source /usr/local/bin/_activate_current_env.sh" | tee --append /etc/profile && \
     : && \
     # Install Kiro CLI
-    curl -o /tmp/kirocli.zip 'https://desktop-release.q.us-east-1.amazonaws.com/latest/kirocli-x86_64-linux.zip' && \
+    curl -o /tmp/kirocli.zip 'https://desktop-release.q.us-east-1.amazonaws.com/2.37.1/kirocli-x86_64-linux.zip' && \
+    echo 'b4049000d5a7b684947306eb9f9a480cab3a3ab2ff42584c293d05bde4d314a1  /tmp/kirocli.zip' | sha256sum -c - && \
     unzip /tmp/kirocli.zip -d /tmp && \
     Q_INSTALL_GLOBAL=1 KIRO_CLI_SKIP_SETUP=1 /tmp/kirocli/install.sh && \
     rm -rf /tmp/kirocli.zip /tmp/kirocli && \
