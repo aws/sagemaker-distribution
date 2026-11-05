@@ -1,4 +1,10 @@
-# v5 GPU images do not ship TensorFlow, so only PyTorch's CUDA build is verified.
+# Verify Tensorflow CUDA
+import tensorflow as tf
+
+cuda_available = tf.test.is_built_with_cuda()
+if not cuda_available:
+    raise Exception("TensorFlow is installed without CUDA support for GPU image build.")
+print("TensorFlow is built with CUDA support.")
 
 # Verify Pytorch is installed with CUDA version
 import subprocess
