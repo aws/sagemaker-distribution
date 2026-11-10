@@ -17,8 +17,8 @@ sagemaker-jupyterlab-extension-common|0.5.3|0.5.3
 amazon-sagemaker-jupyter-scheduler|3.2.2|3.2.2
 amazon-sagemaker-sql-magic|0.2.0|0.2.0
 jupyterlab-lsp|5.0.3|5.0.3
-amazon_sagemaker_sql_editor|0.2.8|0.2.8
-amzn-sagemaker-aiops-jupyterlab-extension|1.0.6|1.0.6
+amazon_sagemaker_sql_editor|1.0.0|1.0.0
+amzn-sagemaker-aiops-jupyterlab-extension|2.0.0|2.0.0
 scipy|1.18.1|1.18.1
 scikit-learn|1.9.1|1.9.1
 matplotlib-base|3.11.2|3.11.2
@@ -33,10 +33,10 @@ notebook|7.5.8|7.5.8
 aws-glue-sessions|1.0.9|1.0.9
 aws-s3-access-grants-boto3-plugin|1.3.0|1.3.0
 aws-smus-cicd-cli|1.0.9|1.0.9
-conda|26.9.4|26.9.4
+conda|26.10.0|26.10.0
 docker-cli|29.9.0|29.9.0
 extension-ray-jupyterlab-sagemaker-ai|0.1.1|0.1.1
-fastapi|0.162.0|0.162.0
+fastapi|0.162.2|0.162.2
 mcp|1.30.0|1.30.0
 git-remote-codecommit|1.16|1.16
 jupyter-activity-monitor-extension|0.3.3|0.3.3
@@ -47,7 +47,7 @@ jupyter-server-proxy|4.6.0|4.6.0
 jupyterlab-git|0.55.0|0.55.0
 keras|3.15.1|3.15.1
 langchain|1.4.9|1.4.9
-langchain-aws|1.9.1|1.9.1
+langchain-aws|1.9.2|1.9.2
 langchain-openai|1.7.4|1.7.4
 pyhive|0.7.0|0.7.0
 python-gssapi|1.12.0|1.12.0
