@@ -91,39 +91,7 @@ c.Application.logging_config = {
 EOT
 fi
 
-# Check if domain is in express mode by looking for a default IAM connection
-if [ ! -z "$dataZoneEndPoint" ]; then
-    iam_connections=$(aws datazone list-connections --endpoint-url "$dataZoneEndPoint" --domain-identifier "$dataZoneDomainId" --project-identifier "$dataZoneProjectId" --type IAM --name "default.iam" --region "$dataZoneDomainRegion" --query "items" --output json 2>&1)
-else
-    iam_connections=$(aws datazone list-connections --domain-identifier "$dataZoneDomainId" --project-identifier "$dataZoneProjectId" --type IAM --name "default.iam" --region "$dataZoneDomainRegion" --query "items" --output json 2>&1)
-fi
-
-iam_connection_count=$(echo "$iam_connections" | jq -r 'if type == "array" then length else 0 end' 2>/dev/null || echo "0")
-if [ "$iam_connection_count" -gt 0 ]; then
-    is_express_mode="true"
-else
-    is_express_mode="false"
-fi
-
-if [ "$is_express_mode" = "true" ]; then
-    echo "Domain is in express mode"
-    if grep -q "^DOMAIN_MODE=" ~/.bashrc; then
-        echo "DOMAIN_MODE is defined in the env"
-    else
-        echo DOMAIN_MODE="EXPRESS" >> ~/.bashrc
-        echo readonly DOMAIN_MODE >> ~/.bashrc
-    fi
-else
-    echo "Domain is not in express mode"
-    if grep -q "^DOMAIN_MODE=" ~/.bashrc; then
-        echo "DOMAIN_MODE is defined in the env"
-    else
-        echo DOMAIN_MODE="NON_EXPRESS" >> ~/.bashrc
-        echo readonly DOMAIN_MODE >> ~/.bashrc
-    fi
-fi
-
-# DER is optional for newer domains: use DER creds when the domain has one, otherwise the project role.
+# Domains with a domain execution role (DER) use DER credentials; domains without one use the project role.
 if [ ! -z "$dataZoneEndPoint" ]; then
     domainExecutionRole=$(aws datazone get-domain --endpoint-url "$dataZoneEndPoint" --identifier "$dataZoneDomainId" --region "$dataZoneDomainRegion" --query "domainExecutionRole" --output text)
 else
@@ -131,29 +99,32 @@ else
 fi
 getDomainStatus=$?
 
-if [ $getDomainStatus -eq 0 ]; then
-    if [ -n "$domainExecutionRole" ] && [ "$domainExecutionRole" != "None" ]; then
-        has_domain_execution_role="true"
-    else
-        has_domain_execution_role="false"
-    fi
+# If GetDomain fails, take the DER path so the DER credential fetch below reports the error.
+if [ $getDomainStatus -ne 0 ] || { [ -n "$domainExecutionRole" ] && [ "$domainExecutionRole" != "None" ]; }; then
+    has_domain_execution_role="true"
 else
-    # Fall back to express mode when GetDomain fails.
-    echo "Failed to get domain. Falling back to express mode to determine domain execution role presence"
-    if [ "$is_express_mode" = "true" ]; then
-        has_domain_execution_role="false"
-    else
-        has_domain_execution_role="true"
-    fi
+    has_domain_execution_role="false"
 fi
 
 if [ "$has_domain_execution_role" = "false" ]; then
     echo "Domain has no domain execution role. Using default credentials"
+    if grep -q "^DOMAIN_MODE=" ~/.bashrc; then
+        echo "DOMAIN_MODE is defined in the env"
+    else
+        echo DOMAIN_MODE="EXPRESS" >> ~/.bashrc
+        echo readonly DOMAIN_MODE >> ~/.bashrc
+    fi
     # Use default credentials - no additional configuration needed
     aws configure set credential_source EcsContainer --profile DomainExecutionRoleCreds
     echo "Successfully configured DomainExecutionRoleCreds profile with default credentials"
 else
     echo "Domain has a domain execution role"
+    if grep -q "^DOMAIN_MODE=" ~/.bashrc; then
+        echo "DOMAIN_MODE is defined in the env"
+    else
+        echo DOMAIN_MODE="NON_EXPRESS" >> ~/.bashrc
+        echo readonly DOMAIN_MODE >> ~/.bashrc
+    fi
     # Setting this to +x to not log credentials from the response of fetching credentials.
     set +x
     # Note: The $? check immediately follows the sagemaker-studio command to ensure we're checking its exit status.
@@ -361,8 +332,8 @@ fi
 
 # Generate sagemaker pysdk intelligent default config
 nohup python /etc/sagemaker/sm_pysdk_default_config.py &
-# Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab and domain is not in express mode
-if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$is_express_mode" != "true" ]; then
+# Only run the following commands if SAGEMAKER_APP_TYPE_LOWERCASE is jupyterlab and domain has a domain execution role
+if [ "${SAGEMAKER_APP_TYPE_LOWERCASE}" = "jupyterlab" ] && [ "$has_domain_execution_role" = "true" ]; then
     # clean up gen ai debugging file
     rm -rf /home/sagemaker-user/src/.temp_sagemaker_unified_studio_debugging_info
 
