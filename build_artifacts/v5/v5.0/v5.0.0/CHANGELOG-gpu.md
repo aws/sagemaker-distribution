@@ -46,18 +46,18 @@ aws-smus-cicd-cli|1.0.9
 conda|26.10.0
 docker-cli|29.9.0
 extension-ray-jupyterlab-sagemaker-ai|0.1.1
-fastapi|0.162.2
+fastapi|0.162.4
 mcp|1.30.0
 git-remote-codecommit|1.16
 jupyter-activity-monitor-extension|0.3.3
 jupyter-ai|3.2.0
 jupyter-collaboration|4.4.2
 jupyter-dash|0.4.2
-jupyter-server-proxy|4.6.0
+jupyter-server-proxy|4.6.1
 jupyterlab-git|0.55.0
 keras|3.15.1
-langchain|1.4.9
-langchain-aws|1.9.2
+langchain|1.4.10
+langchain-aws|1.9.3
 langchain-openai|1.7.4
 pyhive|0.7.0
 python-gssapi|1.12.0
@@ -146,7 +146,7 @@ pysocks|1.7.1
 urllib3|1.26.20
 requests|2.34.2
 tqdm|4.70.1
-annotated-doc|0.0.5
+annotated-doc|0.0.6
 colorama|0.4.6
 typing-extensions|4.16.0
 annotated-types|0.8.0
@@ -154,7 +154,7 @@ pydantic-core|2.50.4
 typing-inspection|0.4.5
 pydantic|2.14.3
 mdurl|0.1.2
-markdown-it-py|4.2.0
+markdown-it-py|4.3.0
 pygments|2.21.0
 rich|14.3.4
 shellingham|1.5.4
@@ -378,7 +378,7 @@ jupyter_client|8.10.0
 fqdn|1.6.0
 arrow|1.4.0
 isoduration|20.11.0
-jsonpointer|3.10
+jsonpointer|3.12
 rfc3339-validator|0.1.4
 rfc3986-validator|0.1.1
 uri-template|1.3.0
@@ -493,8 +493,8 @@ pillow|11.3.0
 pyparsing|3.3.3
 qhull|2020.2
 libllvm23|23.1.5
-libclang-cpp23.1|23.1.4
-libclang13|23.1.4
+libclang-cpp23.1|23.1.5
+libclang13|23.1.5
 libglvnd|1.7.0
 libegl|1.7.0
 libglx|1.7.0
@@ -536,7 +536,7 @@ grpcio|1.78.2
 pyasn1|0.6.5
 pyasn1-modules|0.4.2
 pyu2f|0.1.5
-google-auth|2.62.1
+google-auth|2.62.2
 protobuf|6.33.5
 googleapis-common-protos|1.76.0
 opentelemetry-api|1.45.1
@@ -787,7 +787,7 @@ uvloop|0.22.1
 watchfiles|1.3.0
 uvicorn-standard|0.54.0
 fastapi-cli|0.0.32
-fastapi-core|0.162.2
+fastapi-core|0.162.4
 fastar|0.12.0
 opentelemetry-exporter-http-transport|0.66b1
 opentelemetry-exporter-otlp-common|0.66b1
@@ -825,7 +825,7 @@ flake8|7.1.2
 flask-cors|6.0.5
 flatbuffers|25.9.23
 unixodbc|2.3.14
-freetds|1.5.20
+freetds|1.5.21
 gast|0.7.0
 libnuma|2.0.18
 gds-tools|1.20.0.107
@@ -850,7 +850,7 @@ huey|3.5.4
 iniconfig|2.3.1
 isort|9.0.2
 jiter|0.19.0
-jsonpatch|1.45
+jsonpatch|1.47
 pycrdt|0.13.1
 jupyter_ydoc|3.5.0
 jupyterlab-chat|0.25.3
@@ -883,7 +883,7 @@ requests-toolbelt|1.0.0
 uuid-utils|0.17.0
 zstandard|0.25.0
 langsmith|0.14.17
-langchain-core|1.7.6
+langchain-core|1.8.0
 ormsgpack|1.13.0
 langgraph-checkpoint|4.3.1
 langgraph-prebuilt|1.1.1
@@ -897,7 +897,7 @@ libtensorflow_cc|2.21.0
 uc-micro-py|2.0.0
 linkify-it-py|2.2.0
 lz4|4.4.5
-mdit-py-plugins|0.6.1
+mdit-py-plugins|0.7.0
 mlflow-skinny|3.18.0
 mlflow-ui|3.18.0
 prometheus_flask_exporter|0.23.2
@@ -959,7 +959,7 @@ sagemaker-serve|1.29.0
 sagemaker-mlops|1.29.0
 snowflake-sqlalchemy|1.11.1
 sqlalchemy-bigquery|1.17.3
-sqlglot|30.30.0
+sqlglot|30.31.0
 tzlocal|5.4.5
 trino-python-client|0.340.0
 vertica-python|1.4.0
