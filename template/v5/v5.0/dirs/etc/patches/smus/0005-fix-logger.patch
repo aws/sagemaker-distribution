@@ -1,5 +1,5 @@
---- /opt/conda/lib/python3.12/site-packages/hdijupyterutils/log.py
-+++ /opt/conda/lib/python3.12/site-packages/hdijupyterutils/log.py
+--- a/hdijupyterutils/log.py
++++ b/hdijupyterutils/log.py
 @@ -2,7 +2,7 @@
  
  from __future__ import print_function

@@ -23,9 +23,6 @@ else
         /opt/conda/share/jupyter/labextensions/sagemaker_sparkmonitor/package.json \
         /opt/conda/share/jupyter/labextensions/@pyviz/jupyterlab_pyviz/package.json \
         /opt/conda/share/jupyter/labextensions/@amzn/sagemaker_post_startup_notification_plugin/package.json
-
-    # Disable the Amazon Q gen-AI lab extension (chat panel) in SMAI
-    rm -f /opt/conda/share/jupyter/labextensions/@amzn/sagemaker_gen_ai_jupyterlab_extension/package.json
 fi
 
 # Setup skills and subagent for SMAI private spaces only

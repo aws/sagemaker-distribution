@@ -1,5 +1,5 @@
---- /opt/conda/lib/python3.12/site-packages/botocore/data/endpoints.json
-+++ /opt/conda/lib/python3.12/site-packages/botocore/data/endpoints.json
+--- a/botocore/data/endpoints.json
++++ b/botocore/data/endpoints.json
 @@ -5404,6 +5404,9 @@
            "ap-northeast-3" : {
              "hostname" : "datazone.ap-northeast-3.api.aws"
