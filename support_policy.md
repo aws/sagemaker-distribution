@@ -21,6 +21,7 @@ AWS leverages [Amazon Elastic Container Registry (ECR) enhanced scanning](https:
 | 2.x.x         | Aug 25th, 2025             |  Feb 25th, 2026 |
 | 3.x.x         | Mar 29th, 2026             |  Sep 29th, 2026 |
 | 4.x.x         | Apr 7th, 2027              |  Oct 7th, 2027  |
+| 5.x.x         | May 13th, 2027             |  Nov 13th, 2027 |
 
 ## Supported Image Versions
 The tables below lists the supported SageMaker Distribution image versions and their planned end of support dates. When you are building images or pulling images from the ECR repository, we recommend you choose supported image versions from the tables below.
@@ -29,7 +30,8 @@ The tables below lists the supported SageMaker Distribution image versions and t
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
-| 4.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.7-cpu  |  May 3rd, 2027  |
+| 5.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:5.0-cpu  |  May 13th, 2027  |
+| 4.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.7-cpu  |  May 3rd, 2027   |
 | 4.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.6-cpu  |  Apr 10th, 2027  |
 | 4.5.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.5-cpu  |  Mar 10th, 2027  |
 | 4.4.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.4-cpu  |  Feb 12th, 2027  |
@@ -40,7 +42,8 @@ The tables below lists the supported SageMaker Distribution image versions and t
 
 | Image Version | ECR Image URI | Planned End of Support Date |
 | :---:         | :---:         | :---:                       |
-| 4.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.7-gpu  |  May 3rd, 2027  |
+| 5.0.x         | public.ecr.aws/sagemaker/sagemaker-distribution:5.0-gpu  |  May 13th, 2027  |
+| 4.7.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.7-gpu  |  May 3rd, 2027   |
 | 4.6.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.6-gpu  |  Apr 10th, 2027  |
 | 4.5.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.5-gpu  |  Mar 10th, 2027  |
 | 4.4.x         | public.ecr.aws/sagemaker/sagemaker-distribution:4.4-gpu  |  Feb 12th, 2027  |
