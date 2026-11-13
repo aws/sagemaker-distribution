@@ -1,0 +1,5 @@
+--find-links /usr/local/airflow/plugins
+--no-index
+
+amzn_sagemaker_studio
+amzn_SagemakerWorkflowsOperator
