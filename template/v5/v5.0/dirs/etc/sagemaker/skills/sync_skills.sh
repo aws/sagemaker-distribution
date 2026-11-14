@@ -5,12 +5,15 @@ set -eu
 IMAGE_SKILLS_DIR="${1:-/etc/sagemaker/skills}"
 EBS_SKILLS_DIR="$HOME/.agent/skills"
 LOCK_FILE="$EBS_SKILLS_DIR/.sagemaker-lock"
+CLI_METADATA_FILE=".aws-skill-metadata"
+CLI_MANAGED_SKILL="aws-ai-ml"
 
 # Agent targets to symlink skills into (add new agents here)
 AGENT_SKILLS_DIRS=("$HOME/.kiro/skills" "$HOME/.claude/skills")
 
 compute_checksum() {
-    (cd "$1" && find . -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')
+    # Agent Toolkit metadata records installation state, not Skill content.
+    (cd "$1" && find . -type f ! -name "$CLI_METADATA_FILE" -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')
 }
 
 get_locked_checksum() {
@@ -21,6 +24,56 @@ set_locked_checksum() {
     [ -f "$LOCK_FILE" ] || echo '{"skills":{}}' > "$LOCK_FILE"
     jq --arg s "$1" --arg c "$2" '.skills[$s].checksum = $c' "$LOCK_FILE" > "$LOCK_FILE.tmp"
     mv "$LOCK_FILE.tmp" "$LOCK_FILE"
+}
+
+get_skill_metadata_version() {
+    local skill_file="$1/SKILL.md"
+    [ -f "$skill_file" ] || return 1
+
+    awk '
+        NR == 1 && $0 == "---" { in_frontmatter = 1; next }
+        in_frontmatter && $0 == "---" { exit }
+        in_frontmatter && /^metadata:[[:space:]]*$/ { in_metadata = 1; next }
+        in_frontmatter && in_metadata && /^[^[:space:]]/ { in_metadata = 0 }
+        in_frontmatter && in_metadata && /^[[:space:]]+version:[[:space:]]*/ {
+            value = $0
+            sub(/^[[:space:]]+version:[[:space:]]*/, "", value)
+            gsub(/[[:space:]\"]/, "", value)
+            print value
+            exit
+        }
+    ' "$skill_file"
+}
+
+ensure_cli_metadata() {
+    local image_skill="$1"
+    local ebs_skill="$2"
+    local skill_name="$3"
+    local metadata_file="$ebs_skill/$CLI_METADATA_FILE"
+    local version
+    local temp_file
+
+    # This migration is intentionally limited to the catalog-backed Skill.
+    if [ "$skill_name" != "$CLI_MANAGED_SKILL" ]; then
+        return 0
+    fi
+
+    # Preserve metadata already owned by Agent Toolkit, including versions
+    # newer than the image snapshot.
+    if [ -e "$metadata_file" ] || [ -L "$metadata_file" ]; then
+        return 0
+    fi
+
+    version=$(get_skill_metadata_version "$image_skill") || true
+    if [[ ! "$version" =~ ^[0-9]+$ ]]; then
+        echo "Warning: cannot enable Agent Toolkit updates for '$skill_name': valid numeric metadata.version not found" >&2
+        return 1
+    fi
+
+    temp_file=$(mktemp "$ebs_skill/$CLI_METADATA_FILE.tmp.XXXXXX")
+    printf '{"version":"v%s"}\n' "$version" > "$temp_file"
+    mv "$temp_file" "$metadata_file"
+    echo "Enabled Agent Toolkit updates for '$skill_name' at version 'v$version'"
 }
 
 # Migration to the unified agent-toolkit-for-aws skills.
@@ -136,6 +189,7 @@ for skill_path in "$IMAGE_SKILLS_DIR"/*/; do
 
     if [ ! -d "$ebs_skill" ]; then
         cp -r "$skill_path" "$ebs_skill"
+        ensure_cli_metadata "$skill_path" "$ebs_skill" "$skill_name" || true
         set_locked_checksum "$skill_name" "$image_checksum"
         echo "Installed skill '$skill_name'"
     else
@@ -151,6 +205,7 @@ for skill_path in "$IMAGE_SKILLS_DIR"/*/; do
             else
                 echo "Skill '$skill_name' already current, skipping"
             fi
+            ensure_cli_metadata "$skill_path" "$ebs_skill" "$skill_name" || true
         else
             echo "Skipping skill '$skill_name' — user modified"
         fi
