@@ -55,13 +55,17 @@ def test_agent_warns_and_waits_before_overwriting(agent_config):
     assert "Only after explicit approval" in prompt
 
 
-def test_agent_calls_toolkit_update_directly(agent_config):
+def test_agent_calls_toolkit_update_and_reloads_skill(agent_config):
     prompt = agent_config["prompt"]
 
     assert "export AWS_SDK_UA_APP_ID=AWSSkill-SageMaker" in prompt
     assert "aws agent-toolkit update-skill" in prompt
     assert "--skill-name aws-ai-ml" in prompt
-    assert "start a new conversation" in prompt
+    assert ("immediately read the complete updated " "$HOME/.kiro/skills/aws-ai-ml/SKILL.md from disk") in prompt
+    assert "updated instructions are added to this conversation" in prompt
+    assert "disregard the previously loaded Skill instructions" in prompt
+    assert "continue the original workflow using the updated Skill" in prompt
+    assert "start a new conversation" not in prompt
     assert "If it fails, report the error and stop" in prompt
     assert "backup" not in prompt.lower()
     assert "rollback" not in prompt.lower()
