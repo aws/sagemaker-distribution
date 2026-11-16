@@ -2,7 +2,7 @@
 # Syncs pre-packaged SageMaker skills from image to user's EBS.
 set -eu
 
-IMAGE_SKILLS_DIR="${1:-/etc/sagemaker/skills}"
+IMAGE_SKILLS_DIR="/etc/sagemaker/skills"
 EBS_SKILLS_DIR="$HOME/.agent/skills"
 LOCK_FILE="$EBS_SKILLS_DIR/.sagemaker-lock"
 
