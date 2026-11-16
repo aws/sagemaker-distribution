@@ -164,6 +164,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     npm i -g @anthropic-ai/claude-code@2.1.322 && \
     # Install Codex CLI
     npm i -g @openai/codex@0.169.0 && \
+    # Install Claude ACP adapter (used by the JupyterLab Claude chat)
+    npm i -g @zed-industries/claude-agent-acp@0.23.1 && \
     # Enforce to use `conda-forge` as only channel, by removing `defaults`
     conda config --remove channels defaults && \
     micromamba config append channels conda-forge --env && \
