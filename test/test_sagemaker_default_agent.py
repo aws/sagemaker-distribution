@@ -8,13 +8,25 @@ import pytest
 pytestmark = pytest.mark.unit
 
 ROOT = Path(__file__).resolve().parents[1]
+TEMPLATE_VERSIONS = (
+    "v4.1",
+    "v4.2",
+    "v4.3",
+    "v4.4",
+    "v4.5",
+    "v4.6",
+    "v4.7",
+    "v4.8",
+    "v5.0",
+    "v5.1",
+)
 AGENT_CONFIGS = tuple(
-    ROOT / "template" / "v5" / minor / "dirs" / "etc" / "sagemaker" / "sagemaker-default-agent.json"
-    for minor in ("v5.0", "v5.1")
+    ROOT / "template" / version.split(".")[0] / version / "dirs" / "etc" / "sagemaker" / "sagemaker-default-agent.json"
+    for version in TEMPLATE_VERSIONS
 )
 
 
-@pytest.fixture(params=AGENT_CONFIGS, ids=("v5.0", "v5.1"))
+@pytest.fixture(params=AGENT_CONFIGS, ids=TEMPLATE_VERSIONS)
 def agent_config(request: pytest.FixtureRequest) -> dict:
     return json.loads(request.param.read_text(encoding="utf-8"))
 
@@ -71,7 +83,7 @@ def test_agent_calls_toolkit_update_and_reloads_skill(agent_config):
     assert "rollback" not in prompt.lower()
 
 
-def test_v5_agent_configs_remain_identical():
-    configs = [json.loads(path.read_text(encoding="utf-8")) for path in AGENT_CONFIGS]
+def test_agent_prompts_remain_identical_across_templates():
+    prompts = [json.loads(path.read_text(encoding="utf-8"))["prompt"] for path in AGENT_CONFIGS]
 
-    assert configs[0] == configs[1]
+    assert len(set(prompts)) == 1
