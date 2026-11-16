@@ -10,12 +10,6 @@ if [ -n "$SAGEMAKER_RECOVERY_MODE" ]; then
 else
     # Activate conda environment 'base' which is the default for Cosmos
     micromamba activate base
-
-    # Disable the Amazon Q gen-AI JupyterLab experience for SMUS (replaced by Kiro Chat)
-    # Server-ext disable stops _load_jupyter_server_extension -> initialize_lsp_server()
-    jupyter server extension disable sagemaker_gen_ai_jupyterlab_extension
-    # Labext disable removes the chat panel from the sidebar
-    jupyter labextension disable @amzn/sagemaker_gen_ai_jupyterlab_extension
 fi
 
 sudo cp -r /etc/sagemaker-ui/kernels/. /opt/conda/share/jupyter/kernels/

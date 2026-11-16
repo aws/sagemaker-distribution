@@ -1,5 +1,5 @@
---- /opt/conda/lib/python3.12/site-packages/sparkmagic/livyclientlib/command.py
-+++ /opt/conda/lib/python3.12/site-packages/sparkmagic/livyclientlib/command.py
+--- a/sparkmagic/livyclientlib/command.py
++++ b/sparkmagic/livyclientlib/command.py
 @@ -54,6 +54,7 @@
          try:
              session.wait_for_idle()

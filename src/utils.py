@@ -61,10 +61,16 @@ def get_match_specs(file_path) -> dict[str, MatchSpec]:
         return {}
 
     requirement_spec = read_env_file(file_path)
-    assert len(requirement_spec.environment.dependencies) == 1
-    assert "conda" in requirement_spec.environment.dependencies
+    if hasattr(requirement_spec, "environment"):
+        # conda < 25.x: RequirementsSpec.environment.dependencies
+        assert len(requirement_spec.environment.dependencies) == 1
+        assert "conda" in requirement_spec.environment.dependencies
+        specs = [MatchSpec(i) for i in requirement_spec.environment.dependencies["conda"]]
+    else:
+        # newer conda: RequirementsSpec.env.requested_packages (already MatchSpec objects)
+        specs = list(requirement_spec.env.requested_packages)
 
-    return {MatchSpec(i).get("name"): MatchSpec(i) for i in requirement_spec.environment.dependencies["conda"]}
+    return {spec.get("name"): spec for spec in specs}
 
 
 def sizeof_fmt(num):

@@ -99,7 +99,25 @@ if [ ! -d "$PATCH_DIR" ]; then
     exit 1
 fi
 
-# Patch files can be generated via "diff -u /path/to/original_file /path/to/new_file > XXX_bad_package.patch"
+# Patch headers are relative to site-packages (a/<package>/<file>, b/<package>/<file>), so they do
+# not change when the image's Python minor version does. Resolve the site-packages directory of the
+# Python the kernel actually runs and apply each patch from there.
+SITE_PACKAGES=$(/opt/conda/bin/python3 -c "import sysconfig; print(sysconfig.get_paths()['purelib'])")
+case "$SITE_PACKAGES" in
+    /opt/conda/lib/python3.*/site-packages) ;;
+    *)
+        echo "Error: unexpected site-packages path '$SITE_PACKAGES'"
+        exit 1
+        ;;
+esac
+echo "Patching packages in $SITE_PACKAGES"
+
+# To create a patch, keep a copy of the original file, edit the file in place, and diff the two with
+# a/ and b/ labels so the headers stay relative to site-packages (no Python version in them):
+#   cd "$SITE_PACKAGES"
+#   cp sparkmagic/utils/utils.py /tmp/utils.py.orig   # then edit sparkmagic/utils/utils.py
+#   diff -u --label a/sparkmagic/utils/utils.py --label b/sparkmagic/utils/utils.py \
+#     /tmp/utils.py.orig sparkmagic/utils/utils.py > 0006-xxx.patch
 # See https://www.thegeekstuff.com/2014/12/patch-command-examples/
 for PATCHFILE in "$PATCH_DIR"/*.patch; do
     [ -f "$PATCHFILE" ] || continue
@@ -110,5 +128,5 @@ for PATCHFILE in "$PATCH_DIR"/*.patch; do
     fi
     
     echo "Applying $PATCHFILE"
-    (cd "/opt/conda" && patch --strip=3 < "$PATCHFILE")
+    patch --directory="$SITE_PACKAGES" --strip=1 < "$PATCHFILE"
 done
