@@ -1,0 +1,3 @@
+# System default for Codex: use Amazon Bedrock with the execution role.
+# Users can override this in ~/.codex/config.toml.
+model_provider = "amazon-bedrock"
