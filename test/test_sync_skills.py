@@ -23,15 +23,19 @@ def sync_script(request: pytest.FixtureRequest) -> Path:
     return request.param
 
 
-def _write_image_skill(image_root: Path, version: str | None = "5") -> Path:
+def _write_image_skill(image_root: Path, marker_version: str | None = "v5") -> Path:
     skill = image_root / SKILL_NAME
     skill.mkdir(parents=True)
-    metadata = f'\nmetadata:\n  version: "{version}"' if version is not None else ""
     (skill / "SKILL.md").write_text(
-        f"---\nname: {SKILL_NAME}\ndescription: Test SageMaker Skill.{metadata}\n---\n\n# Test\n",
+        f'---\nname: {SKILL_NAME}\ndescription: Test SageMaker Skill.\nmetadata:\n  version: "5"\n---\n\n# Test\n',
         encoding="utf-8",
     )
     (skill / "reference.md").write_text("image content\n", encoding="utf-8")
+    if marker_version is not None:
+        (skill / MARKER_NAME).write_text(
+            json.dumps({"version": marker_version}, separators=(",", ":")) + "\n",
+            encoding="utf-8",
+        )
     return skill
 
 
@@ -57,7 +61,7 @@ def _marker_version(home: Path) -> str:
     return json.loads(marker.read_text(encoding="utf-8"))["version"]
 
 
-def test_fresh_install_adds_cli_metadata_and_agent_links(tmp_path, sync_script):
+def test_fresh_install_copies_cli_metadata_and_agent_links(tmp_path, sync_script):
     image = tmp_path / "image"
     home = tmp_path / "home"
     _write_image_skill(image)
@@ -75,21 +79,23 @@ def test_fresh_install_adds_cli_metadata_and_agent_links(tmp_path, sync_script):
         assert link.resolve() == _managed_skill(home).resolve()
 
 
-def test_clean_copy_missing_marker_is_migrated(tmp_path, sync_script):
-    image = tmp_path / "image"
+def test_clean_legacy_copy_missing_marker_is_migrated(tmp_path, sync_script):
+    legacy_image = tmp_path / "legacy-image"
+    current_image = tmp_path / "current-image"
     home = tmp_path / "home"
-    _write_image_skill(image)
-    assert _run_sync(home, image, sync_script).returncode == 0
-    (_managed_skill(home) / MARKER_NAME).unlink()
+    _write_image_skill(legacy_image, marker_version=None)
+    _write_image_skill(current_image)
+    assert _run_sync(home, legacy_image, sync_script).returncode == 0
+    assert not (_managed_skill(home) / MARKER_NAME).exists()
 
-    result = _run_sync(home, image, sync_script)
+    result = _run_sync(home, current_image, sync_script)
 
     assert result.returncode == 0, result.stderr
     assert _marker_version(home) == "v5"
-    assert "Enabled Agent Toolkit updates" in result.stdout
+    assert "Updated skill 'aws-ai-ml'" in result.stdout
 
 
-def test_existing_marker_is_excluded_from_checksum_and_preserved(tmp_path, sync_script):
+def test_toolkit_metadata_change_is_preserved(tmp_path, sync_script):
     image = tmp_path / "image"
     home = tmp_path / "home"
     _write_image_skill(image)
@@ -101,8 +107,7 @@ def test_existing_marker_is_excluded_from_checksum_and_preserved(tmp_path, sync_
 
     assert result.returncode == 0, result.stderr
     assert _marker_version(home) == "v7"
-    assert "already current" in result.stdout
-    assert "user modified" not in result.stdout
+    assert "user modified" in result.stdout
 
 
 def test_modified_copy_is_preserved_without_migration(tmp_path, sync_script):
@@ -140,20 +145,7 @@ def test_cli_updated_copy_is_not_downgraded(tmp_path, sync_script):
     assert "user modified" in result.stdout
 
 
-@pytest.mark.parametrize("version", [None, "v5", "5.1", "five"])
-def test_invalid_image_version_does_not_create_marker(tmp_path, sync_script, version):
-    image = tmp_path / "image"
-    home = tmp_path / "home"
-    _write_image_skill(image, version)
-
-    result = _run_sync(home, image, sync_script)
-
-    assert result.returncode == 0
-    assert not (_managed_skill(home) / MARKER_NAME).exists()
-    assert "valid numeric metadata.version not found" in result.stderr
-
-
-def test_other_skill_is_not_given_agent_toolkit_metadata(tmp_path, sync_script):
+def test_sync_does_not_invent_metadata_for_other_skills(tmp_path, sync_script):
     image = tmp_path / "image"
     home = tmp_path / "home"
     other = image / "other-skill"
@@ -167,3 +159,9 @@ def test_other_skill_is_not_given_agent_toolkit_metadata(tmp_path, sync_script):
 
     assert result.returncode == 0, result.stderr
     assert not (home / ".agent" / "skills" / "other-skill" / MARKER_NAME).exists()
+
+
+def test_v5_sync_scripts_remain_identical():
+    contents = [path.read_text(encoding="utf-8") for path in SYNC_SCRIPTS]
+
+    assert contents[0] == contents[1]

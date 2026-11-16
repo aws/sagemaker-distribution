@@ -24,19 +24,25 @@ def test_agent_checks_aws_ai_ml_updates_once_per_conversation(agent_config):
 
     assert "Before using the aws-ai-ml Skill" in prompt
     assert "for the first time in each conversation" in prompt
-    assert "$HOME/.kiro/skills/aws-ai-ml/.aws-skill-metadata" in prompt
     assert "aws agent-toolkit check-skill-updates" in prompt
     assert "--agent kiro" in prompt
     assert "read only the aws-ai-ml result" in prompt
 
 
-def test_agent_silently_skips_unmanaged_or_current_skills(agent_config):
+def test_agent_relies_on_toolkit_result(agent_config):
     prompt = agent_config["prompt"]
 
-    assert "If $HOME/.kiro/skills/aws-ai-ml/.aws-skill-metadata is absent" in prompt
+    assert ".aws-skill-metadata" not in prompt
+    assert "If the command returns no aws-ai-ml result or no update exists" in prompt
     assert "silently continue with the installed Skill" in prompt
-    assert "If no update exists, silently continue" in prompt
     assert "If the check fails, briefly report the error" in prompt
+
+
+def test_agent_uses_default_cli_timeouts(agent_config):
+    prompt = agent_config["prompt"]
+
+    assert "--cli-connect-timeout" not in prompt
+    assert "--cli-read-timeout" not in prompt
 
 
 def test_agent_warns_and_waits_before_overwriting(agent_config):
