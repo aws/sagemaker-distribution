@@ -7,7 +7,7 @@ EBS_SKILLS_DIR="$HOME/.agent/skills"
 LOCK_FILE="$EBS_SKILLS_DIR/.sagemaker-lock"
 
 # Agent targets to symlink skills into (add new agents here)
-AGENT_SKILLS_DIRS=("$HOME/.kiro/skills" "$HOME/.claude/skills")
+AGENT_SKILLS_DIRS=("$HOME/.kiro/skills" "$HOME/.claude/skills" "$HOME/.agents/skills")
 
 compute_checksum() {
     (cd "$1" && find . -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{print $1}')
@@ -116,6 +116,8 @@ run_migration() {
 
 mkdir -p "$EBS_SKILLS_DIR"
 for dir in "${AGENT_SKILLS_DIRS[@]}"; do mkdir -p "$dir"; done
+# Codex home, so Agent Toolkit detects Codex before its first run
+mkdir -p "$HOME/.codex"
 
 if [ ! -d "$IMAGE_SKILLS_DIR" ]; then
     echo "No bundled skills found at $IMAGE_SKILLS_DIR, skipping."
