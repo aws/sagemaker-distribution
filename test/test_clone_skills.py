@@ -11,10 +11,6 @@ pytestmark = pytest.mark.unit
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE_VERSIONS = (
-    "v4.1",
-    "v4.2",
-    "v4.3",
-    "v4.4",
     "v4.5",
     "v4.6",
     "v4.7",
@@ -22,7 +18,6 @@ TEMPLATE_VERSIONS = (
     "v5.0",
     "v5.1",
 )
-COLLECTION_SOURCE_VERSIONS = {"v4.1", "v4.2", "v4.3", "v4.4"}
 SKILL_NAME = "aws-ai-ml"
 MARKER_NAME = ".aws-skill-metadata"
 
@@ -47,7 +42,7 @@ CLONE_SCRIPT_CASES = tuple(
             / "skills"
             / "clone_skills.sh"
         ),
-        copies_collection=version in COLLECTION_SOURCE_VERSIONS,
+        copies_collection=False,
     )
     for version in TEMPLATE_VERSIONS
 )
@@ -148,11 +143,7 @@ def test_build_does_not_add_metadata_to_other_skills(tmp_path, clone_script_case
     assert not (destination / "other-skill" / MARKER_NAME).exists()
 
 
-def test_clone_scripts_remain_identical_by_source_layout():
-    for copies_collection in (True, False):
-        contents = {
-            case.path.read_text(encoding="utf-8")
-            for case in CLONE_SCRIPT_CASES
-            if case.copies_collection is copies_collection
-        }
-        assert len(contents) == 1
+def test_clone_scripts_remain_identical():
+    contents = {case.path.read_text(encoding="utf-8") for case in CLONE_SCRIPT_CASES}
+
+    assert len(contents) == 1

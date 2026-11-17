@@ -148,14 +148,12 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sudo chown -R $MAMBA_USER:$MAMBA_USER /etc/web-client/ && \
     # Update npm version
     npm i -g npm && \
-    # Install Claude Code CLI
-    npm i -g @anthropic-ai/claude-code@2.1.322 && \
-    # Install Codex CLI
-    npm i -g @openai/codex@0.169.0 && \
-    # Install Claude ACP adapter (used by the JupyterLab Claude chat)
-    npm i -g @zed-industries/claude-agent-acp@0.23.1 && \
-    # Install Codex ACP adapter (used by the JupyterLab Codex chat)
-    npm i -g @zed-industries/codex-acp@0.16.0 && \
+    # Install agent CLIs and JupyterLab ACP adapters
+    npm i -g \
+        @anthropic-ai/claude-code@2.1.322 \
+        @openai/codex@0.169.0 \
+        @zed-industries/claude-agent-acp@0.23.1 \
+        @zed-industries/codex-acp@0.16.0 && \
     # Enforce to use `conda-forge` as only channel, by removing `defaults`
     conda config --remove channels defaults && \
     micromamba config append channels conda-forge --env && \

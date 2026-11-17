@@ -28,5 +28,5 @@ try:
 except:
     pass
 
-# Set Claude as the default AI persona
-c.PersonaManager.default_persona_id = "jupyter-ai-personas::jupyter_ai_acp_client::ClaudeAcpPersona"
+# Set Kiro as the default AI persona
+c.PersonaManager.default_persona_id = "jupyter-ai-personas::jupyter_ai_acp_client::KiroAcpPersona"

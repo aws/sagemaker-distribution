@@ -25,8 +25,6 @@ set_locked_checksum() {
 
 mkdir -p "$EBS_SKILLS_DIR"
 for dir in "${AGENT_SKILLS_DIRS[@]}"; do mkdir -p "$dir"; done
-# Create Codex home so Agent Toolkit detects Codex before its first run.
-mkdir -p "$HOME/.codex"
 
 if [ ! -d "$IMAGE_SKILLS_DIR" ]; then
     echo "No bundled skills found at $IMAGE_SKILLS_DIR, skipping."
