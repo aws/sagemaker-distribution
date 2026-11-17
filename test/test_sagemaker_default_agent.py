@@ -39,9 +39,33 @@ SYNC_AGENT_SCRIPTS = tuple(
     ROOT / "template" / version.split(".")[0] / version / "dirs" / "etc" / "sagemaker" / "sync_agent.sh"
     for version in TEMPLATE_VERSIONS
 )
-CODEX_TEMPLATE_VERSIONS = ("v5.0", "v5.1")
+DOCKERFILES = tuple(ROOT / "template" / version.split(".")[0] / version / "Dockerfile" for version in TEMPLATE_VERSIONS)
+SYNC_SKILLS_SCRIPTS = tuple(
+    ROOT / "template" / version.split(".")[0] / version / "dirs" / "etc" / "sagemaker" / "skills" / "sync_skills.sh"
+    for version in TEMPLATE_VERSIONS
+)
+JUPYTER_CONFIGS = tuple(
+    ROOT / "template" / version.split(".")[0] / version / "dirs" / "etc" / "jupyter" / "jupyter_server_config.py"
+    for version in TEMPLATE_VERSIONS
+)
+SMUS_TEMPLATE_VERSIONS = ("v4.5", "v4.6", "v4.7", "v4.8", "v5.0", "v5.1")
+SMUS_JUPYTER_CONFIGS = tuple(
+    ROOT
+    / "template"
+    / version.split(".")[0]
+    / version
+    / "dirs"
+    / "etc"
+    / "sagemaker-ui"
+    / "jupyter"
+    / "server"
+    / "jupyter_server_config.py"
+    for version in SMUS_TEMPLATE_VERSIONS
+)
+CODEX_TEMPLATE_VERSIONS = TEMPLATE_VERSIONS
 CODEX_CONFIGS = tuple(
-    ROOT / "template" / "v5" / version / "dirs" / "etc" / "codex" / "config.toml" for version in CODEX_TEMPLATE_VERSIONS
+    ROOT / "template" / version.split(".")[0] / version / "dirs" / "etc" / "codex" / "config.toml"
+    for version in CODEX_TEMPLATE_VERSIONS
 )
 
 
@@ -107,7 +131,7 @@ def test_agent_warns_and_waits_before_overwriting(agent_config):
 
     assert "updating replaces the complete installed Skill instead of merging changes" in prompt
     assert "local changes may be lost" in prompt
-    assert "Kiro and Claude Code share this Skill" in prompt
+    assert "Kiro, Claude Code, and Codex share this Skill" in prompt
     assert "Ask whether to update now, then stop and wait" in prompt
     assert "Only after explicit approval" in prompt
 
@@ -160,6 +184,7 @@ def test_claude_agent_warns_and_reloads_updated_skill(claude_agent_config):
 
     assert "updating replaces the complete installed Skill instead of merging changes" in prompt
     assert "local changes may be lost" in prompt
+    assert "Kiro, Claude Code, and Codex share this Skill" in prompt
     assert "Ask whether to update now, then stop and wait" in prompt
     assert "Only after explicit approval" in prompt
     assert "$HOME/.claude/skills/aws-ai-ml/SKILL.md" in prompt
@@ -180,6 +205,7 @@ def test_codex_config_selects_bedrock_and_adds_sagemaker_instructions(codex_conf
     config, prompt = codex_config
 
     assert 'model_provider = "amazon-bedrock"' in config
+    assert 'model = "openai.gpt-5.4"' in config
     assert "You are a specialized AI assistant for Amazon SageMaker Studio" in prompt
     assert "Before using the aws-ai-ml Skill" in prompt
     assert "for the first time in each conversation" in prompt
@@ -222,9 +248,45 @@ def test_codex_warns_updates_and_reloads_shared_skill(codex_config):
 
 
 def test_codex_prompts_remain_identical_across_templates():
-    prompts = [_read_codex_developer_instructions(path)[1] for path in CODEX_CONFIGS]
+    configs = [path.read_text(encoding="utf-8") for path in CODEX_CONFIGS]
 
-    assert len(set(prompts)) == 1
+    assert len(set(configs)) == 1
+
+
+@pytest.mark.parametrize("dockerfile", DOCKERFILES, ids=TEMPLATE_VERSIONS)
+def test_dockerfiles_install_claude_and_codex_runtimes(dockerfile):
+    content = dockerfile.read_text(encoding="utf-8")
+
+    assert content.count("npm i -g @anthropic-ai/claude-code@2.1.322") == 1
+    assert content.count("npm i -g @openai/codex@0.169.0") == 1
+    assert content.count("npm i -g @zed-industries/claude-agent-acp@0.23.1") == 1
+    assert content.count("npm i -g @zed-industries/codex-acp@0.16.0") == 1
+    assert content.count("ENV CLAUDE_CODE_USE_BEDROCK=1") == 1
+    assert content.count("ENV DISABLE_AUTOUPDATER=1") == 1
+
+
+@pytest.mark.parametrize("sync_script", SYNC_SKILLS_SCRIPTS, ids=TEMPLATE_VERSIONS)
+def test_sync_skills_adds_codex_discovery(sync_script):
+    script = sync_script.read_text(encoding="utf-8")
+
+    assert '"$HOME/.agents/skills"' in script
+    assert 'mkdir -p "$HOME/.codex"' in script
+
+
+@pytest.mark.parametrize("jupyter_config", JUPYTER_CONFIGS, ids=TEMPLATE_VERSIONS)
+def test_jupyter_defaults_to_claude(jupyter_config):
+    config = jupyter_config.read_text(encoding="utf-8")
+
+    assert "jupyter_ai_acp_client::ClaudeAcpPersona" in config
+    assert "jupyter_ai_acp_client::KiroAcpPersona" not in config
+
+
+@pytest.mark.parametrize("jupyter_config", SMUS_JUPYTER_CONFIGS, ids=SMUS_TEMPLATE_VERSIONS)
+def test_smus_jupyter_defaults_to_claude(jupyter_config):
+    config = jupyter_config.read_text(encoding="utf-8")
+
+    assert "jupyter_ai_acp_client::ClaudeAcpPersona" in config
+    assert "jupyter_ai_acp_client::KiroAcpPersona" not in config
 
 
 @pytest.mark.parametrize("sync_script", SYNC_AGENT_SCRIPTS, ids=TEMPLATE_VERSIONS)

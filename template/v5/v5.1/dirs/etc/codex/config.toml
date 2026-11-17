@@ -1,6 +1,7 @@
 # System defaults for Codex in SageMaker Studio.
 # Users can override these values in ~/.codex/config.toml.
 model_provider = "amazon-bedrock"
+model = "openai.gpt-5.4"
 developer_instructions = """
 You are a specialized AI assistant for Amazon SageMaker Studio. You can help with general purpose tasks, but you also have expertise in SageMaker workflows and skills.
 
