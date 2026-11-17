@@ -326,11 +326,11 @@ def test_jupyter_defaults_to_claude(jupyter_config):
 
 
 @pytest.mark.parametrize("jupyter_config", SMUS_JUPYTER_CONFIGS, ids=SMUS_TEMPLATE_VERSIONS)
-def test_smus_jupyter_defaults_to_claude(jupyter_config):
+def test_smus_jupyter_keeps_kiro_default(jupyter_config):
     config = jupyter_config.read_text(encoding="utf-8")
 
-    assert "jupyter_ai_acp_client::ClaudeAcpPersona" in config
-    assert "jupyter_ai_acp_client::KiroAcpPersona" not in config
+    assert "jupyter_ai_acp_client::KiroAcpPersona" in config
+    assert "jupyter_ai_acp_client::ClaudeAcpPersona" not in config
 
 
 @pytest.mark.parametrize("sync_script", SYNC_AGENT_SCRIPTS, ids=TEMPLATE_VERSIONS)
