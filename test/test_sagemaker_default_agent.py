@@ -39,6 +39,10 @@ SYNC_AGENT_SCRIPTS = tuple(
     ROOT / "template" / version.split(".")[0] / version / "dirs" / "etc" / "sagemaker" / "sync_agent.sh"
     for version in TEMPLATE_VERSIONS
 )
+CODEX_TEMPLATE_VERSIONS = ("v5.0", "v5.1")
+CODEX_CONFIGS = tuple(
+    ROOT / "template" / "v5" / version / "dirs" / "etc" / "codex" / "config.toml" for version in CODEX_TEMPLATE_VERSIONS
+)
 
 
 def _read_claude_agent(path: Path) -> tuple[str, str]:
@@ -46,6 +50,15 @@ def _read_claude_agent(path: Path) -> tuple[str, str]:
     frontmatter_marker, frontmatter, prompt = text.split("---", maxsplit=2)
     assert frontmatter_marker == ""
     return frontmatter, prompt.strip()
+
+
+def _read_codex_developer_instructions(path: Path) -> tuple[str, str]:
+    text = path.read_text(encoding="utf-8")
+    prefix = 'developer_instructions = """'
+    before, prompt = text.split(prefix, maxsplit=1)
+    prompt, trailing = prompt.rsplit('"""', maxsplit=1)
+    assert not trailing.strip()
+    return before, prompt.strip()
 
 
 @pytest.fixture(params=AGENT_CONFIGS, ids=TEMPLATE_VERSIONS)
@@ -56,6 +69,11 @@ def agent_config(request: pytest.FixtureRequest) -> dict:
 @pytest.fixture(params=CLAUDE_AGENT_CONFIGS, ids=TEMPLATE_VERSIONS)
 def claude_agent_config(request: pytest.FixtureRequest) -> tuple[str, str]:
     return _read_claude_agent(request.param)
+
+
+@pytest.fixture(params=CODEX_CONFIGS, ids=CODEX_TEMPLATE_VERSIONS)
+def codex_config(request: pytest.FixtureRequest) -> tuple[str, str]:
+    return _read_codex_developer_instructions(request.param)
 
 
 def test_agent_checks_aws_ai_ml_updates_once_per_conversation(agent_config):
@@ -154,6 +172,57 @@ def test_claude_agent_warns_and_reloads_updated_skill(claude_agent_config):
 
 def test_claude_agent_prompts_remain_identical_across_templates():
     prompts = [_read_claude_agent(path)[1] for path in CLAUDE_AGENT_CONFIGS]
+
+    assert len(set(prompts)) == 1
+
+
+def test_codex_config_selects_bedrock_and_adds_sagemaker_instructions(codex_config):
+    config, prompt = codex_config
+
+    assert 'model_provider = "amazon-bedrock"' in config
+    assert "You are a specialized AI assistant for Amazon SageMaker Studio" in prompt
+    assert "Before using the aws-ai-ml Skill" in prompt
+    assert "for the first time in each conversation" in prompt
+
+
+def test_codex_checks_aws_ai_ml_updates_with_toolkit(codex_config):
+    _, prompt = codex_config
+
+    assert "export AWS_SDK_UA_APP_ID=AWSSkill-SageMaker" in prompt
+    assert "aws agent-toolkit check-skill-updates" in prompt
+    assert "read only the aws-ai-ml result" in prompt
+    assert "--agent codex" in prompt
+    assert "--agent kiro" not in prompt
+    assert "--agent claude-code" not in prompt
+    assert ".aws-skill-metadata" not in prompt
+    assert "--cli-connect-timeout" not in prompt
+    assert "--cli-read-timeout" not in prompt
+    assert "If the command returns no aws-ai-ml result or no update exists" in prompt
+    assert "If the check fails, briefly report the error" in prompt
+
+
+def test_codex_warns_updates_and_reloads_shared_skill(codex_config):
+    _, prompt = codex_config
+
+    assert "updating replaces the complete installed Skill instead of merging changes" in prompt
+    assert "local changes may be lost" in prompt
+    assert "Kiro, Claude Code, and Codex share this Skill" in prompt
+    assert "Ask whether to update now, then stop and wait" in prompt
+    assert "Only after explicit approval" in prompt
+    assert "aws agent-toolkit update-skill" in prompt
+    assert "--skill-name aws-ai-ml" in prompt
+    assert "$HOME/.agents/skills/aws-ai-ml/SKILL.md" in prompt
+    assert "updated instructions are added to this conversation" in prompt
+    assert "disregard the previously loaded Skill instructions" in prompt
+    assert "continue the original workflow using the updated Skill" in prompt
+    assert "If it fails, report the error and stop" in prompt
+    assert "start a new conversation" not in prompt
+    assert "backup" not in prompt.lower()
+    assert "rollback" not in prompt.lower()
+
+
+def test_codex_prompts_remain_identical_across_templates():
+    prompts = [_read_codex_developer_instructions(path)[1] for path in CODEX_CONFIGS]
 
     assert len(set(prompts)) == 1
 
