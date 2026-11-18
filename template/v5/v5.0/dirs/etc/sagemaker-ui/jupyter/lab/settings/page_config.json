@@ -10,6 +10,7 @@
       "@sagemaker-studio:EmrCluster": true,
       "@jupyter/collaboration-extension": true,
       "@jupyter/docprovider-extension": true,
-      "@jupyter-ai-contrib/server-documents": true
+      "@jupyter-ai-contrib/server-documents": true,
+      "@amzn/amzn_sagemaker_aiops_jupyterlab_extension:catalogs": true
     }
 }
