@@ -146,6 +146,12 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
     sudo chown -R $MAMBA_USER:$MAMBA_USER /etc/web-client/ && \
     # Update npm version
     npm i -g npm && \
+    # Install agent CLIs and JupyterLab ACP adapters
+    npm i -g \
+        @anthropic-ai/claude-code@2.1.322 \
+        @openai/codex@0.169.0 \
+        @zed-industries/claude-agent-acp@0.23.1 \
+        @zed-industries/codex-acp@0.16.0 && \
     # Enforce to use `conda-forge` as only channel, by removing `defaults`
     conda config --remove channels defaults && \
     micromamba config append channels conda-forge --env && \
@@ -265,4 +271,7 @@ ENV PATH="/etc/sagemaker-inference-server:/opt/conda/bin:/opt/conda/condabin:$PA
 WORKDIR "/home/${NB_USER}"
 ENV SHELL=/bin/bash
 ENV OPENSSL_MODULES=/opt/conda/lib64/ossl-modules/
+# Claude Code: use Bedrock via the execution role and keep the shipped version
+ENV CLAUDE_CODE_USE_BEDROCK=1
+ENV DISABLE_AUTOUPDATER=1
 USER $MAMBA_USER
