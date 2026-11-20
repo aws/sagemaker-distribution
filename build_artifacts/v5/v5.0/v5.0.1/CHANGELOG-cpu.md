@@ -12,6 +12,7 @@ This page lists all package changes since the previous release (5.0.0).
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 fastapi|0.162.4|0.162.7|patch
+sagemaker-code-editor|1.10.3|1.10.5|patch
 sagemaker-studio-dataengineering-extensions|1.3.15|1.3.16|patch
 sagemaker-studio-dataengineering-sessions|1.3.28|1.3.29|patch
 uv|0.13.7|0.13.9|patch
@@ -65,7 +66,7 @@ mpc|1.4.0|1.4.1|patch
 fontconfig|2.18.3|2.18.4|patch
 platformdirs|4.14.5|4.14.8|patch
 tornado|6.6|6.6.1|patch
-soupsieve|4.1|4.1.2|patch
+soupsieve|4.1|4.1.3|patch
 exceptiongroup|1.3.1|1.3.2|patch
 authlib|1.9.5|1.9.9|patch
 cloudpickle|3.1.2|3.1.3|patch
