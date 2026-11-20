@@ -11,6 +11,7 @@ This page lists all package changes since the previous release (4.5.7).
 
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
+sagemaker-code-editor|1.10.3|1.10.5|patch
 sagemaker-studio-dataengineering-extensions|1.3.15|1.3.16|patch
 sagemaker-studio-dataengineering-sessions|1.3.27|1.3.29|patch
 
@@ -30,7 +31,7 @@ accelerate|1.15.0|1.16.0|minor
 narwhals|2.28.0|2.29.0|minor
 tornado|6.5.10|6.6.1|minor
 jsonpointer|3.8|3.12|minor
-soupsieve|4.0|4.1.2|minor
+soupsieve|4.0|4.1.3|minor
 send2trash|2.1.0|2.2.0|minor
 pandoc|3.13|3.14|minor
 google-api-core|2.33.0|2.29.0|minor
