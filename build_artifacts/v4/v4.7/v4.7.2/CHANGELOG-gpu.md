@@ -13,6 +13,7 @@ Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 fastapi|0.162.0|0.162.7|patch
 jupyter-server-proxy|4.6.0|4.6.1|patch
+sagemaker-code-editor|1.10.3|1.10.5|patch
 sagemaker-studio-dataengineering-extensions|1.3.15|1.3.16|patch
 sagemaker-studio-dataengineering-sessions|1.3.27|1.3.29|patch
 uv|0.13.7|0.13.9|patch
@@ -33,9 +34,10 @@ accelerate|1.15.0|1.16.0|minor
 narwhals|2.28.0|2.29.0|minor
 tornado|6.5.10|6.6.1|minor
 jsonpointer|3.8|3.12|minor
-soupsieve|4.0|4.1.2|minor
+soupsieve|4.0|4.1.3|minor
 send2trash|2.1.0|2.2.0|minor
 pandoc|3.13|3.14|minor
+google-api-core|2.29.0|2.33.0|minor
 threadpoolctl|3.7.0|3.8.0|minor
 python-slugify|9.1.3|9.2.0|minor
 markdown-it-py|4.2.0|4.3.0|minor
@@ -52,6 +54,7 @@ deepdiff|9.1.0|9.2.1|minor
 email-validator|2.3.0|2.4.0|minor
 email_validator|2.3.0|2.4.0|minor
 sse-starlette|3.6.0|3.7.0|minor
+google-cloud-bigquery-core|3.47.0|3.18.0|minor
 jiter|0.18.0|0.19.0|minor
 jsonpatch|1.33|1.48|minor
 langsmith|0.14.17|0.15.1|minor
@@ -62,6 +65,7 @@ sagemaker-core|2.28.0|2.30.0|minor
 sagemaker-train|1.26.0|1.30.0|minor
 sagemaker-serve|1.26.0|1.30.0|minor
 sagemaker-mlops|1.26.0|1.29.0|minor
+sqlalchemy-bigquery|1.17.3|1.16.0|minor
 sqlglot|30.29.0|30.33.0|minor
 slack-sdk|3.46.0|3.48.0|minor
 llvm-openmp|23.1.5|23.1.6|patch
@@ -103,3 +107,9 @@ opentelemetry-semantic-conventions|0.66b1|0.66b2|
 opentelemetry-exporter-prometheus|0.66b1|0.66b2|
 opentelemetry-instrumentation|0.66b1|0.66b2|
 opentelemetry-instrumentation-threading|0.66b1|0.66b2|
+
+### Removed
+
+Package | Last Version
+---|---
+google-api-core-grpc|2.29.0
