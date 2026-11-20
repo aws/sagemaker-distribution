@@ -296,9 +296,9 @@ def test_dockerfiles_install_claude_and_codex_runtimes(dockerfile):
 
     assert content.count("# Install agent CLIs and JupyterLab ACP adapters") == 1
     assert content.count("@anthropic-ai/claude-code@2.1.322") == 1
-    assert content.count("@openai/codex@0.169.0") == 1
-    assert content.count("@zed-industries/claude-agent-acp@0.23.1") == 1
-    assert content.count("@zed-industries/codex-acp@0.16.0") == 1
+    assert content.count("@openai/codex@0.170.0") == 1
+    assert content.count("@agentclientprotocol/claude-agent-acp@0.109.0") == 1
+    assert content.count("@agentclientprotocol/codex-acp@2.8.0") == 1
     assert content.count("ENV CLAUDE_CODE_USE_BEDROCK=1") == 1
     assert content.count("ENV DISABLE_AUTOUPDATER=1") == 1
 
