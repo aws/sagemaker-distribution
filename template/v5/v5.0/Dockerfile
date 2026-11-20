@@ -154,6 +154,8 @@ RUN if [[ -z $ARG_BASED_ENV_IN_FILENAME ]] ; \
         @openai/codex@0.170.0 \
         @agentclientprotocol/claude-agent-acp@0.109.0 \
         @agentclientprotocol/codex-acp@2.8.0 && \
+    # Remove the npm download cache so the package tarballs are not kept in the image
+    npm cache clean --force && \
     # Enforce to use `conda-forge` as only channel, by removing `defaults`
     conda config --remove channels defaults && \
     micromamba config append channels conda-forge --env && \
