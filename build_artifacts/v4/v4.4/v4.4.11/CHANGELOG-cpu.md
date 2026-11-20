@@ -11,6 +11,7 @@ This page lists all package changes since the previous release (4.4.10).
 
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
+sagemaker-code-editor|1.10.3|1.10.5|patch
 sagemaker-studio-dataengineering-extensions|1.3.15|1.3.16|patch
 sagemaker-studio-dataengineering-sessions|1.3.27|1.3.29|patch
 
@@ -28,9 +29,11 @@ accelerate|1.15.0|1.16.0|minor
 narwhals|2.28.0|2.29.0|minor
 tornado|6.5.10|6.6.1|minor
 jsonpointer|3.8|3.12|minor
-soupsieve|4.0|4.1.2|minor
+soupsieve|4.0|4.1.3|minor
 send2trash|2.1.0|2.2.0|minor
 pandoc|3.13|3.14|minor
+qt6-main|6.9.0|6.8.3|minor
+pyside6|6.9.0|6.8.3|minor
 threadpoolctl|3.7.0|3.8.0|minor
 python-slugify|9.1.3|9.2.0|minor
 markdown-it-py|4.2.0|4.3.0|minor
