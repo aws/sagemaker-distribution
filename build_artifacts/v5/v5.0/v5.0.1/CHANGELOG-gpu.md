@@ -27,6 +27,7 @@ uv|0.13.7|0.13.9|patch
 Package | Previous Version | Current Version | Change Type
 ---|---|---|---
 cachebox|5.2.3|6.2.11|major
+nodejs|20.19.6|22.23.5|major
 tbb|2023.1.0|2023.2.0|minor
 accelerate|1.15.0|1.16.0|minor
 pcre2|10.47|10.49|minor
@@ -89,7 +90,7 @@ python-multipart|0.0.33|0.0.34|patch
 python-fasthtml|0.14.22|0.14.26|patch
 smart-open|9.0.3|9.0.6|patch
 fugue|0.9.8|0.9.9|patch
-coverage|7.17.2|7.17.3|patch
+coverage|7.17.2|7.17.4|patch
 dnspython|2.9.1|2.9.2|patch
 fastapi-core|0.162.4|0.162.7|patch
 pydantic-settings|2.16.2|2.16.3|patch
