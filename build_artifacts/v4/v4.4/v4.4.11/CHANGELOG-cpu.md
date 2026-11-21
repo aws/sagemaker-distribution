@@ -32,8 +32,6 @@ jsonpointer|3.8|3.12|minor
 soupsieve|4.0|4.1.3|minor
 send2trash|2.1.0|2.2.0|minor
 pandoc|3.13|3.14|minor
-qt6-main|6.9.0|6.8.3|minor
-pyside6|6.9.0|6.8.3|minor
 threadpoolctl|3.7.0|3.8.0|minor
 python-slugify|9.1.3|9.2.0|minor
 markdown-it-py|4.2.0|4.3.0|minor
