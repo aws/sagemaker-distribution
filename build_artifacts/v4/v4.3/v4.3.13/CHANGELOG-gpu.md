@@ -34,6 +34,7 @@ jsonpointer|3.8|3.12|minor
 soupsieve|4.0|4.1.3|minor
 send2trash|2.1.0|2.2.0|minor
 pandoc|3.13|3.14|minor
+google-api-core|2.33.0|2.29.0|minor
 threadpoolctl|3.7.0|3.8.0|minor
 python-slugify|9.1.3|9.2.0|minor
 markdown-it-py|4.2.0|4.3.0|minor
@@ -50,6 +51,7 @@ deepdiff|9.1.0|9.2.1|minor
 email-validator|2.3.0|2.4.0|minor
 email_validator|2.3.0|2.4.0|minor
 sse-starlette|3.6.0|3.7.0|minor
+google-cloud-bigquery-core|3.18.0|3.47.0|minor
 jiter|0.18.0|0.19.0|minor
 langsmith|0.14.17|0.15.1|minor
 mdit-py-plugins|0.6.1|0.7.0|minor
@@ -59,6 +61,7 @@ sagemaker-core|2.28.0|2.30.0|minor
 sagemaker-train|1.26.0|1.30.0|minor
 sagemaker-serve|1.26.0|1.30.0|minor
 sagemaker-mlops|1.26.0|1.29.0|minor
+sqlalchemy-bigquery|1.16.0|1.17.3|minor
 sqlglot|30.29.0|30.33.0|minor
 slack-sdk|3.46.0|3.48.0|minor
 llvm-openmp|23.1.5|23.1.6|patch
@@ -98,3 +101,9 @@ opentelemetry-semantic-conventions|0.66b1|0.66b2|
 opentelemetry-exporter-prometheus|0.66b1|0.66b2|
 opentelemetry-instrumentation|0.66b1|0.66b2|
 opentelemetry-instrumentation-threading|0.66b1|0.66b2|
+
+### New
+
+Package | Version
+---|---
+google-api-core-grpc|2.29.0
